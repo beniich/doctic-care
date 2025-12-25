@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Stethoscope,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,8 @@ const navItems: NavItem[] = [
   { icon: Calendar, label: "Appointments", path: "/appointments", badge: 5 },
   { icon: FileText, label: "Medical Records", path: "/records" },
   { icon: Package, label: "Products", path: "/products" },
-  { icon: CreditCard, label: "Billing", path: "/billing" },
+  { icon: CreditCard, label: "Patient Billing", path: "/billing" },
+  { icon: Building2, label: "SaaS Billing", path: "/saas-billing" },
   { icon: Bot, label: "AI Assistant", path: "/assistant" },
 ];
 
