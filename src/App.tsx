@@ -9,6 +9,7 @@ import Appointments from "./pages/Appointments";
 import Records from "./pages/Records";
 import Products from "./pages/Products";
 import Billing from "./pages/Billing";
+import SaasBilling from "./pages/SaasBilling";
 import AIAssistant from "./pages/AIAssistant";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/records" element={<Records />} />
           <Route path="/products" element={<Products />} />
           <Route path="/billing" element={<Billing />} />
+          <Route path="/saas-billing" element={<SaasBilling />} />
           <Route path="/assistant" element={<AIAssistant />} />
           <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
