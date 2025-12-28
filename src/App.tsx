@@ -63,6 +63,14 @@ const App = () => (
                       </PublicOnlyRoute>
                     }
                   />
+                  <Route
+                    path="/signup"
+                    element={
+                      <PublicOnlyRoute redirectTo="/dashboard">
+                        <LoginPage />
+                      </PublicOnlyRoute>
+                    }
+                  />
                   <Route path="/patients" element={<Patients />} />
                   <Route path="/appointments" element={<Appointments />} />
                   <Route path="/medical-care-sheet" element={<MedicalCareSheetPage />} />
