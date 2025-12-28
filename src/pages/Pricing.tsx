@@ -12,53 +12,54 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const plans = [
     {
-        name: "Free",
-        priceMonthly: "0",
-        priceAnnual: "0",
-        description: "Perfect for solo practitioners getting started",
+        name: "Silver",
+        priceMonthly: "23",
+        priceAnnual: "19",
+        description: "Idéal pour démarrer votre pratique numérique",
         features: [
-            "Up to 50 patient records",
-            "Basic appointment scheduling",
-            "Email reminders",
-            "Mobile access",
-            "Community support",
+            "Jusqu'à 100 patients",
+            "Agenda basique",
+            "Dossiers médicaux",
+            "Support email",
+            "1 utilisateur",
         ],
-        cta: "Get Started",
+        cta: "Commencer",
         href: "/signup",
         popular: false,
     },
     {
-        name: "Professional",
-        priceMonthly: "49",
-        priceAnnual: "42",
-        description: "Best for growing clinics and private practices",
+        name: "Master",
+        priceMonthly: "79",
+        priceAnnual: "67",
+        description: "Pour les cabinets en croissance avec IA intégrée",
         features: [
-            "Unlimited patient records",
-            "Advanced scheduling & reminders",
-            "Telemedicine integration",
-            "Billing & invoicing",
-            "Priority support",
-            "Custom branding",
+            "Patients illimités",
+            "Agenda intelligent IA",
+            "Transcription vocale",
+            "Aide au diagnostic IA",
+            "3 utilisateurs",
+            "Support prioritaire",
+            "Télétransmission",
         ],
-        cta: "Start 14-day Trial",
-        href: "/signup?plan=pro",
+        cta: "Essai gratuit 14 jours",
+        href: "/signup?plan=master",
         popular: true,
     },
     {
-        name: "Enterprise",
-        priceMonthly: "Custom",
-        priceAnnual: "Custom",
-        description: "For hospitals and large multi-location practices",
+        name: "Gold",
+        priceMonthly: "120",
+        priceAnnual: "100",
+        description: "Solution complète pour les établissements",
         features: [
-            "Everything in Professional",
-            "Multi-location support",
-            "API access",
-            "Dedicated account manager",
-            "Advanced analytics & reporting",
-            "HIPAA-compliant hosting",
-            "On-premise option available",
+            "Tout Master inclus",
+            "Utilisateurs illimités",
+            "API personnalisée",
+            "Formation dédiée",
+            "Support VIP 24/7",
+            "Intégrations sur mesure",
+            "Audit de sécurité",
         ],
-        cta: "Contact Sales",
+        cta: "Contacter les ventes",
         href: "/contact",
         popular: false,
     },
@@ -230,8 +231,8 @@ const Pricing = () => {
                             >
                                 <Card
                                     className={`relative h-full flex flex-col ${plan.popular
-                                            ? "border-primary shadow-2xl scale-105 md:scale-110 z-10"
-                                            : "border-border"
+                                        ? "border-primary shadow-2xl scale-105 md:scale-110 z-10"
+                                        : "border-border"
                                         }`}
                                 >
                                     {plan.popular && (

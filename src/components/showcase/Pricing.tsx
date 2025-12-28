@@ -3,6 +3,7 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Check, Sparkles, Crown, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const plans = [
     {
@@ -138,8 +139,8 @@ const Pricing = () => {
 
                             <div
                                 className={`h-full p-8 rounded-2xl border transition-all duration-300 ${plan.highlighted
-                                        ? "border-accent/50 bg-card shadow-glow-accent"
-                                        : "border-border bg-card/50 backdrop-blur-sm hover:border-primary/30"
+                                    ? "border-accent/50 bg-card shadow-glow-accent"
+                                    : "border-border bg-card/50 backdrop-blur-sm hover:border-primary/30"
                                     }`}
                             >
                                 {/* Plan header */}
@@ -177,13 +178,16 @@ const Pricing = () => {
 
                                 {/* CTA Button */}
                                 <Button
+                                    asChild
                                     variant={plan.buttonVariant}
                                     className={`w-full rounded-full py-6 font-semibold transition-all duration-300 hover:scale-[1.02] ${plan.highlighted
-                                            ? "bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow-accent"
-                                            : "hover:bg-primary hover:text-primary-foreground"
+                                        ? "bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow-accent"
+                                        : "hover:bg-primary hover:text-primary-foreground"
                                         }`}
                                 >
-                                    {plan.buttonText}
+                                    <Link to="/pricing">
+                                        {plan.buttonText}
+                                    </Link>
                                 </Button>
                             </div>
                         </motion.div>
