@@ -470,7 +470,8 @@ app.post('/api/archives', (req, res) => {
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Handle React routing, return all requests to React app
-app.get('*', (req, res) => {
+// Express 5 requires regex for catch-all or specific syntax instead of '*'
+app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
