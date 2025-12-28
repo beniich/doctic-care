@@ -3,6 +3,12 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
 dotenv.config();
@@ -454,6 +460,18 @@ app.post('/api/archives', (req, res) => {
     const newArchive = { id: archives.length + 1, ...req.body };
     archives.push(newArchive);
     res.status(201).json(newArchive);
+});
+
+// ============================================================================
+// SERVE FRONTEND (MUST BE LAST)
+// ============================================================================
+
+// Serve static files from the "dist" directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start Server
