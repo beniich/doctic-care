@@ -13,24 +13,31 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, changeType = "neutral", icon: Icon, iconColor }: StatCardProps) {
   return (
-    <Card className="glass-card">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+    <Card className="gradient-card group hover:border-primary/30 transition-all duration-300 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <CardHeader className="flex flex-row items-center justify-between pb-3 relative z-10">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        <div className={cn("p-2 rounded-lg", iconColor || "bg-primary/10")}>
-          <Icon className="h-4 w-4 text-primary" />
+        <div className={cn(
+          "p-2.5 rounded-xl transition-all duration-300 group-hover:scale-110",
+          iconColor || "bg-primary/10 group-hover:bg-primary/20"
+        )}>
+          <Icon className="h-5 w-5 text-primary group-hover:text-primary drop-shadow-glow" />
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+      <CardContent className="relative z-10">
+        <div className="text-3xl font-bold mb-1 text-gradient-hover group-hover:text-gradient transition-all duration-300">
+          {value}
+        </div>
         {change && (
           <p className={cn(
-            "text-xs mt-1",
+            "text-xs font-medium flex items-center gap-1",
             changeType === "positive" && "text-success",
             changeType === "negative" && "text-destructive",
             changeType === "neutral" && "text-muted-foreground"
           )}>
+            {changeType === "positive" && <TrendingUp className="h-3 w-3" />}
             {change}
           </p>
         )}
@@ -87,33 +94,34 @@ export function UpcomingAppointments() {
   ];
 
   return (
-    <Card className="glass-card">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <Clock className="h-5 w-5 text-primary" />
+    <Card className="gradient-card group hover:border-primary/30 transition-all duration-300 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <CardHeader className="flex flex-row items-center justify-between pb-3 relative z-10">
+        <CardTitle className="flex items-center gap-2 text-primary">
+          <Clock className="h-5 w-5" />
           Today's Schedule
         </CardTitle>
         <span className="text-sm text-muted-foreground">{appointments.length} appointments</span>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 relative z-10">
         {appointments.map((apt) => (
           <div
             key={apt.id}
-            className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+            className="flex items-center justify-between p-3 rounded-lg bg-muted/10 hover:bg-muted transition-colors group"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-sm font-medium text-primary">
-                  {apt.patient.split(" ").map(n => n[0]).join("")}
+                  {apt.patient.split(" ").map((n) => n[0]).join("")}
                 </span>
               </div>
               <div>
-                <p className="font-medium text-sm">{apt.patient}</p>
+                <p className="font-medium text-sm text-foreground">{apt.patient}</p>
                 <p className="text-xs text-muted-foreground">{apt.type}</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm font-medium">{apt.time}</p>
+              <p className="text-sm font-medium text-foreground">{apt.time}</p>
               <span className={cn(
                 "status-badge text-xs",
                 apt.status === "confirmed" ? "status-success" : "status-warning"
@@ -138,20 +146,21 @@ export function RecentActivity() {
   ];
 
   return (
-    <Card className="glass-card">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-accent" />
+    <Card className="gradient-card group hover:border-primary/30 transition-all duration-300 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <CardHeader className="flex flex-row items-center justify-between pb-3 relative z-10">
+        <CardTitle className="flex items-center gap-2 text-accent">
+          <TrendingUp className="h-5 w-5" />
           Recent Activity
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 relative z-10">
         {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-primary mt-2" />
+          <div key={activity.id} className="flex items-start gap-3 group">
+            <div className="w-2 h-2 rounded-full bg-primary mt-2 group-hover:scale-125 transition-transform" />
             <div className="flex-1 min-w-0">
               <p className="text-sm">
-                <span className="font-medium">{activity.action}</span>
+                <span className="font-medium text-foreground">{activity.action}</span>
                 <span className="text-muted-foreground"> — {activity.patient}</span>
               </p>
               <p className="text-xs text-muted-foreground">{activity.time}</p>

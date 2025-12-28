@@ -11,13 +11,18 @@ import {
   Bot,
   ChevronLeft,
   ChevronRight,
-  Stethoscope,
   Building2,
   Network,
+  Pill,
+  Video,
+  Film,
+  Share2,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface NavItem {
   icon: React.ElementType;
@@ -27,10 +32,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Users, label: "Patients", path: "/patients", badge: 12 },
   { icon: Calendar, label: "Appointments", path: "/appointments", badge: 5 },
   { icon: FileText, label: "Medical Records", path: "/records" },
+  { icon: Pill, label: "Prescriptions", path: "/prescriptions" },
+  { icon: Video, label: "Teleconsultation", path: "/teleconsult" },
   { icon: Package, label: "Products", path: "/products" },
   { icon: CreditCard, label: "Patient Billing", path: "/billing" },
   { icon: Building2, label: "SaaS Billing", path: "/saas-billing" },
@@ -39,7 +46,14 @@ const navItems: NavItem[] = [
 ];
 
 const bottomNavItems: NavItem[] = [
+  { icon: CreditCard, label: "My Subscription", path: "/subscription" },
   { icon: Settings, label: "Settings", path: "/settings" },
+];
+
+const contentItems: NavItem[] = [
+  { icon: Film, label: "Streaming & Vidéos", path: "/streaming" },
+  { icon: Share2, label: "Réseaux Sociaux", path: "/publish-social" },
+  { icon: MessageSquare, label: "Messages", path: "/messages" },
 ];
 
 export function AppSidebar() {
@@ -103,8 +117,8 @@ export function AppSidebar() {
     >
       {/* Logo Header */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
-        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary">
-          <Stethoscope className="h-5 w-5 text-primary-foreground" />
+        <div className="flex items-center justify-center w-9 h-9">
+          <img src="/logo.png" alt="Doctic Logo" className="w-full h-full object-contain" />
         </div>
         {!collapsed && (
           <div className="flex flex-col">
@@ -114,11 +128,22 @@ export function AppSidebar() {
         )}
       </div>
 
-      {/* Main Navigation */}
-      <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto scrollbar-thin">
-        {navItems.map((item) => (
-          <NavItemButton key={item.path} item={item} />
-        ))}
+      <nav className="flex-1 py-4 px-2 space-y-6 overflow-y-auto scrollbar-thin">
+        {/* Main Modules */}
+        <div className="space-y-1">
+          {!collapsed && <h3 className="px-3 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2">Principal</h3>}
+          {navItems.map((item) => (
+            <NavItemButton key={item.path} item={item} />
+          ))}
+        </div>
+
+        {/* Content Modules */}
+        <div className="space-y-1">
+          {!collapsed && <h3 className="px-3 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2">Contenu & Partage</h3>}
+          {contentItems.map((item) => (
+            <NavItemButton key={item.path} item={item} />
+          ))}
+        </div>
       </nav>
 
       {/* Bottom Navigation */}
@@ -126,6 +151,14 @@ export function AppSidebar() {
         {bottomNavItems.map((item) => (
           <NavItemButton key={item.path} item={item} />
         ))}
+
+        {/* Theme Toggle */}
+        <div className={cn(
+          "flex items-center h-11 px-3",
+          collapsed && "justify-center px-0"
+        )}>
+          <ThemeToggle />
+        </div>
 
         {/* Collapse Toggle */}
         <Button
