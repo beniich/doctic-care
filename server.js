@@ -490,138 +490,15 @@ app.listen(PORT, () => {
 
 
 
-// ============================================================================
-// AUTHENTICATION
-// ============================================================================
-
-app.post('/api/login', (req, res) => {
-    const { email, password, role } = req.body;
-    // Mock login - accept any email/password for demo
-    if (email) {
-        res.json({
-            token: 'mock-jwt-token-12345',
-            user: {
-                id: '1',
-                name: 'Dr. Anderson',
-                email: email,
-                role: role || 'doctor'
-            }
-        });
-    } else {
-        res.status(401).json({ error: 'Invalid credentials' });
-    }
-});
-
-// ============================================================================
-// PATIENTS ROUTES
-// ============================================================================
-
-app.get('/api/patients', (req, res) => {
-    const q = req.query.q ? req.query.q.toLowerCase() : '';
-    const filtered = q ? patients.filter(p => p.name.toLowerCase().includes(q)) : patients;
-    res.json(filtered);
-});
-
-app.post('/api/patients', (req, res) => {
-    const newPatient = { id: patients.length + 1, ...req.body };
-    patients.push(newPatient);
-    res.status(201).json(newPatient);
-});
-
-app.put('/api/patients/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = patients.findIndex(p => p.id === id);
-    if (index !== -1) {
-        patients[index] = { ...patients[index], ...req.body };
-        res.json(patients[index]);
-    } else {
-        res.status(404).json({ error: 'Patient not found' });
-    }
-});
-
-app.delete('/api/patients/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    patients = patients.filter(p => p.id !== id);
-    res.json({ success: true, id });
-});
-
-// ============================================================================
-// APPOINTMENTS ROUTES
-// ============================================================================
-
-app.get('/api/appointments', (req, res) => res.json(appointments));
-
-app.post('/api/appointments', (req, res) => {
-    const newApt = { id: appointments.length + 1, ...req.body };
-    appointments.push(newApt);
-    res.status(201).json(newApt);
-});
-
-app.put('/api/appointments/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = appointments.findIndex(a => a.id === id);
-    if (index !== -1) {
-        appointments[index] = { ...appointments[index], ...req.body };
-        res.json(appointments[index]);
-    } else {
-        res.status(404).json({ error: 'Appointment not found' });
-    }
-});
-
-app.delete('/api/appointments/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    appointments = appointments.filter(a => a.id !== id);
-    res.json({ success: true });
-});
-
-// ============================================================================
-// RECORDS ROUTES
-// ============================================================================
-
-app.get('/api/records', (req, res) => res.json(records));
-app.post('/api/records', (req, res) => {
-    const newRecord = { id: records.length + 1, ...req.body };
-    records.push(newRecord);
-    res.status(201).json(newRecord);
-});
-
-// ============================================================================
-// BILLING ROUTES
-// ============================================================================
-
-app.get('/api/billing', (req, res) => res.json(invoices));
-app.post('/api/billing', (req, res) => {
-    const newInvoice = { id: `INV-2024-${String(invoices.length + 1).padStart(3, '0')}`, ...req.body };
-    invoices.push(newInvoice);
-    res.status(201).json(newInvoice);
-});
-
-// ============================================================================
-// PRESCRIPTIONS ROUTES
-// ============================================================================
-
-app.get('/api/prescriptions', (req, res) => res.json(prescriptions));
-app.post('/api/prescriptions', (req, res) => {
-    const newPres = { id: prescriptions.length + 1, ...req.body };
-    prescriptions.push(newPres);
-    res.status(201).json(newPres);
-});
-
-// ============================================================================
-// ARCHIVES ROUTES
-// ============================================================================
-
-app.get('/api/archives', (req, res) => res.json(archives));
-app.post('/api/archives', (req, res) => {
-    const newArchive = { id: archives.length + 1, ...req.body };
-    archives.push(newArchive);
-    res.status(201).json(newArchive);
-});
-
 // Start Server
 app.listen(PORT, () => {
-    console.log(`Backend server running on http://localhost:${PORT}`);
-    console.log(`- API Patients: http://localhost:${PORT}/api/patients`);
-    console.log(`- API Appointments: http://localhost:${PORT}/api/appointments`);
-    console.log(`- API Billing: http://localhost:${PORT}/api/billing`);
+    console.log(`🚀 Backend server running on http://localhost:${PORT}`);
+    console.log(`\n📋 Available API Endpoints:`);
+    console.log(`   - Authentication: http://localhost:${PORT}/api/login`);
+    console.log(`   - Patients: http://localhost:${PORT}/api/patients`);
+    console.log(`   - Appointments: http://localhost:${PORT}/api/appointments`);
+    console.log(`   - Billing: http://localhost:${PORT}/api/billing`);
+    console.log(`   - Stripe Checkout: http://localhost:${PORT}/api/create-checkout-session`);
+    console.log(`   - Stripe Webhooks: http://localhost:${PORT}/api/webhooks/stripe`);
+    console.log(`\n💳 Stripe integration ${process.env.STRIPE_SECRET_KEY ? '✅ active' : '⚠️  not configured'}`);
 });
