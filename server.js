@@ -488,15 +488,4 @@ app.listen(PORT, () => {
 
 
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`🚀 Backend server running on http://localhost:${PORT}`);
-    console.log(`\n📋 Available API Endpoints:`);
-    console.log(`   - Authentication: http://localhost:${PORT}/api/login`);
-    console.log(`   - Patients: http://localhost:${PORT}/api/patients`);
-    console.log(`   - Appointments: http://localhost:${PORT}/api/appointments`);
-    console.log(`   - Billing: http://localhost:${PORT}/api/billing`);
-    console.log(`   - Stripe Checkout: http://localhost:${PORT}/api/create-checkout-session`);
-    console.log(`   - Stripe Webhooks: http://localhost:${PORT}/api/webhooks/stripe`);
-    console.log(`\n💳 Stripe integration ${process.env.STRIPE_SECRET_KEY ? '✅ active' : '⚠️  not configured'}`);
-});
+
