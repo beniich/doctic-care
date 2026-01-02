@@ -1,0 +1,177 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ========================================
+  # TESTS UNITAIRES
+  # ========================================
+  unit-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test -- --coverage
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+  
+  # ========================================
+  # VALIDATION SÉCURITÉ
+  # ========================================
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+      
+      - name: Run Snyk Security Scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+  
+  # ========================================
+  # LINT & FORMAT
+  # ========================================
+  quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - run: npm ci
+      
+      - name: Run ESLint
+        run: npm run lint
+  
+  # ========================================
+  # BUILD
+  # ========================================
+  build:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, quality]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - run: npm ci
+      
+      - name: Build frontend
+        run: npm run build
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+  
+  # ========================================
+  # TESTS DE CHARGE (optionnel - staging only)
+  # ========================================
+  load-test:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install K6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+      
+      - name: Run smoke test
+        run: k6 run --vus 10 --duration 1m tests/load/k6-full-scenario.js
+        env:
+          API_URL: ${{ secrets.STAGING_API_URL }}
+  
+  # ========================================
+  # DEPLOY STAGING
+  # ========================================
+  deploy-staging:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    needs: [build, load-test]
+    environment: staging
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+      
+      - name: Deploy to Render (Staging)
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}
+  
+  # ========================================
+  # DEPLOY PRODUCTION
+  # ========================================
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: [build, security]
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+      
+      - name: Deploy to Production
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}
+      
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "🚀 Doctic Medical OS v${{ github.sha }} deployed to production!"
+            }

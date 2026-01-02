@@ -1,0 +1,380 @@
+// ========================================
+// DOCTIC MEDICAL OS - Prisma Schema
+// Version: 2.1.0 - Production Ready
+// Database: PostgreSQL
+// ========================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================================
+// MULTI-TENANT
+// ========================================
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  active    Boolean  @default(true)
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  patients  Patient[]
+  
+  @@index([slug])
+  @@index([active])
+}
+
+// ========================================
+// USERS & AUTH
+// ========================================
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  DOCTOR
+  ASSISTANT
+  PATIENT
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  password      String?   // Null si OAuth uniquement
+  
+  // OAuth
+  googleId      String?   @unique
+  
+  // Profile
+  firstName     String?
+  lastName      String?
+  name          String?
+  avatar        String?
+  phone         String?
+  
+  // Role & Permissions
+  role          Role      @default(DOCTOR)
+  tenantId      String?
+  tenant        Tenant?   @relation(fields: [tenantId], references: [id])
+  
+  // Security
+  active        Boolean   @default(true)
+  lastLogin     DateTime?
+  failedLoginAttempts Int @default(0)
+  lockedUntil   DateTime?
+  
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  auditLogs           AuditLog[]
+  prescriptions       Prescription[]
+  teleconsultSessions TeleconsultSession[] @relation("DoctorSessions")
+  patientSessions     TeleconsultSession[] @relation("PatientSessions")
+  
+  @@index([email])
+  @@index([googleId])
+  @@index([tenantId])
+  @@index([active])
+}
+
+// ========================================
+// PATIENTS
+// ========================================
+
+model Patient {
+  id              String    @id @default(uuid())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  
+  // Identity
+  firstName       String
+  lastName        String
+  dateOfBirth     DateTime?
+  gender          String?
+  ssn             String?   // Encrypted - Numéro Sécurité Sociale
+  
+  // Contact
+  email           String?
+  phone           String?
+  address         String?
+  city            String?
+  postalCode      String?
+  country         String    @default("FR")
+  
+  // Medical
+  bloodType       String?
+  allergies       String[]
+  chronicDiseases String[]
+  
+  // Metadata
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  appointments       Appointment[]
+  prescriptions      Prescription[]
+  medicalRecords     MedicalRecord[]
+  teleconsultSessions TeleconsultSession[]
+  invoices           Invoice[]
+  
+  @@index([tenantId])
+  @@index([lastName, firstName])
+  @@index([active])
+}
+
+// ========================================
+// APPOINTMENTS
+// ========================================
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  patientId   String
+  patient     Patient           @relation(fields: [patientId], references: [id])
+  
+  start       DateTime
+  end         DateTime
+  status      AppointmentStatus @default(PENDING)
+  
+  motif       String?
+  notes       String?
+  
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  @@index([patientId])
+  @@index([start])
+  @@index([status])
+}
+
+// ========================================
+// PRESCRIPTIONS
+// ========================================
+
+enum PrescriptionStatus {
+  ACTIVE
+  DISPENSED
+  EXPIRED
+  CANCELLED
+}
+
+model Prescription {
+  id              String              @id @default(uuid())
+  patientId       String
+  patient         Patient             @relation(fields: [patientId], references: [id])
+  doctorId        String
+  doctor          User                @relation(fields: [doctorId], references: [id])
+  
+  prescriptionDate DateTime           @default(now())
+  expiryDate       DateTime?
+  status           PrescriptionStatus @default(ACTIVE)
+  
+  notes            String?
+  signatureUrl     String?
+  pdfUrl           String?
+  
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  
+  // Relations
+  medications      PrescriptionItem[]
+  
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([prescriptionDate])
+  @@index([status])
+}
+
+model PrescriptionItem {
+  id              String        @id @default(uuid())
+  prescriptionId  String
+  prescription    Prescription  @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  
+  medicationName  String
+  dosage          String
+  frequency       String
+  duration        String
+  quantity        Int
+  refills         Int           @default(0)
+  instructions    String?
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([prescriptionId])
+}
+
+// ========================================
+// TELECONSULTATION
+// ========================================
+
+enum TeleconsultStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model TeleconsultSession {
+  id              String            @id @default(uuid())
+  patientId       String
+  patient         Patient           @relation(fields: [patientId], references: [id])
+  doctorId        String
+  doctor          User              @relation("DoctorSessions", fields: [doctorId], references: [id])
+  
+  scheduledDate   DateTime
+  actualStart     DateTime?
+  actualEnd       DateTime?
+  durationMinutes Int?
+  
+  roomUrl         String?
+  recordingUrl    String?
+  
+  status          TeleconsultStatus @default(SCHEDULED)
+  motif           String?
+  notes           String?
+  
+  // Billing
+  invoiceId       String?
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([scheduledDate])
+  @@index([status])
+}
+
+// ========================================
+// MEDICAL RECORDS
+// ========================================
+
+model MedicalRecord {
+  id          String   @id @default(uuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  
+  recordDate  DateTime @default(now())
+  title       String
+  content     String
+  attachments String[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([patientId])
+  @@index([recordDate])
+}
+
+// ========================================
+// INVOICES
+// ========================================
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Invoice {
+  id          String        @id @default(uuid())
+  patientId   String
+  patient     Patient       @relation(fields: [patientId], references: [id])
+  
+  invoiceNumber String      @unique
+  invoiceDate   DateTime    @default(now())
+  dueDate       DateTime?
+  
+  subtotal      Decimal     @db.Decimal(10, 2)
+  taxRate       Decimal     @default(20) @db.Decimal(5, 2)
+  taxAmount     Decimal     @db.Decimal(10, 2)
+  total         Decimal     @db.Decimal(10, 2)
+  
+  status        InvoiceStatus @default(DRAFT)
+  paidAt        DateTime?
+  
+  notes         String?
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  items         InvoiceItem[]
+  
+  @@index([patientId])
+  @@index([invoiceNumber])
+  @@index([status])
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  description String
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  total       Decimal  @db.Decimal(10, 2)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([invoiceId])
+}
+
+// ========================================
+// AUDIT LOGS (HIPAA/RGPD Compliance)
+// ========================================
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  
+  action    String   // USER_LOGIN, PRESCRIPTION_CREATED, etc.
+  resource  String?  // Ex: "Patient:uuid"
+  outcome   String   @default("SUCCESS") // SUCCESS, FAILURE, DENIED
+  
+  ipAddress String?
+  userAgent String?
+  metadata  Json?
+  
+  timestamp DateTime @default(now())
+  
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+  @@index([resource])
+}
+
+// ========================================
+// SESSIONS (si Redis pas disponible)
+// ========================================
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+  
+  @@index([expiresAt])
+}

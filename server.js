@@ -14,10 +14,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2024-10-28.acacia',
-});
+// Initialize Stripe only if properly configured
+let stripe;
+if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY.startsWith('sk_')) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2024-10-28.acacia',
+    });
+    console.log('✅ Stripe initialized');
+} else {
+    console.warn('⚠️  Stripe not configured - using mock mode');
+}
 
 app.use(cors());
 

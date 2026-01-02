@@ -1,70 +1,330 @@
-# Guide de Déploiement : Doctic-Care sur cPanel
+# 🚀 Guide de Déploiement Doctic Medical OS V2.1.0
 
-Votre projet est une application hybride : **Vite (Frontend)** + **Express (Backend)**.
-Le backend (`server.js`) sert l'API **ET** les fichiers statiques du frontend (dossier `dist`).
+## Checklist Avant Production
 
-Voici le "Bon Chemin" adapté spécifiquement à votre structure pour éviter les erreurs 500 et les pages blanches.
+### ✅ P0 - Bloquant
 
-## 1. Préparation Locale (CRITIQUE)
+- [ ] **Installer dépendances backend**
+  ```bash
+  cd doctic-care
+  npm install express cors passport jsonwebtoken helmet express-rate-limit
+  npm install zod redis connect-redis bcrypt
+  npm install @prisma/client prisma --save-dev
+  npm install jest supertest --save-dev
+  ```
 
-Contrairement à un simple site HTML, vous devez **construire** le frontend avant de déployer. cPanel ne doit pas exécuter `vite build`.
+- [ ] **Configurer Prisma**
+  ```bash
+  # Copier schema complet
+  cp prisma/schema-complete.prisma prisma/schema.prisma
+  
+  # Générer client Prisma
+  npx prisma generate
+  
+  # Créer migration
+  npx prisma migrate dev --name init
+  ```
 
-1.  **Nettoyer et Construire** :
-    ```bash
-    # Dans votre terminal local
-    npm run build
-    ```
-    > Cela va créer un dossier `dist` optimisé. Ce dossier est INDISPENSABLE.
+- [ ] **Configurer variables d'environnement**
+  ```bash
+  # Générer secrets sécurisés
+  npm run generate:secrets
+  
+  # Copier dans .env
+  cp .env.example .env
+  # Éditer avec vos valeurs
+  ```
 
-2.  **Vérification** :
-    Assurez-vous que le dossier `dist` contient `index.html` et des fichiers JS/CSS.
+- [ ] **Valider configuration**
+  ```bash
+  npm run validate:env
+  ```
 
-## 2. Fichiers à Transférer
+- [ ] **Lancer tests**
+  ```bash
+  npm test
+  # Coverage >70% requis
+  ```
 
-Ne transférez PAS tout votre ordinateur. Voici ce qui doit aller sur le serveur (via FTP ou Gestionnaire de fichiers) :
+### ⚠️ P1 - Semaine 1
 
-*   [x] `dist/` (Le dossier entier que vous venez de créer)
-*   [x] `server.js` (Votre backend API + Serveur Web)
-*   [x] `app.js` (Le point d'entrée pour cPanel/Passenger)
-*   [x] `package.json` (Pour les dépendances)
-*   [x] `.env` (Vos clés secrètes - créez-le sur le serveur si besoin)
+- [ ] **Configurer HTTPS**
+  - Certificat SSL Let's Encrypt
+  - Nginx reverse proxy
+  - Redirection HTTP → HTTPS
 
-> **NE PAS Transférer** : `node_modules` (on l'installera sur le serveur), `.git`, `src` (inutile en prod), `vite.config.ts`.
+- [ ] **Configurer Redis**
+  ```bash
+  # Installation Ubuntu
+  sudo apt install redis-server
+  sudo systemctl enable redis
+  
+  # Configuration .env
+  REDIS_URL=redis://localhost:6379
+  ```
 
-## 3. Configuration cPanel ("Setup Node.js App")
+- [ ] **Configurer PostgreSQL**
+  ```bash
+  # Créer DB production
+  sudo -u postgres createdb doctic_prod
+  
+  # Exécuter migrations
+  npx prisma migrate deploy
+  ```
 
-1.  **Créer l'application** :
-    *   **Node.js Version** : 18.x ou 20.x (Recommandé).
-    *   **Application Mode** : `Production`.
-    *   **Application Root** : `/home/votreuser/doctic` (ou le dossier où vous avez mis les fichiers).
-    *   **Application URL** : `doctic.cloudindustrie.com`.
-    *   **Application Startup File** : `app.js` (C'est très important, car `app.js` appelle `server.js`).
-
-2.  **Installer les dépendances** :
-    *   Une fois l'app créée, cliquez sur le bouton "Run NPM Install".
-    *   Cela va créer le dossier `node_modules` sur le serveur.
-
-3.  **Variables d'Environnement** :
-    *   Ajoutez vos variables dans l'interface cPanel (pas seulement dans `.env`) si possible, ou assurez-vous que `.env` est bien lu.
-    *   `STRIPE_SECRET_KEY` = `...`
-    *   `NODE_ENV` = `production`
-
-## 4. Corrections Apportées (Automatiques)
-
-J'ai déjà effectué deux corrections importantes dans votre code pour que cela fonctionne :
-
-1.  **`package.json`** : Ajout du script `"start": "node server.js"`.
-2.  **`server.js`** : Suppression d'un bloc de code en double qui provoquait des erreurs (tentative de lancer le serveur deux fois).
-
-## 5. Dépannage (Si erreur 500)
-
-*   **Logs** : Regardez le fichier `stderr.log` dans le dossier de l'app sur cPanel.
-*   **Passenger** : Si Passenger ne démarre pas, créez ou vérifiez le fichier `.htaccess` généré par cPanel. Il doit pointer vers le gestionnaire Node.js.
-*   **Port** : Ne forcez pas le port. `server.js` utilise `process.env.PORT` par défaut, ce qui est correct pour Passenger.
+- [ ] **Configurer monitoring**
+  - Sentry pour erreurs
+  - Datadog/CloudWatch pour logs
+  - UptimeRobot pour uptime
 
 ---
 
-**Résumé** :
-1. `npm run build` (Local)
-2. Upload `dist`, `server.js`, `app.js`, `package.json`
-3. cPanel -> Create App -> NPM Install -> Restart.
+## 🐳 Déploiement Docker
+
+### Dockerfile Optimisé
+
+```dockerfile
+FROM node:20-alpine AS base
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+FROM base AS runtime
+COPY . .
+RUN npx prisma generate
+
+EXPOSE 5000
+CMD ["node", "server.js"]
+```
+
+### docker-compose.yml
+
+```yaml
+version: '3.8'
+services:
+  backend:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env.production
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: doctic_prod
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+```
+
+### Lancer
+
+```bash
+docker-compose up -d
+docker-compose logs -f backend
+```
+
+---
+
+## ☁️ Déploiement Cloud
+
+### AWS EC2
+
+```bash
+# 1. Instance Ubuntu 22.04 t3.small
+# 2. Installer Node.js, PostgreSQL, Redis
+sudo apt update
+sudo apt install nodejs npm postgresql redis-server nginx
+
+# 3. Cloner repo
+git clone https://github.com/votre-org/doctic-care.git
+cd doctic-care
+
+# 4. Installer dépendances
+npm install
+
+# 5. Configurer .env production
+cp .env.production.example .env.production
+nano .env.production
+
+# 6. Migrations
+npx prisma migrate deploy
+
+# 7. PM2 pour auto-restart
+npm install -g pm2
+pm2 start server.js --name doctic-backend
+pm2 startup
+pm2 save
+```
+
+### Render.com (Simple)
+
+```bash
+# 1. Connecter GitHub repo
+# 2. Service Type: Web Service
+# 3. Build Command: npm install && npx prisma generate
+# 4. Start Command: node server.js
+# 5. Ajouter variables d'environnement dans dashboard
+```
+
+---
+
+## 🔒 Sécurité Post-Déploiement
+
+### 1. Vérifier HTTPS
+
+```bash
+curl -I https://api.doctic.fr/health
+# Doit retourner status 200
+```
+
+### 2. Tester Rate Limiting
+
+```bash
+# Doit bloquer après 5 tentatives
+for i in {1..10}; do curl https://api.doctic.fr/auth/google; done
+```
+
+### 3. Vérifier Headers Sécurité
+
+```bash
+curl -I https://api.doctic.fr/health | grep -i "x-frame\|strict-transport"
+```
+
+### 4. Tester Token Blacklist
+
+```bash
+# Login → Logout → Retry avec même token
+# Doit retourner 401 TOKEN_REVOKED
+```
+
+---
+
+## 📊 Monitoring
+
+### Logs
+
+```bash
+# Logs backend
+tail -f /var/log/doctic-backend.log
+
+# Logs PostgreSQL
+tail -f /var/log/postgresql/postgresql-14-main.log
+
+# Logs Redis
+tail -f /var/log/redis/redis-server.log
+```
+
+### Métriques
+
+- **Uptime** : >99.9%
+- **Response time** : <200ms (p95)
+- **Error rate** : <0.1%
+- **CPU** : <60%
+- **Memory** : <80%
+
+---
+
+## 🔄 Backup
+
+### PostgreSQL Automatique
+
+```bash
+# /etc/cron.daily/backup-doctic-db
+#!/bin/bash
+pg_dump doctic_prod | gzip > /backups/doctic_$(date +%Y%m%d).sql.gz
+
+# Garder 30 jours
+find /backups -name "doctic_*.sql.gz" -mtime +30 -delete
+```
+
+### Redis Snapshot
+
+```bash
+# redis.conf
+save 900 1
+save 300 10
+save 60 10000
+
+dir /var/lib/redis/snapshots
+```
+
+---
+
+## 🆘 Dépannage Production
+
+### Backend ne démarre pas
+
+```bash
+# Vérifier logs
+pm2 logs doctic-backend
+
+# Vérifier env
+npm run validate:env
+
+# Vérifier ports
+sudo netstat -tulpn | grep :5000
+```
+
+### Redis connection failed
+
+```bash
+# Test connexion
+redis-cli ping
+
+# Vérifier config
+cat /etc/redis/redis.conf | grep bind
+```
+
+### PostgreSQL migration failed
+
+```bash
+# Reset DB (dev only!)
+npx prisma migrate reset
+
+# Déployer
+npx prisma migrate deploy
+```
+
+---
+
+## 📞 Support Production
+
+**Erreurs critiques** : support@doctic.fr  
+**Incident response** : +33 XXX XXX XXX  
+**Status page** : https://status.doctic.fr
+
+---
+
+**Version** : 2.1.0  
+**Dernière mise à jour** : 2 Janvier 2026

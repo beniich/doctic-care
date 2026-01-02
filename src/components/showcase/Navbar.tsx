@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Stethoscope, Sun, Moon, Menu, X } from "lucide-react";
+import { Sun, Moon, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -31,8 +31,8 @@ const Navbar = () => {
             animate={{ y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                    ? "glass-card border-b py-3"
-                    : "bg-transparent py-5"
+                ? "glass-card border-b py-3"
+                : "bg-transparent py-5"
                 }`}
         >
             <div className="container mx-auto px-4 flex items-center justify-between">
@@ -41,8 +41,12 @@ const Navbar = () => {
                     to="/"
                     className="flex items-center gap-2 group"
                 >
-                    <div className="p-2 rounded-xl gradient-bg">
-                        <Stethoscope className="w-6 h-6 text-primary-foreground" />
+                    <div className="w-10 h-10 relative">
+                        <img
+                            src="/logo-new.png"
+                            alt="Doctic Pro"
+                            className="w-full h-full object-contain"
+                        />
                     </div>
                     <span className="text-xl font-bold text-foreground">Doctic Pro</span>
                 </Link>
