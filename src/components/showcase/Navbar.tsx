@@ -75,7 +75,7 @@ const Navbar = () => {
                         {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </Button>
                     <Link to="/login">
-                        <Button className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-6">
+                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
                             Inscription
                         </Button>
                     </Link>
@@ -121,7 +121,7 @@ const Navbar = () => {
                                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                             </Button>
                             <Link to="/login" className="flex-1">
-                                <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-full">
+                                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
                                     Inscription
                                 </Button>
                             </Link>

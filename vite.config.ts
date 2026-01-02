@@ -14,4 +14,17 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-core': ['react', 'react-dom', 'react-router-dom'],
+          'ui-components': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+          'calendar': ['@fullcalendar/react', '@fullcalendar/daygrid', '@fullcalendar/timegrid'],
+          'animations': ['framer-motion'],
+        }
+      }
+    },
+    chunkSizeWarningLimit: 800,
+  },
 }));

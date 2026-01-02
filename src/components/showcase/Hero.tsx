@@ -46,7 +46,7 @@ const Hero = () => {
                     transition={{ duration: 0.5 }}
                     className="inline-flex items-center gap-2 glass-card px-4 py-2 mb-8"
                 >
-                    <Sparkles className="w-4 h-4 text-accent" />
+                    <Sparkles className="w-4 h-4 text-primary" />
                     <span className="text-sm font-medium text-primary-foreground/90">
                         Propulsé par l'Intelligence Artificielle
                     </span>
@@ -85,7 +85,7 @@ const Hero = () => {
                     <Button
                         asChild
                         size="lg"
-                        className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-8 py-6 text-lg font-semibold shadow-glow-accent transition-all duration-300 hover:scale-105 group"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 group"
                     >
                         <Link to="/pricing">
                             Commencer gratuitement

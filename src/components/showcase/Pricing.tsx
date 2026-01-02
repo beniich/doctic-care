@@ -101,7 +101,7 @@ const Pricing = () => {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-16"
                 >
-                    <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
+                    <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
                         Tarifs
                     </span>
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
@@ -131,7 +131,7 @@ const Pricing = () => {
                             {/* Popular badge */}
                             {plan.highlighted && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                                    <span className="px-4 py-1.5 rounded-full bg-accent text-accent-foreground text-sm font-medium shadow-glow-accent">
+                                    <span className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-xl">
                                         Plus populaire
                                     </span>
                                 </div>
@@ -139,14 +139,14 @@ const Pricing = () => {
 
                             <div
                                 className={`h-full p-8 rounded-2xl border transition-all duration-300 ${plan.highlighted
-                                    ? "border-accent/50 bg-card shadow-glow-accent"
+                                    ? "border-primary/50 bg-card shadow-xl"
                                     : "border-border bg-card/50 backdrop-blur-sm hover:border-primary/30"
                                     }`}
                             >
                                 {/* Plan header */}
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className={`p-2 rounded-xl ${plan.highlighted ? "bg-accent/20" : "bg-primary/10"}`}>
-                                        <plan.icon className={`w-6 h-6 ${plan.highlighted ? "text-accent" : "text-primary"}`} />
+                                    <div className={`p-2 rounded-xl ${plan.highlighted ? "bg-primary/20" : "bg-primary/10"}`}>
+                                        <plan.icon className={`w-6 h-6 text-primary`} />
                                     </div>
                                     <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
                                 </div>
@@ -181,7 +181,7 @@ const Pricing = () => {
                                     asChild
                                     variant={plan.buttonVariant}
                                     className={`w-full rounded-full py-6 font-semibold transition-all duration-300 hover:scale-[1.02] ${plan.highlighted
-                                        ? "bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow-accent"
+                                        ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl"
                                         : "hover:bg-primary hover:text-primary-foreground"
                                         }`}
                                 >
