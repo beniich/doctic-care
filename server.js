@@ -840,23 +840,29 @@ app.get(/.*/, (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-    console.log(`🚀 Backend server running on http://localhost:${PORT}`);
-    console.log(`\n📋 Available API Endpoints:`);
-    console.log(`   - Authentication: http://localhost:${PORT}/api/login`);
-    console.log(`   - Patients: http://localhost:${PORT}/api/patients`);
-    console.log(`   - Appointments: http://localhost:${PORT}/api/appointments`);
-    console.log(`   - Billing: http://localhost:${PORT}/api/billing`);
-    console.log(`   - Stripe Checkout: http://localhost:${PORT}/api/create-checkout-session`);
-    console.log(`   - Stripe Webhooks: http://localhost:${PORT}/api/webhooks/stripe`);
-    console.log(`\n💳 Stripe integration ${process.env.STRIPE_SECRET_KEY ? '✅ active' : '⚠️  not configured'}`);
-});
+// Start Server only if run directly
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    app.listen(PORT, () => {
+        console.log(`🚀 Backend server running on http://localhost:${PORT}`);
+        console.log(`\n📋 Available API Endpoints:`);
+        console.log(`   - Authentication: http://localhost:${PORT}/api/login`);
+        console.log(`   - Patients: http://localhost:${PORT}/api/patients`);
+        console.log(`   - Appointments: http://localhost:${PORT}/api/appointments`);
+        console.log(`   - Billing: http://localhost:${PORT}/api/billing`);
+        console.log(`   - Stripe Checkout: http://localhost:${PORT}/api/create-checkout-session`);
+        console.log(`   - Stripe Webhooks: http://localhost:${PORT}/api/webhooks/stripe`);
+        console.log(`\n💳 Stripe integration ${process.env.STRIPE_SECRET_KEY ? '✅ active' : '⚠️  not configured'}`);
+    });
+}
 
 // CSRF Error Handler
 app.use((err, req, res, next) => {
     if (err.code !== 'EBADCSRFTOKEN') return next(err);
     res.status(403).json({ error: 'Invalid or missing CSRF token' });
 });
+
+// Export for Vercel
+export default app;
 
 
 
