@@ -1,0 +1,98 @@
+{
+    "app": {
+        "title": "Doctic Pro",
+        "description": "Das medizinische Betriebssystem der Zukunft",
+        "powered_by_ai": "Angetrieben durch künstliche Intelligenz"
+    },
+    "nav": {
+        "features": "Funktionen",
+        "pricing": "Preise",
+        "blog": "Blog",
+        "signup": "Anmelden",
+        "login": "Einloggen"
+    },
+    "hero": {
+        "badge": "Angetrieben durch künstliche Intelligenz",
+        "title_line1": "Doctic Pro",
+        "title_line2": "Das medizinische BS der Zukunft",
+        "subtitle": "Verwalten Sie Patienten, Termine, Krankenakten, Abrechnungen und vieles mehr mit einer intelligenten Plattform für medizinisches Fachpersonal.",
+        "cta_start": "Kostenlos starten",
+        "cta_demo": "Demo ansehen",
+        "stat_security": "DSGVO Sicherheit",
+        "stat_response": "Reaktionszeit",
+        "stat_doctors": "Aktive Ärzte"
+    },
+    "pricing": {
+        "badge": "Preise",
+        "title": "Wählen Sie Ihren Plan",
+        "subtitle": "Transparente Preise angepasst an Ihre Praxisgröße. Alle Pläne beinhalten Updates und sicheres Hosting.",
+        "ideal_for": "Ideal für den Start Ihrer digitalen Praxis",
+        "growth_ai": "Für wachsende Praxen mit integrierter KI",
+        "complete_solution": "Komplettlösung für Einrichtungen",
+        "popular": "Beliebtestes",
+        "month": "/Monat",
+        "start_btn": "Starten",
+        "trial_btn": "14 Tage kostenlos testen",
+        "contact_btn": "Vertrieb kontaktieren",
+        "features": {
+            "patients_100": "Bis zu 100 Patienten",
+            "basic_agenda": "Basis-Agenda",
+            "medical_records": "Krankenakten",
+            "email_support": "E-Mail-Support",
+            "user_1": "1 Nutzer",
+            "patients_unlimited": "Unbegrenzte Patienten",
+            "ai_agenda": "Smarte KI-Agenda",
+            "voice_transcription": "Sprachtranskription",
+            "ai_diagnosis": "KI-Diagnosehilfe",
+            "users_3": "3 Nutzer",
+            "priority_support": "Prioritäts-Support",
+            "teletransmission": "Datenübertragung",
+            "all_master": "Alle Master-Funktionen",
+            "users_unlimited": "Unbegrenzte Nutzer",
+            "custom_api": "Benutzerdefinierte API",
+            "training": "Dedizierte Schulung",
+            "support_vip": "VIP Support 24/7",
+            "custom_integrations": "Maßgeschneiderte Integrationen",
+            "security_audit": "Sicherheitsaudit"
+        },
+        "disclaimer": "Alle Preise zzgl. Steuern. Jederzeit kündbar.",
+        "terms": "AGB ansehen"
+    },
+    "dashboard": {
+        "welcome": "Willkommen,",
+        "subtitle": "Hier ist ein Überblick über Ihre Praxis heute",
+        "kpi": {
+            "active_patients": "Aktive Patienten",
+            "appointments_today": "Termine Heute",
+            "monthly_revenue": "Monatlicher Umsatz",
+            "satisfaction": "Zufriedenheit"
+        },
+        "activity": {
+            "title": "Aktivitätsübersicht",
+            "trends": "Trendanalyse",
+            "description": "Ihre Konsultations- und Umsatzdaten werden hier mit interaktiven Diagrammen angezeigt."
+        },
+        "appointments": {
+            "title": "Anstehende Termine",
+            "view_all": "Alle ansehen",
+            "status_confirmed": "Bestätigt",
+            "status_pending": "Ausstehend",
+            "time_am": "Vorm.",
+            "time_pm": "Nachm."
+        },
+        "recent_activity": {
+            "title": "Kürzliche Aktivität",
+            "consultation_finished": "Konsultation beendet",
+            "new_prescription": "Neues Rezept",
+            "teleconsult_planned": "Telekonsultation geplant",
+            "video_published": "Video veröffentlicht",
+            "time_ago": "vor",
+            "in": "in"
+        },
+        "tips": {
+            "title": "Tipp des Tages",
+            "content": "Verwenden Sie den KI-Assistenten, um die neuesten Testergebnisse Ihrer Patienten schnell zu analysieren.",
+            "open_assistant": "KI-Assistent öffnen"
+        }
+    }
+}

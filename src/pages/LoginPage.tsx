@@ -86,7 +86,11 @@ export default function LoginPage() {
                 <div className="mt-8 text-center">
                     <p className="text-sm text-gray-400 mb-4">Ou continuer avec</p>
                     <div className="flex justify-center gap-4">
-                        <Button variant="outline" className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            className="flex items-center gap-2"
+                            onClick={() => window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/auth/google`}
+                        >
                             <div className="w-5 h-5 bg-red-500 rounded-full" /> Google
                         </Button>
                         <Button variant="outline" className="flex items-center gap-2">

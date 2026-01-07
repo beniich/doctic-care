@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface NavItem {
   icon: React.ElementType;
@@ -154,10 +155,11 @@ export function AppSidebar() {
 
         {/* Theme Toggle */}
         <div className={cn(
-          "flex items-center h-11 px-3",
-          collapsed && "justify-center px-0"
+          "flex items-center h-11 px-3 gap-2",
+          collapsed && "justify-center px-0 flex-col h-auto py-2"
         )}>
           <ThemeToggle />
+          <LanguageSwitcher />
         </div>
 
         {/* Collapse Toggle */}

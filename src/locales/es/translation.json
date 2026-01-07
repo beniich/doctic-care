@@ -1,0 +1,98 @@
+{
+    "app": {
+        "title": "Doctic Pro",
+        "description": "El SO Médico del Futuro",
+        "powered_by_ai": "Impulsado por Inteligencia Artificial"
+    },
+    "nav": {
+        "features": "Funcionalidades",
+        "pricing": "Precios",
+        "blog": "Blog",
+        "signup": "Registrarse",
+        "login": "Iniciar sesión"
+    },
+    "hero": {
+        "badge": "Impulsado por Inteligencia Artificial",
+        "title_line1": "Doctic Pro",
+        "title_line2": "El SO Médico del Futuro",
+        "subtitle": "Gestione pacientes, citas, historias clínicas, facturación y mucho más con una plataforma inteligente diseñada para profesionales de la salud.",
+        "cta_start": "Empezar gratis",
+        "cta_demo": "Ver demostración",
+        "stat_security": "Seguridad RGPD",
+        "stat_response": "Tiempo de respuesta",
+        "stat_doctors": "Médicos activos"
+    },
+    "pricing": {
+        "badge": "Precios",
+        "title": "Elige tu Plan",
+        "subtitle": "Precios transparentes adaptados al tamaño de su consulta. Todos los planes incluyen actualizaciones y alojamiento seguro.",
+        "ideal_for": "Ideal para iniciar su práctica digital",
+        "growth_ai": "Para consultas en crecimiento con IA integrada",
+        "complete_solution": "Solución completa para instituciones",
+        "popular": "Más Popular",
+        "month": "/mes",
+        "start_btn": "Empezar",
+        "trial_btn": "Prueba gratuita de 14 días",
+        "contact_btn": "Contactar ventas",
+        "features": {
+            "patients_100": "Hasta 100 pacientes",
+            "basic_agenda": "Agenda básica",
+            "medical_records": "Historias clínicas",
+            "email_support": "Soporte por correo",
+            "user_1": "1 usuario",
+            "patients_unlimited": "Pacientes ilimitados",
+            "ai_agenda": "Agenda inteligente IA",
+            "voice_transcription": "Transcripción de voz",
+            "ai_diagnosis": "Ayuda al diagnóstico IA",
+            "users_3": "3 usuarios",
+            "priority_support": "Soporte prioritario",
+            "teletransmission": "Teletransmisión",
+            "all_master": "Todo Master incluido",
+            "users_unlimited": "Usuarios ilimitados",
+            "custom_api": "API personalizada",
+            "training": "Formación dedicada",
+            "support_vip": "Soporte VIP 24/7",
+            "custom_integrations": "Integraciones a medida",
+            "security_audit": "Auditoría de seguridad"
+        },
+        "disclaimer": "Todos los precios sin impuestos. Cancelación en cualquier momento.",
+        "terms": "Ver términos y condiciones"
+    },
+    "dashboard": {
+        "welcome": "Bienvenido,",
+        "subtitle": "Aquí tiene una visión general de su consulta hoy",
+        "kpi": {
+            "active_patients": "Pacientes Activos",
+            "appointments_today": "Citas Hoy",
+            "monthly_revenue": "Ingresos Mensuales",
+            "satisfaction": "Satisfacción"
+        },
+        "activity": {
+            "title": "Resumen de Actividad",
+            "trends": "Análisis de Tendencias",
+            "description": "Sus datos de consulta e ingresos se mostrarán aquí con gráficos interactivos."
+        },
+        "appointments": {
+            "title": "Próximas Citas",
+            "view_all": "Ver Todo",
+            "status_confirmed": "Confirmado",
+            "status_pending": "Pendiente",
+            "time_am": "AM",
+            "time_pm": "PM"
+        },
+        "recent_activity": {
+            "title": "Actividad Reciente",
+            "consultation_finished": "Consulta finalizada",
+            "new_prescription": "Nueva receta",
+            "teleconsult_planned": "Teleconsulta programada",
+            "video_published": "Video publicado",
+            "time_ago": "hace",
+            "in": "en"
+        },
+        "tips": {
+            "title": "Consejo del Día",
+            "content": "Utilice el asistente de IA para analizar rápidamente los últimos resultados de las pruebas de sus pacientes.",
+            "open_assistant": "Abrir Asistente IA"
+        }
+    }
+}

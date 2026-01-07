@@ -28,12 +28,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-            const savedUser = JSON.parse(localStorage.getItem('userData') || '{}');
-            setUser(savedUser);
-            setIsAuthenticated(true);
-        }
+        const checkSession = async () => {
+            try {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const res = await fetch(`${API_URL}/api/me`); // Cookie will be sent automatically
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.isAuthenticated) {
+                        setUser({
+                            ...data.user,
+                            // Perms mapping based on role would go here if not provided by backend
+                            // For now, map simple permissions based on role
+                            permissions: Object.entries(PERMISSIONS)
+                                .filter(([, roles]) => roles.includes(data.user.role?.toLowerCase() || 'doctor'))
+                                .map(([perm]) => perm)
+                        });
+                        setIsAuthenticated(true);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error("Session check failed", e);
+            }
+
+            // Fallback to local storage (legacy/mock)
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                const savedUser = JSON.parse(localStorage.getItem('userData') || '{}');
+                setUser(savedUser);
+                setIsAuthenticated(true);
+            }
+        };
+
+        checkSession();
     }, []);
 
     const login = (role: string) => {
@@ -52,7 +79,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAuthenticated(true);
     };
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            await fetch(`${API_URL}/api/logout`, { method: 'POST' });
+        } catch (e) {
+            console.error(e);
+        }
         localStorage.removeItem('accessToken');
         localStorage.removeItem('userData');
         setUser(null);

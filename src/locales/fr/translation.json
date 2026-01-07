@@ -1,0 +1,98 @@
+{
+    "app": {
+        "title": "Doctic Pro",
+        "description": "L'OS Médical du Futur",
+        "powered_by_ai": "Propulsé par l'Intelligence Artificielle"
+    },
+    "nav": {
+        "features": "Fonctionnalités",
+        "pricing": "Tarifs",
+        "blog": "Blog",
+        "signup": "Inscription",
+        "login": "Connexion"
+    },
+    "hero": {
+        "badge": "Propulsé par l'Intelligence Artificielle",
+        "title_line1": "Doctic Pro",
+        "title_line2": "L'OS Médical du Futur",
+        "subtitle": "Gérez patients, rendez-vous, dossiers médicaux, factures et bien plus avec une plateforme intelligente conçue pour les professionnels de santé.",
+        "cta_start": "Commencer gratuitement",
+        "cta_demo": "Voir la démo",
+        "stat_security": "Sécurité RGPD",
+        "stat_response": "Temps de réponse",
+        "stat_doctors": "Médecins actifs"
+    },
+    "pricing": {
+        "badge": "Tarifs",
+        "title": "Choisissez Votre Plan",
+        "subtitle": "Des tarifs transparents adaptés à la taille de votre cabinet. Tous les plans incluent les mises à jour et l'hébergement sécurisé.",
+        "ideal_for": "Idéal pour démarrer votre pratique numérique",
+        "growth_ai": "Pour les cabinets en croissance avec IA intégrée",
+        "complete_solution": "Solution complète pour les établissements",
+        "popular": "Plus populaire",
+        "month": "/mois",
+        "start_btn": "Commencer",
+        "trial_btn": "Essai gratuit 14 jours",
+        "contact_btn": "Contacter les ventes",
+        "features": {
+            "patients_100": "Jusqu'à 100 patients",
+            "basic_agenda": "Agenda basique",
+            "medical_records": "Dossiers médicaux",
+            "email_support": "Support email",
+            "user_1": "1 utilisateur",
+            "patients_unlimited": "Patients illimités",
+            "ai_agenda": "Agenda intelligent IA",
+            "voice_transcription": "Transcription vocale",
+            "ai_diagnosis": "Aide au diagnostic IA",
+            "users_3": "3 utilisateurs",
+            "priority_support": "Support prioritaire",
+            "teletransmission": "Télétransmission",
+            "all_master": "Tout Master inclus",
+            "users_unlimited": "Utilisateurs illimités",
+            "custom_api": "API personnalisée",
+            "training": "Formation dédiée",
+            "support_vip": "Support VIP 24/7",
+            "custom_integrations": "Intégrations sur mesure",
+            "security_audit": "Audit de sécurité"
+        },
+        "disclaimer": "Tous les prix sont hors taxes. Annulation possible à tout moment.",
+        "terms": "Voir les conditions générales"
+    },
+    "dashboard": {
+        "welcome": "Bienvenue,",
+        "subtitle": "Voici un aperçu de votre cabinet aujourd'hui",
+        "kpi": {
+            "active_patients": "Patients actifs",
+            "appointments_today": "RDV aujourd'hui",
+            "monthly_revenue": "Revenus mensuels",
+            "satisfaction": "Satisfaction"
+        },
+        "activity": {
+            "title": "Aperçu de l'activité",
+            "trends": "Analyse des tendances",
+            "description": "Vos données de consultation et de revenus seront affichées ici avec des graphiques interactifs."
+        },
+        "appointments": {
+            "title": "Rendez-vous à venir",
+            "view_all": "Voir tout",
+            "status_confirmed": "Confirmé",
+            "status_pending": "En attente",
+            "time_am": "Matin",
+            "time_pm": "Après-midi"
+        },
+        "recent_activity": {
+            "title": "Activité récente",
+            "consultation_finished": "Consultation terminée",
+            "new_prescription": "Nouvelle ordonnance",
+            "teleconsult_planned": "Téléconsultation prévue à",
+            "video_published": "Vidéo publiée sur",
+            "time_ago": "Il y a",
+            "in": "Dans"
+        },
+        "tips": {
+            "title": "Astuce du jour",
+            "content": "Utilisez l'assistant IA pour analyser rapidement les derniers résultats d'analyse de vos patients.",
+            "open_assistant": "Ouvrir l'Assistant IA"
+        }
+    }
+}

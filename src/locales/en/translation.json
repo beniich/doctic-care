@@ -1,0 +1,98 @@
+{
+    "app": {
+        "title": "Doctic Pro",
+        "description": "The Medical OS of the Future",
+        "powered_by_ai": "Powered by Artificial Intelligence"
+    },
+    "nav": {
+        "features": "Features",
+        "pricing": "Pricing",
+        "blog": "Blog",
+        "signup": "Sign Up",
+        "login": "Login"
+    },
+    "hero": {
+        "badge": "Powered by Artificial Intelligence",
+        "title_line1": "Doctic Pro",
+        "title_line2": "The Medical OS of the Future",
+        "subtitle": "Manage patients, appointments, medical records, billing and much more with an intelligent platform designed for healthcare professionals.",
+        "cta_start": "Start for free",
+        "cta_demo": "Watch demo",
+        "stat_security": "GDPR Security",
+        "stat_response": "Response Time",
+        "stat_doctors": "Active Doctors"
+    },
+    "pricing": {
+        "badge": "Pricing",
+        "title": "Choose Your Plan",
+        "subtitle": "Transparent pricing adapted to your practice size. All plans include updates and secure hosting.",
+        "ideal_for": "Ideal to start your digital practice",
+        "growth_ai": "For growing practices with integrated AI",
+        "complete_solution": "Complete solution for institutions",
+        "popular": "Most Popular",
+        "month": "/month",
+        "start_btn": "Start",
+        "trial_btn": "14-day free trial",
+        "contact_btn": "Contact Sales",
+        "features": {
+            "patients_100": "Up to 100 patients",
+            "basic_agenda": "Basic agenda",
+            "medical_records": "Medical records",
+            "email_support": "Email support",
+            "user_1": "1 user",
+            "patients_unlimited": "Unlimited patients",
+            "ai_agenda": "AI Smart Agenda",
+            "voice_transcription": "Voice transcription",
+            "ai_diagnosis": "AI diagnosis aid",
+            "users_3": "3 users",
+            "priority_support": "Priority support",
+            "teletransmission": "Teletransmission",
+            "all_master": "All Master features",
+            "users_unlimited": "Unlimited users",
+            "custom_api": "Custom API",
+            "training": "Dedicated training",
+            "support_vip": "VIP Support 24/7",
+            "custom_integrations": "Custom integrations",
+            "security_audit": "Security audit"
+        },
+        "disclaimer": "All prices are excluding tax. Cancel anytime.",
+        "terms": "See terms and conditions"
+    },
+    "dashboard": {
+        "welcome": "Welcome,",
+        "subtitle": "Here is an overview of your practice today",
+        "kpi": {
+            "active_patients": "Active Patients",
+            "appointments_today": "Appointments Today",
+            "monthly_revenue": "Monthly Revenue",
+            "satisfaction": "Satisfaction"
+        },
+        "activity": {
+            "title": "Activity Overview",
+            "trends": "Trend Analysis",
+            "description": "Your consultation and revenue data will be displayed here with interactive charts."
+        },
+        "appointments": {
+            "title": "Upcoming Appointments",
+            "view_all": "View All",
+            "status_confirmed": "Confirmed",
+            "status_pending": "Pending",
+            "time_am": "AM",
+            "time_pm": "PM"
+        },
+        "recent_activity": {
+            "title": "Recent Activity",
+            "consultation_finished": "Consultation finished",
+            "new_prescription": "New prescription",
+            "teleconsult_planned": "Teleconsultation scheduled",
+            "video_published": "Video published",
+            "time_ago": "ago",
+            "in": "in"
+        },
+        "tips": {
+            "title": "Tip of the Day",
+            "content": "Use the AI assistant to quickly analyze your patients' latest test results.",
+            "open_assistant": "Open AI Assistant"
+        }
+    }
+}

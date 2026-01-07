@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import Navbar from "@/components/showcase/Navbar";
 import Hero from "@/components/showcase/Hero";
 import Features from "@/components/showcase/Features";
@@ -6,13 +7,14 @@ import Pricing from "@/components/showcase/Pricing";
 import Footer from "@/components/showcase/Footer";
 
 const Landing = () => {
+    const { t } = useTranslation();
     return (
         <>
             <Helmet>
-                <title>Doctic Pro - L'OS Médical du Futur | Gestion de Cabinet</title>
+                <title>{t('app.title')} - {t('app.description')} | Gestion de Cabinet</title>
                 <meta
                     name="description"
-                    content="Doctic Pro est la plateforme médicale nouvelle génération. Gérez patients, rendez-vous, dossiers médicaux et facturation avec l'intelligence artificielle."
+                    content={t('hero.subtitle')}
                 />
                 <meta
                     name="keywords"

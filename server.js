@@ -1,17 +1,104 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
-const Stripe = require('stripe');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+import Stripe from 'stripe';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import * as Sentry from '@sentry/node';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
+import { createClient } from 'redis';
+import auditRequest from './backend/middleware/auditRequest.js';
+import cookieParser from 'cookie-parser';
+import csrf from 'csurf';
+import session from 'express-session';
+import RedisStore from 'connect-redis';
+import passport from './backend/config/passport.js';
+import prisma from './backend/config/db.js';
 
-// __dirname is available by default in CommonJS
-// No need for fileURLToPath
+// Define __dirname for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
 dotenv.config();
 
+// Initialize Sentry
+Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [
+        nodeProfilingIntegration(),
+    ],
+    // Tracing
+    tracesSampleRate: 1.0, //  Capture 100% of the transactions
+    // Set sampling rate for profiling - this is relative to tracesSampleRate
+    profilesSampleRate: 1.0,
+});
+
 const app = express();
+
+app.use(cookieParser());
+// Setup CSRF protection
+const csrfProtection = csrf({ cookie: true });
+
+// Expose CSRF token for frontend
+app.get('/api/csrf-token', csrfProtection, (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
+});
+
+// Sentry Request Handler must be the first middleware on the app
+app.use(Sentry.Handlers.requestHandler());
+// TracingHandler creates a trace for every incoming request
+app.use(Sentry.Handlers.tracingHandler());
+
+// Initialize Services (DB & Cache)
+// Prisma initialized in db.js
+const redisClient = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+
+redisClient.on('error', (err) => console.warn('⚠️ Redis Client Error', err));
+(async () => {
+    try {
+        if (process.env.REDIS_URL) {
+            await redisClient.connect();
+            console.log('✅ Redis connected');
+        }
+    } catch (e) {
+        console.warn('⚠️ Redis connection failed - proceeding without cache');
+    }
+})();
+
+// Sentry Request Handler must be the first middleware on the app
+app.use(Sentry.Handlers.requestHandler());
+// TracingHandler creates a trace for every incoming request
+app.use(Sentry.Handlers.tracingHandler());
+
+// Session Management
+let sessionStore = new session.MemoryStore();
+if (process.env.REDIS_URL && redisClient.isOpen) {
+    sessionStore = new RedisStore({
+        client: redisClient,
+        prefix: 'doctic:',
+    });
+}
+
+app.use(session({
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET || 'secret-fallback-dev',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // true in prod
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
 const PORT = process.env.PORT || 5000;
 
 // Initialize Stripe only if properly configured
@@ -99,7 +186,46 @@ app.post('/api/webhooks/stripe',
 );
 
 // Regular JSON parsing for all other routes
+// Regular JSON parsing for all other routes
 app.use(bodyParser.json());
+
+// ============================================================================
+// HEALTH CHECK (Monitoring)
+// ============================================================================
+app.get('/api/health', async (req, res) => {
+    const health = {
+        uptime: process.uptime(),
+        timestamp: new Date(),
+        status: 'OK',
+        services: {
+            database: 'UNKNOWN',
+            redis: 'UNKNOWN'
+        }
+    };
+
+    try {
+        await prisma.$queryRaw`SELECT 1`;
+        health.services.database = 'UP';
+    } catch (e) {
+        health.services.database = 'DOWN';
+        health.status = 'DEGRADED';
+    }
+
+    try {
+        if (redisClient.isOpen) {
+            await redisClient.ping();
+            health.services.redis = 'UP';
+        } else {
+            health.services.redis = 'DISABLED';
+        }
+    } catch (e) {
+        health.services.redis = 'DOWN';
+        // Redis might be non-critical depending on config
+    }
+
+    const statusCode = health.status === 'OK' ? 200 : 503;
+    res.status(statusCode).json(health);
+});
 
 // ============================================================================
 // IN-MEMORY DATABASES (MOCK)
@@ -342,7 +468,55 @@ app.post('/api/cancel-subscription', async (req, res) => {
 // AUTHENTICATION
 // ============================================================================
 
-app.post('/api/login', (req, res) => {
+// ============================================================================
+// AUTHENTICATION
+// ============================================================================
+
+// Expose CSRF Token to Frontend
+app.get('/api/csrf-token', csrfProtection, (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
+});
+
+// ============================================================================
+// AUTHENTICATION ROUTES
+// ============================================================================
+
+// 1. Google Login
+app.get('/auth/google', passport.authenticate('google', {
+    scope: ['profile', 'email']
+}));
+
+// 2. Google Callback
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login?error=auth_failed' }),
+    (req, res) => {
+        // Successful authentication
+        res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    }
+);
+
+// 3. Get Current User
+app.get('/api/me', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.json({
+            isAuthenticated: true,
+            user: req.user
+        });
+    } else {
+        res.status(401).json({ isAuthenticated: false });
+    }
+});
+
+// 4. Logout
+app.post('/api/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) return next(err);
+        res.json({ success: true });
+    });
+});
+
+// Legacy/Dev Mock Login (kept for fallback if needed, but protected)
+app.post('/api/login', auditRequest('USER_LOGIN'), (req, res) => {
     const { email, password, role } = req.body;
     // Mock login - accept any email/password for demo
     if (email) {
@@ -364,62 +538,190 @@ app.post('/api/login', (req, res) => {
 // PATIENTS ROUTES
 // ============================================================================
 
-app.get('/api/patients', (req, res) => {
-    const q = req.query.q ? req.query.q.toLowerCase() : '';
-    const filtered = q ? patients.filter(p => p.name.toLowerCase().includes(q)) : patients;
-    res.json(filtered);
-});
+// ============================================================================
+// PATIENTS ROUTES
+// ============================================================================
 
-app.post('/api/patients', (req, res) => {
-    const newPatient = { id: patients.length + 1, ...req.body };
-    patients.push(newPatient);
-    res.status(201).json(newPatient);
-});
+app.get('/api/patients', async (req, res) => {
+    try {
+        const q = req.query.q ? req.query.q.toLowerCase() : '';
+        const where = q ? {
+            OR: [
+                { firstName: { contains: q, mode: 'insensitive' } },
+                { lastName: { contains: q, mode: 'insensitive' } },
+                { email: { contains: q, mode: 'insensitive' } }
+            ]
+        } : {};
 
-app.put('/api/patients/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = patients.findIndex(p => p.id === id);
-    if (index !== -1) {
-        patients[index] = { ...patients[index], ...req.body };
-        res.json(patients[index]);
-    } else {
-        res.status(404).json({ error: 'Patient not found' });
+        const patients = await prisma.patient.findMany({ where });
+        // Map to match frontend expectations if needed (e.g. combine names)
+        const mappedPatients = patients.map(p => ({
+            ...p,
+            name: `${p.firstName} ${p.lastName}`
+        }));
+        res.json(mappedPatients);
+    } catch (error) {
+        console.error('Error fetching patients:', error);
+        res.status(500).json({ error: 'Failed to fetch patients' });
     }
 });
 
-app.delete('/api/patients/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    patients = patients.filter(p => p.id !== id);
-    res.json({ success: true, id });
+app.post('/api/patients', async (req, res) => {
+    try {
+        // Basic validation - check if tenant exists, defaulting to first one for migration context
+        // In real app, tenantId should come from auth user
+        let tenant = await prisma.tenant.findFirst();
+        if (!tenant) {
+            // Auto-create default tenant if missing
+            tenant = await prisma.tenant.create({
+                data: { name: 'Default Clinic', slug: 'default-clinic' }
+            });
+        }
+
+        // Split name if only 'name' provided
+        let { firstName, lastName, name } = req.body;
+        if (!firstName && name) {
+            const parts = name.split(' ');
+            firstName = parts[0];
+            lastName = parts.slice(1).join(' ') || '-';
+        }
+
+        const newPatient = await prisma.patient.create({
+            data: {
+                ...req.body,
+                firstName: firstName || 'Unknown',
+                lastName: lastName || 'Unknown',
+                tenantId: tenant.id
+            }
+        });
+        res.status(201).json({ ...newPatient, name: `${newPatient.firstName} ${newPatient.lastName}` });
+    } catch (error) {
+        console.error('Error creating patient:', error);
+        res.status(500).json({ error: 'Failed to create patient' });
+    }
+});
+
+app.put('/api/patients/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedPatient = await prisma.patient.update({
+            where: { id },
+            data: req.body
+        });
+        res.json({ ...updatedPatient, name: `${updatedPatient.firstName} ${updatedPatient.lastName}` });
+    } catch (error) {
+        if (error.code === 'P2025') {
+            return res.status(404).json({ error: 'Patient not found' });
+        }
+        res.status(500).json({ error: 'Failed to update patient' });
+    }
+});
+
+app.delete('/api/patients/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.patient.delete({ where: { id } });
+        res.json({ success: true, id });
+    } catch (error) {
+        if (error.code === 'P2025') {
+            return res.status(404).json({ error: 'Patient not found' });
+        }
+        res.status(500).json({ error: 'Failed to delete patient' });
+    }
 });
 
 // ============================================================================
 // APPOINTMENTS ROUTES
 // ============================================================================
 
-app.get('/api/appointments', (req, res) => res.json(appointments));
+// ============================================================================
+// APPOINTMENTS ROUTES
+// ============================================================================
 
-app.post('/api/appointments', (req, res) => {
-    const newApt = { id: appointments.length + 1, ...req.body };
-    appointments.push(newApt);
-    res.status(201).json(newApt);
-});
+app.get('/api/appointments', async (req, res) => {
+    try {
+        const appointments = await prisma.appointment.findMany({
+            include: {
+                patient: {
+                    select: { firstName: true, lastName: true }
+                }
+            }
+        });
 
-app.put('/api/appointments/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = appointments.findIndex(a => a.id === id);
-    if (index !== -1) {
-        appointments[index] = { ...appointments[index], ...req.body };
-        res.json(appointments[index]);
-    } else {
-        res.status(404).json({ error: 'Appointment not found' });
+        // Map to match frontend expectations
+        const mappedAppointments = appointments.map(a => ({
+            ...a,
+            patient: `${a.patient.firstName} ${a.patient.lastName}`,
+            provider: 'Dr. Anderson' // Placeholder as appointment model doesn't have provider link yet or implicit via auth
+        }));
+        res.json(mappedAppointments);
+    } catch (err) {
+        console.error('Error fetching appointments:', err);
+        res.status(500).json({ error: 'Failed to fetch appointments' });
     }
 });
 
-app.delete('/api/appointments/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    appointments = appointments.filter(a => a.id !== id);
-    res.json({ success: true });
+app.post('/api/appointments', async (req, res) => {
+    try {
+        // Need to resolve patientId from name if only patient name provided (legacy frontend)
+        // For now assume frontend sends patientId OR we pick first match (risky but okay for migration phase)
+        let { patientId, patient: patientName } = req.body;
+
+        if (!patientId && patientName) {
+            const parts = patientName.split(' ');
+            const p = await prisma.patient.findFirst({
+                where: {
+                    firstName: { contains: parts[0] },
+                    lastName: { contains: parts[1] || '' }
+                }
+            });
+            if (p) patientId = p.id;
+        }
+
+        if (!patientId) {
+            // Fallback: create dummy patient if name provided, or error
+            // For safety, let's require existing patient
+            return res.status(400).json({ error: 'Patient ID required' });
+        }
+
+        const newApt = await prisma.appointment.create({
+            data: {
+                start: new Date(req.body.date || new Date().toISOString()),
+                end: new Date(new Date(req.body.date).getTime() + 30 * 60000), // Default 30m
+                patientId: patientId,
+                status: req.body.status ? req.body.status.toUpperCase() : 'PENDING',
+                motif: req.body.reason,
+                notes: req.body.notes
+            }
+        });
+        res.status(201).json(newApt);
+    } catch (err) {
+        console.error('Error creating appointment:', err);
+        res.status(500).json({ error: 'Failed to create appointment' });
+    }
+});
+
+app.put('/api/appointments/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updated = await prisma.appointment.update({
+            where: { id },
+            data: req.body
+        });
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update appointment' });
+    }
+});
+
+app.delete('/api/appointments/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.appointment.delete({ where: { id } });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete appointment' });
+    }
 });
 
 // ============================================================================
@@ -448,11 +750,66 @@ app.post('/api/billing', (req, res) => {
 // PRESCRIPTIONS ROUTES
 // ============================================================================
 
-app.get('/api/prescriptions', (req, res) => res.json(prescriptions));
-app.post('/api/prescriptions', (req, res) => {
-    const newPres = { id: prescriptions.length + 1, ...req.body };
-    prescriptions.push(newPres);
-    res.status(201).json(newPres);
+// ============================================================================
+// PRESCRIPTIONS ROUTES
+// ============================================================================
+
+app.get('/api/prescriptions', async (req, res) => {
+    try {
+        const prescriptions = await prisma.prescription.findMany({
+            include: {
+                patient: { select: { firstName: true, lastName: true } },
+                medications: true
+            }
+        });
+
+        const mapped = prescriptions.map(p => ({
+            ...p,
+            patient: `${p.patient.firstName} ${p.patient.lastName}`,
+            medications: p.medications
+        }));
+        res.json(mapped);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch prescriptions' });
+    }
+});
+
+app.post('/api/prescriptions', async (req, res) => {
+    try {
+        // Assuming Mock Frontend sends 'patient' as string name
+        // We need real doctor ID (from auth or default)
+        let doctor = await prisma.user.findFirst({ where: { role: 'DOCTOR' } });
+
+        let { patientId, patient: patientName, medications } = req.body;
+
+        if (!patientId && patientName) {
+            const parts = patientName.split(' ');
+            const p = await prisma.patient.findFirst({
+                where: { firstName: parts[0] }
+            });
+            if (p) patientId = p.id;
+        }
+
+        if (!patientId || !doctor) return res.status(400).json({ error: 'Patient or Doctor not found' });
+
+        const newPres = await prisma.prescription.create({
+            data: {
+                patientId,
+                doctorId: doctor.id,
+                medications: {
+                    create: medications // Assumes medications is array of objects matching schema
+                },
+                status: 'ACTIVE'
+            },
+            include: { medications: true }
+        });
+        res.status(201).json(newPres);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to create prescription' });
+    }
 });
 
 // ============================================================================
@@ -469,6 +826,9 @@ app.post('/api/archives', (req, res) => {
 // ============================================================================
 // SERVE FRONTEND (MUST BE LAST)
 // ============================================================================
+
+// Sentry Error Handler must be before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
 
 // Serve static files from the "dist" directory
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -490,6 +850,12 @@ app.listen(PORT, () => {
     console.log(`   - Stripe Checkout: http://localhost:${PORT}/api/create-checkout-session`);
     console.log(`   - Stripe Webhooks: http://localhost:${PORT}/api/webhooks/stripe`);
     console.log(`\n💳 Stripe integration ${process.env.STRIPE_SECRET_KEY ? '✅ active' : '⚠️  not configured'}`);
+});
+
+// CSRF Error Handler
+app.use((err, req, res, next) => {
+    if (err.code !== 'EBADCSRFTOKEN') return next(err);
+    res.status(403).json({ error: 'Invalid or missing CSRF token' });
 });
 
 

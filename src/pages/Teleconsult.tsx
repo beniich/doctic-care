@@ -164,7 +164,7 @@ export default function Teleconsult() {
                                 >
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="font-medium truncate">{session.patient}</span>
-                                        <Badge variant={getStatusBadgeVariant(session.status) as any} className="text-[10px] h-5 px-1.5">{session.status}</Badge>
+                                        <Badge variant={getStatusBadgeVariant(session.status) as "default" | "secondary" | "destructive" | "outline" | null | undefined} className="text-[10px] h-5 px-1.5">{session.status}</Badge>
                                     </div>
                                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                         <span className="flex items-center gap-1">

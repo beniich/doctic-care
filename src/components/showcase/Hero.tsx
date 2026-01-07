@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Shield, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const Hero = () => {
+    const { t } = useTranslation();
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Animated Background */}
@@ -48,7 +50,7 @@ const Hero = () => {
                 >
                     <Sparkles className="w-4 h-4 text-primary" />
                     <span className="text-sm font-medium text-primary-foreground/90">
-                        Propulsé par l'Intelligence Artificielle
+                        {t('hero.badge')}
                     </span>
                 </motion.div>
 
@@ -59,9 +61,9 @@ const Hero = () => {
                     transition={{ duration: 0.6, delay: 0.1 }}
                     className="text-4xl md:text-5xl lg:text-7xl font-bold text-primary-foreground mb-6 leading-tight"
                 >
-                    Doctic Pro
+                    {t('hero.title_line1')}
                     <br />
-                    <span className="text-primary-foreground/80">L'OS Médical du Futur</span>
+                    <span className="text-primary-foreground/80">{t('hero.title_line2')}</span>
                 </motion.h1>
 
                 {/* Subtitle */}
@@ -71,8 +73,8 @@ const Hero = () => {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="text-lg md:text-xl text-primary-foreground/70 max-w-2xl mx-auto mb-10"
                 >
-                    Gérez patients, rendez-vous, dossiers médicaux, factures et bien plus
-                    avec une plateforme intelligente conçue pour les professionnels de santé.
+                >
+                    {t('hero.subtitle')}
                 </motion.p>
 
                 {/* CTA Buttons */}
@@ -88,7 +90,7 @@ const Hero = () => {
                         className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 group"
                     >
                         <Link to="/pricing">
-                            Commencer gratuitement
+                            {t('hero.cta_start')}
                             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </Button>
@@ -96,7 +98,7 @@ const Hero = () => {
                         size="lg"
                         className="rounded-full px-8 py-6 text-lg font-semibold bg-primary-foreground/20 border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/30 backdrop-blur-sm transition-all duration-300"
                     >
-                        Voir la démo
+                        {t('hero.cta_demo')}
                     </Button>
                 </motion.div>
 
@@ -108,9 +110,9 @@ const Hero = () => {
                     className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto"
                 >
                     {[
-                        { icon: Shield, value: "99.9%", label: "Sécurité RGPD" },
-                        { icon: Zap, value: "< 1s", label: "Temps de réponse" },
-                        { icon: Sparkles, value: "5000+", label: "Médecins actifs" },
+                        { icon: Shield, value: "99.9%", label: t('hero.stat_security') },
+                        { icon: Zap, value: "< 1s", label: t('hero.stat_response') },
+                        { icon: Sparkles, value: "5000+", label: t('hero.stat_doctors') },
                     ].map((stat, index) => (
                         <motion.div
                             key={stat.label}

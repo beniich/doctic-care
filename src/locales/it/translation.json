@@ -1,0 +1,98 @@
+{
+    "app": {
+        "title": "Doctic Pro",
+        "description": "Il SO Medico del Futuro",
+        "powered_by_ai": "Alimentato da Intelligenza Artificiale"
+    },
+    "nav": {
+        "features": "Funzionalità",
+        "pricing": "Prezzi",
+        "blog": "Blog",
+        "signup": "Iscriviti",
+        "login": "Accedi"
+    },
+    "hero": {
+        "badge": "Alimentato da Intelligenza Artificiale",
+        "title_line1": "Doctic Pro",
+        "title_line2": "Il SO Medico del Futuro",
+        "subtitle": "Gestisci pazienti, appuntamenti, cartelle cliniche, fatturazione e molto altro con una piattaforma intelligente progettata per i professionisti sanitari.",
+        "cta_start": "Inizia gratis",
+        "cta_demo": "Guarda demo",
+        "stat_security": "Sicurezza GDPR",
+        "stat_response": "Tempo di risposta",
+        "stat_doctors": "Medici attivi"
+    },
+    "pricing": {
+        "badge": "Prezzi",
+        "title": "Scegli il tuo Piano",
+        "subtitle": "Prezzi trasparenti adattati alle dimensioni del tuo studio. Tutti i piani includono aggiornamenti e hosting sicuro.",
+        "ideal_for": "Ideale per iniziare la tua pratica digitale",
+        "growth_ai": "Per studi in crescita con IA integrata",
+        "complete_solution": "Soluzione completa per istituzioni",
+        "popular": "Più Popolare",
+        "month": "/mese",
+        "start_btn": "Inizia",
+        "trial_btn": "Prova gratuita 14 giorni",
+        "contact_btn": "Contatta vendite",
+        "features": {
+            "patients_100": "Fino a 100 pazienti",
+            "basic_agenda": "Agenda base",
+            "medical_records": "Cartelle cliniche",
+            "email_support": "Supporto email",
+            "user_1": "1 utente",
+            "patients_unlimited": "Pazienti illimitati",
+            "ai_agenda": "Agenda intelligente IA",
+            "voice_transcription": "Trascrizione vocale",
+            "ai_diagnosis": "Aiuto diagnosi IA",
+            "users_3": "3 utenti",
+            "priority_support": "Supporto prioritario",
+            "teletransmission": "Teletrasmissione",
+            "all_master": "Tutto Master incluso",
+            "users_unlimited": "Utenti illimitati",
+            "custom_api": "API personalizzata",
+            "training": "Formazione dedicata",
+            "support_vip": "Supporto VIP 24/7",
+            "custom_integrations": "Integrazioni su misura",
+            "security_audit": "Audit di sicurezza"
+        },
+        "disclaimer": "Tutti i prezzi tasse escluse. Disdici quando vuoi.",
+        "terms": "Vedi termini e condizioni"
+    },
+    "dashboard": {
+        "welcome": "Benvenuto,",
+        "subtitle": "Ecco una panoramica del tuo studio oggi",
+        "kpi": {
+            "active_patients": "Pazienti Attivi",
+            "appointments_today": "Appuntamenti Oggi",
+            "monthly_revenue": "Entrate Mensili",
+            "satisfaction": "Soddisfazione"
+        },
+        "activity": {
+            "title": "Panoramica Attività",
+            "trends": "Analisi delle Tendenze",
+            "description": "I tuoi dati su visite e entrate verranno visualizzati qui con grafici interattivi."
+        },
+        "appointments": {
+            "title": "Prossimi Appuntamenti",
+            "view_all": "Vedi Tutto",
+            "status_confirmed": "Confermato",
+            "status_pending": "In sospeso",
+            "time_am": "AM",
+            "time_pm": "PM"
+        },
+        "recent_activity": {
+            "title": "Attività Recente",
+            "consultation_finished": "Visita terminata",
+            "new_prescription": "Nuova ricetta",
+            "teleconsult_planned": "Teleconsulto programmato",
+            "video_published": "Video pubblicato",
+            "time_ago": "fa",
+            "in": "tra"
+        },
+        "tips": {
+            "title": "Consiglio del Giorno",
+            "content": "Usa l'assistente IA per analizzare rapidamente gli ultimi risultati degli esami dei tuoi pazienti.",
+            "open_assistant": "Apri Assistente IA"
+        }
+    }
+}

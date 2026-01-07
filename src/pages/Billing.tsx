@@ -93,8 +93,7 @@ export default function Billing() {
   };
 
   const updateItem = (index: number, field: keyof InvoiceItem, value: string | number) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setFormData((prev: any) => {
+    setFormData((prev) => {
       const items = [...(prev.items || [])];
       items[index] = { ...items[index], [field]: value };
       if (field === 'qty' || field === 'price') {
@@ -283,7 +282,7 @@ export default function Billing() {
                         <td className="py-4 px-4 text-muted-foreground">{inv.date}</td>
                         <td className="py-4 px-4 text-right font-bold text-base">{inv.total.toFixed(2)} €</td>
                         <td className="py-4 px-4 text-center">
-                          <Badge variant={getStatusBadgeVariant(inv.status) as any}>
+                          <Badge variant={getStatusBadgeVariant(inv.status) as "default" | "secondary" | "destructive" | "outline" | null | undefined}>
                             {inv.status === 'paid' ? 'Payée' : inv.status === 'pending' ? 'En attente' : inv.status === 'overdue' ? 'Retard' : 'Brouillon'}
                           </Badge>
                         </td>

@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
+import { EventClickArg } from '@fullcalendar/core';
 import { Search, Plus, Edit, Trash2, Video, Calendar as CalendarIcon, Clock, MapPin, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,7 +61,7 @@ export default function Appointments() {
 
   // Format pour FullCalendar
   const calendarEvents = appointments.map(apt => {
-    let start = `${apt.date}T${apt.time}:00`;
+    const start = `${apt.date}T${apt.time}:00`;
     return {
       id: apt.id.toString(),
       title: `${apt.patient} - ${apt.type}`,
@@ -91,7 +92,7 @@ export default function Appointments() {
     return <MapPin className="h-4 w-4" />;
   };
 
-  const handleEventClick = (info: any) => {
+  const handleEventClick = (info: EventClickArg) => {
     const apt = appointments.find(a => a.id === parseInt(info.event.id));
     if (apt) {
       setSelectedAppointment(apt);
@@ -99,7 +100,7 @@ export default function Appointments() {
     }
   };
 
-  const handleDateClick = (info: any) => {
+  const handleDateClick = (info: DateClickArg) => {
     // Info contains dateStr
     handleNewAppointment(info.dateStr);
   };
@@ -163,7 +164,7 @@ export default function Appointments() {
     alert(`Démarrage ${apt.type.includes('télé') ? 'téléconsultation' : 'consultation'} avec ${apt.patient}`);
   };
 
-  const updateForm = (key: keyof Appointment, value: any) => {
+  const updateForm = (key: keyof Appointment, value: Appointment[keyof Appointment]) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
@@ -235,8 +236,8 @@ export default function Appointments() {
                             key={apt.id}
                             onClick={() => setSelectedAppointment(apt)}
                             className={`p-4 rounded-lg border cursor-pointer transition-all ${selectedAppointment?.id === apt.id
-                                ? 'border-primary bg-primary/5 shadow-sm'
-                                : 'border-transparent hover:bg-accent hover:border-border'
+                              ? 'border-primary bg-primary/5 shadow-sm'
+                              : 'border-transparent hover:bg-accent hover:border-border'
                               }`}
                           >
                             <div className="flex justify-between items-start mb-2">

@@ -92,8 +92,7 @@ export default function Prescriptions() {
     };
 
     const updateMedication = (index: number, field: keyof Medication, value: string | number) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setFormData((prev: any) => {
+        setFormData((prev) => {
             const meds = [...prev.medications];
             meds[index] = { ...meds[index], [field]: value };
             return { ...prev, medications: meds };
@@ -237,7 +236,7 @@ export default function Prescriptions() {
                                                         </Badge>
                                                     </td>
                                                     <td className="py-4 px-4 text-center">
-                                                        <Badge variant={getStatusBadgeVariant(pres.status) as any}>
+                                                        <Badge variant={getStatusBadgeVariant(pres.status) as "default" | "secondary" | "destructive" | "outline" | null | undefined}>
                                                             {pres.status === 'active' ? 'Active' : pres.status === 'dispensed' ? 'Délivrée' : 'Expirée'}
                                                         </Badge>
                                                     </td>

@@ -3,7 +3,7 @@
 // Version: 2.1.0
 // ========================================
 
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 // ========================================
 // VARIABLES REQUISES
@@ -97,7 +97,7 @@ const requiredEnvVars = {
  * Valider toutes les variables d'environnement
  * @throws {Error} Si validation échoue
  */
-function validateEnvironment() {
+export function validateEnvironment() {
     const errors = [];
     const warnings = [];
 
@@ -167,7 +167,7 @@ function validateEnvironment() {
 /**
  * Vérifier sécurité en production
  */
-function validateProduction() {
+export function validateProduction() {
     if (process.env.NODE_ENV !== 'production') {
         return;
     }
@@ -213,14 +213,14 @@ function validateProduction() {
  * Générer secrets aléatoires
  * @param {number} length - Longueur en bytes
  */
-function generateSecret(length = 32) {
+export function generateSecret(length = 32) {
     return crypto.randomBytes(length).toString('hex');
 }
 
 /**
  * Afficher exemple .env
  */
-function showEnvExample() {
+export function showEnvExample() {
     console.log('📋 Exemple de fichier .env:\n');
     console.log(`NODE_ENV=development
 PORT=5000
@@ -242,14 +242,3 @@ DATABASE_URL=postgresql://user:password@localhost:5432/doctic_db
 REDIS_URL=redis://localhost:6379
 `);
 }
-
-// ========================================
-// EXPORTS
-// ========================================
-
-module.exports = {
-    validateEnvironment,
-    validateProduction,
-    generateSecret,
-    showEnvExample
-};

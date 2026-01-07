@@ -1,0 +1,98 @@
+{
+    "app": {
+        "title": "Doctic Pro",
+        "description": "未来の医療OS",
+        "powered_by_ai": "人工知能を搭載"
+    },
+    "nav": {
+        "features": "機能",
+        "pricing": "料金",
+        "blog": "ブログ",
+        "signup": "登録",
+        "login": "ログイン"
+    },
+    "hero": {
+        "badge": "人工知能を搭載",
+        "title_line1": "Doctic Pro",
+        "title_line2": "未来の医療OS",
+        "subtitle": "患者、予約、医療記録、請求などを管理するための医療専門家向けインテリジェントプラットフォーム。",
+        "cta_start": "無料で始める",
+        "cta_demo": "デモを見る",
+        "stat_security": "GDPR セキュリティ",
+        "stat_response": "応答時間",
+        "stat_doctors": "アクティブな医師"
+    },
+    "pricing": {
+        "badge": "料金",
+        "title": "プランを選択",
+        "subtitle": "診療所の規模に合わせた透明な料金設定。すべてのプランに更新と安全なホスティングが含まれています。",
+        "ideal_for": "デジタル診療の開始に最適",
+        "growth_ai": "AI統合による成長中の診療所向け",
+        "complete_solution": "施設向け完全ソリューション",
+        "popular": "一番人気",
+        "month": "/月",
+        "start_btn": "開始",
+        "trial_btn": "14日間無料トライアル",
+        "contact_btn": "営業に連絡",
+        "features": {
+            "patients_100": "患者数100名まで",
+            "basic_agenda": "基本スケジュール",
+            "medical_records": "医療記録",
+            "email_support": "メールサポート",
+            "user_1": "ユーザー1名",
+            "patients_unlimited": "患者数無制限",
+            "ai_agenda": "AIスマートスケジュール",
+            "voice_transcription": "音声文字起こし",
+            "ai_diagnosis": "AI診断支援",
+            "users_3": "ユーザー3名",
+            "priority_support": "優先サポート",
+            "teletransmission": "データ伝送",
+            "all_master": "Master機能すべて",
+            "users_unlimited": "ユーザー無制限",
+            "custom_api": "カスタムAPI",
+            "training": "専用トレーニング",
+            "support_vip": "VIPサポート 24/7",
+            "custom_integrations": "カスタム統合",
+            "security_audit": "セキュリティ監査"
+        },
+        "disclaimer": "価格はすべて税抜きです。いつでもキャンセル可能。",
+        "terms": "利用規約を見る"
+    },
+    "dashboard": {
+        "welcome": "ようこそ、",
+        "subtitle": "今日の診療の概要です",
+        "kpi": {
+            "active_patients": "アクティブな患者",
+            "appointments_today": "今日の予約",
+            "monthly_revenue": "月間収益",
+            "satisfaction": "満足度"
+        },
+        "activity": {
+            "title": "アクティビティ概要",
+            "trends": "傾向分析",
+            "description": "ここに診療と収益のデータがインタラクティブなグラフで表示されます。"
+        },
+        "appointments": {
+            "title": "今後の予約",
+            "view_all": "すべて表示",
+            "status_confirmed": "確認済み",
+            "status_pending": "保留中",
+            "time_am": "午前",
+            "time_pm": "午後"
+        },
+        "recent_activity": {
+            "title": "最近のアクティビティ",
+            "consultation_finished": "診察終了",
+            "new_prescription": "新規処方箋",
+            "teleconsult_planned": "オンライン診療予定",
+            "video_published": "動画公開",
+            "time_ago": "前",
+            "in": "後"
+        },
+        "tips": {
+            "title": "今日のヒント",
+            "content": "AIアシスタントを使用して、患者の最新の検査結果を素早く分析しましょう。",
+            "open_assistant": "AIアシスタントを開く"
+        }
+    }
+}

@@ -3,8 +3,11 @@ import { motion } from "framer-motion";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
+    const { t } = useTranslation();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isDark, setIsDark] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,9 +23,9 @@ const Navbar = () => {
     }, [isDark]);
 
     const navLinks = [
-        { name: "Fonctionnalités", href: "#features" },
-        { name: "Tarifs", href: "#pricing" },
-        { name: "Blog", href: "#" },
+        { name: t('nav.features'), href: "#features" },
+        { name: t('nav.pricing'), href: "#pricing" },
+        { name: t('nav.blog'), href: "#" },
     ];
 
     return (
@@ -48,7 +51,7 @@ const Navbar = () => {
                             className="w-full h-full object-contain"
                         />
                     </div>
-                    <span className="text-xl font-bold text-foreground">Doctic Pro</span>
+                    <span className="text-xl font-bold text-foreground">{t('app.title')}</span>
                 </Link>
 
                 {/* Desktop Nav Links */}
@@ -66,6 +69,7 @@ const Navbar = () => {
 
                 {/* Right Actions */}
                 <div className="hidden md:flex items-center gap-3">
+                    <LanguageSwitcher />
                     <Button
                         variant="ghost"
                         size="icon"
@@ -76,7 +80,7 @@ const Navbar = () => {
                     </Button>
                     <Link to="/login">
                         <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
-                            Inscription
+                            {t('nav.signup')}
                         </Button>
                     </Link>
                 </div>
@@ -112,6 +116,7 @@ const Navbar = () => {
                             </a>
                         ))}
                         <div className="flex items-center gap-3 pt-4 border-t border-border">
+                            <LanguageSwitcher />
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -122,7 +127,7 @@ const Navbar = () => {
                             </Button>
                             <Link to="/login" className="flex-1">
                                 <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
-                                    Inscription
+                                    {t('nav.signup')}
                                 </Button>
                             </Link>
                         </div>

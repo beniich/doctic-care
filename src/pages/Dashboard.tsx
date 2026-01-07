@@ -3,7 +3,10 @@ import { Users, Calendar, DollarSign, Activity, TrendingUp, Clock, FileText, Vid
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { motion } from "framer-motion";
 
+import { useTranslation } from "react-i18next";
+
 export default function Dashboard() {
+  const { t } = useTranslation();
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -20,17 +23,17 @@ export default function Dashboard() {
   };
 
   const kpis = [
-    { title: 'Patients actifs', value: '1 245', change: '+12%', icon: Users, color: 'from-blue-600 to-cyan-500' },
-    { title: 'RDV aujourd\'hui', value: '24', change: '+5', icon: Calendar, color: 'from-violet-600 to-purple-500' },
-    { title: 'Revenus mensuels', value: '€25 767', change: '+18%', icon: DollarSign, color: 'from-emerald-500 to-green-600' },
-    { title: 'Satisfaction', value: '98%', change: '+2%', icon: Activity, color: 'from-amber-500 to-orange-600' }
+    { title: t('dashboard.kpi.active_patients'), value: '1 245', change: '+12%', icon: Users, color: 'from-blue-600 to-cyan-500' },
+    { title: t('dashboard.kpi.appointments_today'), value: '24', change: '+5', icon: Calendar, color: 'from-violet-600 to-purple-500' },
+    { title: t('dashboard.kpi.monthly_revenue'), value: '€25 767', change: '+18%', icon: DollarSign, color: 'from-emerald-500 to-green-600' },
+    { title: t('dashboard.kpi.satisfaction'), value: '98%', change: '+2%', icon: Activity, color: 'from-amber-500 to-orange-600' }
   ];
 
   const recentActivities = [
-    { icon: FileText, text: 'Consultation terminée - Sarah Johnson', time: 'Il y a 5 min', color: 'bg-green-500 text-white' },
-    { icon: FileText, text: 'Nouvelle ordonnance - Michael Chen', time: 'Il y a 15 min', color: 'bg-blue-500 text-white' },
-    { icon: Video, text: 'Téléconsultation prévue à 14h', time: 'Dans 2h', color: 'bg-violet-500 text-white' },
-    { icon: Video, text: 'Vidéo publiée sur TikTok', time: 'Il y a 1h', color: 'bg-pink-500 text-white' }
+    { icon: FileText, text: `${t('dashboard.recent_activity.consultation_finished')} - Sarah Johnson`, time: '5 min', color: 'bg-green-500 text-white' },
+    { icon: FileText, text: `${t('dashboard.recent_activity.new_prescription')} - Michael Chen`, time: '15 min', color: 'bg-blue-500 text-white' },
+    { icon: Video, text: t('dashboard.recent_activity.teleconsult_planned'), time: '2h', color: 'bg-violet-500 text-white' },
+    { icon: Video, text: t('dashboard.recent_activity.video_published'), time: '1h', color: 'bg-pink-500 text-white' }
   ];
 
   const upcomingAppointments = [
@@ -55,11 +58,11 @@ export default function Dashboard() {
                 transition={{ duration: 0.5 }}
               >
                 <h1 className="text-4xl font-bold mb-2">
-                  <span className="gradient-text">Bienvenue,</span>{" "}
+                  <span className="gradient-text">{t('dashboard.welcome')}</span>{" "}
                   <span className="text-foreground">Dr. Anderson</span>
                 </h1>
                 <p className="text-muted-foreground text-lg">
-                  Voici un aperçu de votre cabinet aujourd'hui
+                  {t('dashboard.subtitle')}
                 </p>
               </motion.div>
             </div>
@@ -109,16 +112,16 @@ export default function Dashboard() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Activity className="h-5 w-5 text-primary" />
-                        Aperçu de l'activité
+                        {t('dashboard.activity.title')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 flex items-center justify-center relative overflow-hidden">
                       <div className="absolute inset-0 hero-gradient opacity-5" />
                       <div className="text-center z-10">
                         <TrendingUp className="h-20 w-20 text-muted-foreground/20 mx-auto mb-4 animate-float" />
-                        <p className="text-lg font-medium text-foreground">Analyse des tendances</p>
+                        <p className="text-lg font-medium text-foreground">{t('dashboard.activity.trends')}</p>
                         <p className="text-sm text-muted-foreground max-w-xs mx-auto mt-2">
-                          Vos données de consultation et de revenus seront affichées ici avec des graphiques interactifs.
+                          {t('dashboard.activity.description')}
                         </p>
                       </div>
                     </CardContent>
@@ -131,10 +134,10 @@ export default function Dashboard() {
                     <CardHeader className="flex flex-row items-center justify-between">
                       <CardTitle className="flex items-center gap-2">
                         <Clock className="h-5 w-5 text-primary" />
-                        Rendez-vous à venir
+                        {t('dashboard.appointments.title')}
                       </CardTitle>
                       <button className="text-xs text-primary font-medium hover:underline flex items-center gap-1">
-                        Voir tout <ArrowRight className="w-3 h-3" />
+                        {t('dashboard.appointments.view_all')} <ArrowRight className="w-3 h-3" />
                       </button>
                     </CardHeader>
                     <CardContent>
@@ -144,7 +147,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-4">
                               <div className="flex flex-col items-center justify-center w-14 h-14 rounded-xl bg-background shadow-sm border border-border group-hover:border-primary/30 transition-colors">
                                 <span className="text-sm font-bold text-foreground">{apt.time}</span>
-                                <span className="text-[10px] text-muted-foreground uppercase">AM</span>
+                                <span className="text-[10px] text-muted-foreground uppercase">{t('dashboard.appointments.time_am')}</span>
                               </div>
                               <div>
                                 <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{apt.patient}</p>
@@ -155,10 +158,10 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div className={`px-3 py-1 rounded-full text-xs font-medium border ${apt.status === 'confirmed'
-                                ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-                                : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+                              ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                              : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
                               }`}>
-                              {apt.status === 'confirmed' ? 'Confirmé' : 'En attente'}
+                              {apt.status === 'confirmed' ? t('dashboard.appointments.status_confirmed') : t('dashboard.appointments.status_pending')}
                             </div>
                           </div>
                         ))}
@@ -176,7 +179,7 @@ export default function Dashboard() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Stethoscope className="h-5 w-5 text-accent" />
-                        Activité récente
+                        {t('dashboard.recent_activity.title')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -201,12 +204,12 @@ export default function Dashboard() {
                 <motion.div variants={item}>
                   <Card className="glass-card border-border bg-gradient-to-br from-primary/5 to-accent/5">
                     <CardContent className="p-6">
-                      <h3 className="font-semibold text-lg mb-2 gradient-text">Astuce du jour</h3>
+                      <h3 className="font-semibold text-lg mb-2 gradient-text">{t('dashboard.tips.title')}</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Utilisez l'assistant IA pour analyser rapidement les derniers résultats d'analyse de vos patients.
+                        {t('dashboard.tips.content')}
                       </p>
                       <button className="w-full py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all">
-                        Ouvrir l'Assistant IA
+                        {t('dashboard.tips.open_assistant')}
                       </button>
                     </CardContent>
                   </Card>

@@ -155,7 +155,7 @@ export default function Patients() {
   };
 
   // Helper to update form data
-  const updateForm = (key: keyof Patient, value: any) => {
+  const updateForm = (key: keyof Patient, value: Patient[keyof Patient]) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
@@ -225,7 +225,7 @@ export default function Patients() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <p className="font-medium truncate">{patient.name}</p>
-                          <Badge variant={patient.status === 'Actif' ? 'default' : 'secondary'} className="text-xs">
+                          <Badge variant={(patient.status === 'Actif' ? 'default' : 'secondary') as "default" | "secondary"} className="text-xs">
                             {patient.status}
                           </Badge>
                         </div>
