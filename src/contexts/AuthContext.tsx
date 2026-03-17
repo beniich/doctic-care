@@ -14,10 +14,11 @@ interface AuthContextValue {
 }
 
 // ─── CONTEXT ──────────────────────────────────────────────────────────────────
-const AuthContext = createContext<AuthContextValue>({
+const AuthContext = createContext<AuthContextValue & { showSplash: boolean }>({
   user: null,
   loading: true,
   isAuthenticated: false,
+  showSplash: false,
   login: async () => ({ success: false }),
   logout: async () => {},
   refresh: async () => {},
@@ -27,6 +28,7 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
   
   // Utiliser hook conditionnel si à l'avenir on veut que AuthProvider soit très haut (avant Router)
   // On laisse navigate géré dans les composants qui en ont besoin, ou on le passe ici.
@@ -50,9 +52,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       const res = await authApi.login(email, password);
-      // NOTE: dans l'ancien AuthContext, user.role était attendu pour le login de dev. 
-      // Ici on utilise la vraie API.
+      // Wow Factor: Active le splash screen
+      setShowSplash(true);
       setUser(res.data.user);
+      
+      // On garde le splash 1.8s pour l'effet "Wow"
+      setTimeout(() => {
+        setShowSplash(false);
+      }, 1800);
+
       return { success: true };
     } catch (err: unknown) {
       return {
@@ -76,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       loading,
       isAuthenticated: !!user,
+      showSplash,
       login,
       logout,
       refresh,

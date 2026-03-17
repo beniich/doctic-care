@@ -19,12 +19,16 @@ export default function LoginPage() {
         document.documentElement.classList.toggle('dark');
     };
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         // Connexion via AuthContext
-        login(ROLES.DOCTOR);
-        // Redirection vers dashboard
-        navigate('/');
+        const result = await login(email, password);
+        if (result.success) {
+            // Redirection vers dashboard (le splash s'affiche via App.tsx)
+            navigate('/dashboard');
+        } else {
+            alert(result.error || "Erreur de connexion");
+        }
     };
 
     const bg = isDarkMode ? 'bg-gray-950' : 'bg-gray-50';

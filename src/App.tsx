@@ -20,7 +20,7 @@ import Teleconsult from "./pages/Teleconsult";
 import Streaming from "./pages/Streaming";
 import NotFound from "./pages/NotFound";
 
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ModalProvider } from "@/contexts/ModalContext";
 import SocialPublish from "./pages/SocialPublish";
 import Landing from "./pages/Landing";
@@ -32,8 +32,77 @@ import SubscriptionManagement from "./pages/SubscriptionManagement";
 
 import { ProtectedRoute, PublicOnlyRoute } from "@/components/ProtectedRoute";
 import { HelmetProvider } from "react-helmet-async";
+import { LoadingSplash } from "./components/ui/LoadingSplash";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  const { showSplash } = useAuth();
+  
+  return (
+    <TooltipProvider>
+      {showSplash && <LoadingSplash />}
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PublicOnlyRoute redirectTo="/dashboard">
+                <LoginPage />
+              </PublicOnlyRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicOnlyRoute redirectTo="/dashboard">
+                <LoginPage />
+              </PublicOnlyRoute>
+            }
+          />
+          <Route path="/patients" element={<Patients />} />
+          <Route path="/appointments" element={<Appointments />} />
+          <Route path="/medical-care-sheet" element={<MedicalCareSheetPage />} />
+          <Route path="/records" element={<Records />} />
+          <Route path="/prescriptions" element={<Prescriptions />} />
+          <Route path="/teleconsult" element={<Teleconsult />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/billing" element={<Billing />} />
+          <Route path="/saas-billing" element={<SaasBilling />} />
+          <Route path="/network" element={<MultiTenantDashboard />} />
+          <Route path="/assistant" element={<AIAssistant />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/publish-social" element={<SocialPublish />} />
+          <Route path="/streaming" element={<Streaming />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route
+            path="/subscription"
+            element={
+              <ProtectedRoute>
+                <SubscriptionManagement />
+              </ProtectedRoute>
+            }
+          />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  );
+};
 
 const App = () => (
   <HelmetProvider>
@@ -41,66 +110,7 @@ const App = () => (
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="doctic-theme">
         <AuthProvider>
           <ModalProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Landing />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/login"
-                    element={
-                      <PublicOnlyRoute redirectTo="/dashboard">
-                        <LoginPage />
-                      </PublicOnlyRoute>
-                    }
-                  />
-                  <Route
-                    path="/signup"
-                    element={
-                      <PublicOnlyRoute redirectTo="/dashboard">
-                        <LoginPage />
-                      </PublicOnlyRoute>
-                    }
-                  />
-                  <Route path="/patients" element={<Patients />} />
-                  <Route path="/appointments" element={<Appointments />} />
-                  <Route path="/medical-care-sheet" element={<MedicalCareSheetPage />} />
-                  <Route path="/records" element={<Records />} />
-                  <Route path="/prescriptions" element={<Prescriptions />} />
-                  <Route path="/teleconsult" element={<Teleconsult />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/billing" element={<Billing />} />
-                  <Route path="/saas-billing" element={<SaasBilling />} />
-                  <Route path="/network" element={<MultiTenantDashboard />} />
-                  <Route path="/assistant" element={<AIAssistant />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/publish-social" element={<SocialPublish />} />
-                  <Route path="/streaming" element={<Streaming />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route
-                    path="/subscription"
-                    element={
-                      <ProtectedRoute>
-                        <SubscriptionManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </TooltipProvider>
+            <AppContent />
           </ModalProvider>
         </AuthProvider>
       </ThemeProvider>
