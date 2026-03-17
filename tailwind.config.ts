@@ -15,19 +15,22 @@ export default {
     extend: {
       fontFamily: {
         sans: [
-          'Work Sans',
+          '"Exo 2"',
           'ui-sans-serif',
           'system-ui',
           'sans-serif'
         ],
         serif: ['Lora', 'serif'],
         mono: ['Inconsolata', 'monospace'],
+        'mono-tech': ['"Share Tech Mono"', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
+        'background-2': "hsl(var(--background-2))",
+        'background-3': "hsl(var(--background-3))",
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",

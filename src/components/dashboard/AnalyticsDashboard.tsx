@@ -58,29 +58,29 @@ export const AnalyticsDashboard: React.FC = () => {
     const errTrends = null;
 
     return (
-        <div className="bg-white dark:bg-card p-8 rounded-[1.5rem] mt-8 border border-border shadow-sm">
-            <h2 className="text-xl font-bold mb-6 text-slate-800 dark:text-white">📊 Tableau de bord d'analytics IA</h2>
+        <div className="glass-card bg-card/50 p-8 mt-8 border-border/50">
+            <h2 className="text-xl font-bold mb-6 text-white">📊 Tableau de bord d'analytics IA</h2>
 
             {/* ---------- Overview ---------- */}
             {loadingOverview && <p>Chargement des indicateurs…</p>}
             {errOverview && <p className="text-red-500">Erreur: {String(errOverview)}</p>}
             {overview && (
                 <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Total erreurs</h3>
-                        <p className="text-3xl font-bold text-red-500">{overview.total_errors}</p>
+                    <div className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-sm">
+                        <h3 className="text-sm font-medium text-white/50 mb-2 uppercase tracking-wider">Total erreurs</h3>
+                        <p className="text-3xl font-bold text-destructive">{overview.total_errors}</p>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Dernières 24h</h3>
-                        <p className="text-3xl font-bold text-orange-500">{overview.errors_last_24h}</p>
+                    <div className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-sm">
+                        <h3 className="text-sm font-medium text-white/50 mb-2 uppercase tracking-wider">Dernières 24h</h3>
+                        <p className="text-3xl font-bold text-warning">{overview.errors_last_24h}</p>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Coût IA (tokens)</h3>
-                        <p className="text-slate-700 dark:text-slate-300">
-                            In: <strong className="text-slate-900 dark:text-white">{overview.avg_input_tokens}</strong><br />
-                            Out: <strong className="text-slate-900 dark:text-white">{overview.avg_output_tokens}</strong>
+                    <div className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-sm">
+                        <h3 className="text-sm font-medium text-white/50 mb-2 uppercase tracking-wider">Coût IA (tokens)</h3>
+                        <p className="text-white/70">
+                            In: <strong className="text-white">{overview.avg_input_tokens}</strong><br />
+                            Out: <strong className="text-white">{overview.avg_output_tokens}</strong>
                         </p>
                     </div>
                 </section>
@@ -88,20 +88,20 @@ export const AnalyticsDashboard: React.FC = () => {
 
             {overview && overview.top_5_endpoints.length > 0 && (
                 <section className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">Top erreurs par endpoint</h3>
-                    <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
+                    <h3 className="text-lg font-semibold mb-4 text-white">Top erreurs par endpoint</h3>
+                    <div className="bg-black/20 rounded-xl overflow-hidden border border-white/10">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 text-sm">
-                                    <th className="p-4 font-medium border-b border-slate-200 dark:border-slate-800">Endpoint</th>
-                                    <th className="p-4 font-medium border-b border-slate-200 dark:border-slate-800">Occurrences</th>
+                                <tr className="bg-white/5 text-white/50 text-sm">
+                                    <th className="p-4 font-medium border-b border-white/10">Endpoint</th>
+                                    <th className="p-4 font-medium border-b border-white/10">Occurrences</th>
                                 </tr>
                             </thead>
                             <tbody className="text-sm">
                                 {overview.top_5_endpoints.map((e, i) => (
-                                    <tr key={e.endpoint} className="border-b border-slate-100 dark:border-slate-800/50 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
-                                        <td className="p-4 font-mono text-slate-600 dark:text-slate-300">{e.endpoint}</td>
-                                        <td className="p-4 font-bold text-slate-900 dark:text-white">{e.count}</td>
+                                    <tr key={e.endpoint} className="border-b border-white/5 last:border-b-0 hover:bg-white/5 transition-colors">
+                                        <td className="p-4 font-mono-tech text-white/70">{e.endpoint}</td>
+                                        <td className="p-4 font-bold text-white">{e.count}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -114,8 +114,8 @@ export const AnalyticsDashboard: React.FC = () => {
             {loadingTrends && <p>Chargement de la courbe…</p>}
             {errTrends && <p className="text-red-500">{String(errTrends)}</p>}
             {trends && trends.length > 0 && (
-                <section className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <h3 className="text-lg font-semibold mb-6 text-slate-800 dark:text-white">Évolution des erreurs (30 jours)</h3>
+                <section className="bg-black/20 p-6 rounded-xl border border-white/10">
+                    <h3 className="text-lg font-semibold mb-6 text-white">Évolution des erreurs (30 jours)</h3>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={trends}>

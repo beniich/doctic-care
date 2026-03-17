@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,65 +8,75 @@
 
 @layer base {
   :root {
-    /* Deep Blue Background - LATTICE80 Style */
-    --background: 208 96% 22%; /* #023E73 */
-    --foreground: 28 23% 80%; /* #D9CCC1 */
+    /* Doctic Purple Theme - Cyberpunk/Neon Style */
+    --background: 259 71% 14%; /* #1a0a3c */
+    --background-2: 258 65% 18%; /* #22104d */
+    --background-3: 254 59% 26%; /* #2d1b69 */
+
+    --foreground: 0 0% 100%; /* #ffffff */
+    --foreground-muted: 0 0% 100% / 0.5;
+    --foreground-subtle: 0 0% 100% / 0.25;
 
     /* Cards with sleek elevation */
-    --card: 196 96% 17%; /* #024059 */
-    --card-foreground: 28 23% 80%;
+    --card: 0 0% 100% / 0.06;
+    --card-hover: 0 0% 100% / 0.09;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 196 96% 17%;
-    --popover-foreground: 28 23% 80%;
+    --popover: 259 71% 14%;
+    --popover-foreground: 0 0% 100%;
 
-    /* LATTICE80 Orange Primary */
-    --primary: 28 80% 41%; /* #BF6415 */
-    --primary-foreground: 0 0% 100%;
+    /* Cyan Primary */
+    --primary: 193 100% 50%; /* #00c8ff */
+    --primary-foreground: 259 71% 14%;
 
-    /* Deep Dark Secondary */
-    --secondary: 196 96% 15%;
-    --secondary-foreground: 28 23% 80%;
+    /* Secondary */
+    --secondary: 0 0% 100% / 0.05;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Muted dark elements */
-    --muted: 208 80% 18%;
-    --muted-foreground: 28 23% 60%;
+    /* Muted elements */
+    --muted: 0 0% 100% / 0.05;
+    --muted-foreground: 0 0% 100% / 0.5;
 
-    /* LATTICE80 Brown Accent */
-    --accent: 16 41% 38%; /* #8C503A */
-    --accent-foreground: 0 0% 100%;
+    /* Purple Accent */
+    --accent: 253 100% 75%; /* #9b7fff */
+    --accent-foreground: 259 71% 14%;
 
-    /* Status Colors - Vibrant (identiques dans les 2 modes) */
+    /* Status Colors - Vibrant */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 56%;
-    --success-foreground: 0 0% 100%;
+    --success: 151 100% 45%; /* #00e676 */
+    --success-foreground: 259 71% 14%;
 
-    --warning: 38 92% 50%;
+    --warning: 25 100% 50%; /* #ff6b00 */
     --warning-foreground: 0 0% 100%;
 
-    --info: 199 89% 56%;
-    --info-foreground: 0 0% 100%;
+    --info: 193 100% 50%; /* #00c8ff */
+    --info-foreground: 259 71% 14%;
 
     /* UI Elements */
-    --border: 196 80% 25%;
-    --input: 196 80% 25%;
-    --ring: 28 80% 41%;
-    --radius: 1rem; /* Sleek rounded corners matching reclamtrack */
+    --border: 254 100% 65% / 0.2; /* rgba(120,80,255,0.2) */
+    --input: 254 100% 65% / 0.2;
+    --ring: 193 100% 50%;
+    --radius: 1rem;
 
     /* Sidebar - Transparent Glass Style */
-    --sidebar-background: 208 96% 18% / 0.7;
-    --sidebar-foreground: 28 23% 80%;
-    --sidebar-primary: 28 80% 41%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 196 96% 15% / 0.5;
-    --sidebar-accent-foreground: 28 23% 80%;
-    --sidebar-border: 196 80% 25% / 0.3;
-    --sidebar-ring: 28 80% 41%;
+    --sidebar-background: 0 0% 100% / 0.03;
+    --sidebar-foreground: 0 0% 100% / 0.5; /* --text2 */
+    --sidebar-primary: 193 100% 50%;
+    --sidebar-primary-foreground: 259 71% 14%;
+    --sidebar-accent: 0 0% 100% / 0.05;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 254 100% 65% / 0.15;
+    --sidebar-ring: 193 100% 50%;
 
-    /* Glass Effects with dark tint */
-    --glass: 196 96% 17% / 0.8;
-    --glass-border: 28 23% 80% / 0.1;
+    /* Glass Effects */
+    --glass: 259 71% 14% / 0.7;
+    --glass-border: 254 100% 65% / 0.15;
+
+    /* Glows */
+    --glow-purple: 255 69% 55% / 0.4; /* rgba(100,60,220,0.4) */
+    --glow-cyan: 193 100% 50% / 0.3; /* rgba(0,200,255,0.3) */
 
     /* Chart Colors - Vibrant (identiques dans les 2 modes) */
     --chart-1: 290 91% 65%;
@@ -75,72 +87,56 @@
   }
 
   .light {
-    /* Light Background - Soft & Clean (LATTICE80 Inspired) */
-    --background: 28 23% 95%; /* Lighter version for bg */
-    --foreground: 208 96% 22%; /* Inverse: deep blue text */
+    /* La maquette est Dark Only by default. 
+       On mappe le light mode sur le dark mode momentanément pour éviter un flash blanc indésirable. */
+    --background: 259 71% 14%;
+    --background-2: 258 65% 18%;
+    --background-3: 254 59% 26%;
 
-    /* Cards with soft elevation */
-    --card: 0 0% 100%;
-    --card-foreground: 208 96% 22%;
+    --foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 208 96% 22%;
+    --card: 0 0% 100% / 0.06;
+    --card-foreground: 0 0% 100%;
 
-    /* Primary - MÊME couleur que dark mode */
-    --primary: 28 80% 41%;
-    --primary-foreground: 0 0% 100%;
+    --popover: 259 71% 14%;
+    --popover-foreground: 0 0% 100%;
 
-    /* Light Secondary */
-    --secondary: 28 23% 90%;
-    --secondary-foreground: 208 96% 22%;
+    --primary: 193 100% 50%;
+    --primary-foreground: 259 71% 14%;
 
-    /* Muted light elements */
-    --muted: 28 23% 90%;
-    --muted-foreground: 208 96% 35%;
+    --secondary: 0 0% 100% / 0.05;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Brown/Orange Accent - MÊME couleur que dark mode */
-    --accent: 16 41% 38%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 0 0% 100% / 0.05;
+    --muted-foreground: 0 0% 100% / 0.5;
 
-    /* Status Colors - IDENTIQUES au dark mode */
+    --accent: 253 100% 75%;
+    --accent-foreground: 259 71% 14%;
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 56%;
-    --success-foreground: 0 0% 100%;
+    --success: 151 100% 45%;
+    --success-foreground: 259 71% 14%;
 
-    --warning: 38 92% 50%;
+    --warning: 25 100% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --info: 199 89% 56%;
-    --info-foreground: 0 0% 100%;
+    --info: 193 100% 50%;
+    --info-foreground: 259 71% 14%;
 
-    /* UI Elements (inversé) */
-    --border: 28 23% 85%;
-    --input: 28 23% 85%;
-    --ring: 28 80% 41%;
+    --border: 254 100% 65% / 0.2;
+    --input: 254 100% 65% / 0.2;
+    --ring: 193 100% 50%;
 
-    /* Sidebar - Transparent Glass Light Style (inversé) */
-    --sidebar-background: 0 0% 100% / 0.7;
-    --sidebar-foreground: 208 96% 22%;
-    --sidebar-primary: 28 80% 41%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 28 23% 90% / 0.8;
-    --sidebar-accent-foreground: 208 96% 22%;
-    --sidebar-border: 28 23% 85% / 0.5;
-    --sidebar-ring: 28 80% 41%;
-
-    /* Glass Effects with light tint */
-    --glass: 0 0% 100% / 0.8;
-    --glass-border: 208 96% 22% / 0.1;
-
-    /* Chart Colors - IDENTIQUES au dark mode */
-    --chart-1: 290 91% 65%;
-    --chart-2: 330 81% 60%;
-    --chart-3: 142 76% 56%;
-    --chart-4: 38 92% 50%;
-    --chart-5: 199 89% 56%;
-    /* Chart Colors - IDENTIQUES au dark mode */
+    --sidebar-background: 0 0% 100% / 0.03;
+    --sidebar-foreground: 0 0% 100% / 0.5;
+    --sidebar-primary: 193 100% 50%;
+    --sidebar-primary-foreground: 259 71% 14%;
+    --sidebar-accent: 0 0% 100% / 0.05;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 254 100% 65% / 0.15;
+    --sidebar-ring: 193 100% 50%; /* Chart Colors - IDENTIQUES au dark mode */
     --chart-1: 290 91% 65%;
     --chart-2: 330 81% 60%;
     --chart-3: 142 76% 56%;
@@ -155,17 +151,6 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-  }
-
-  /* Ajouts pour le style Showcase */
-  :root {
-    --glass-bg: 240 10% 6% / 0.6;
-    --glass-border: 240 10% 15% / 0.5;
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  }
-
-  .light {
     --glass-bg: 0 0% 100% / 0.7;
     --glass-border: 240 10% 90% / 0.5;
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
@@ -561,6 +546,65 @@ body {
     }
     50% {
       background-position: 100% 50%;
+    }
+  }
+
+  /* CDV CDV globals.css animations */
+  .animate-fade-up {
+    animation: fadeUp 0.5s ease forwards;
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease forwards;
+  }
+  .delay-1 {
+    animation-delay: 0.1s;
+    opacity: 0;
+  }
+  .delay-2 {
+    animation-delay: 0.2s;
+    opacity: 0;
+  }
+  .delay-3 {
+    animation-delay: 0.3s;
+    opacity: 0;
+  }
+  .delay-4 {
+    animation-delay: 0.4s;
+    opacity: 0;
+  }
+  .delay-5 {
+    animation-delay: 0.5s;
+    opacity: 0;
+  }
+  .delay-6 {
+    animation-delay: 0.6s;
+    opacity: 0;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
     }
   }
 }

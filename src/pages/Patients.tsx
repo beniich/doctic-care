@@ -162,11 +162,12 @@ export default function Patients() {
   return (
     <>
       <OutlookLayout
+        title="BASE PATIENTS"
         listPane={
-          <div className="flex flex-col h-full bg-background">
+          <div className="flex flex-col h-full bg-transparent">
             {/* Header */}
-            <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-              <h2 className="font-semibold flex items-center gap-2">
+            <div className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+              <h2 className="font-semibold flex items-center gap-2 text-white/80">
                 <Users className="h-5 w-5 text-primary" />
                 Patients ({patients.length})
               </h2>
@@ -184,21 +185,21 @@ export default function Patients() {
             )}
 
             {/* Recherche */}
-            <div className="p-4 border-b border-border">
+            <div className="p-4 border-b border-white/10">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
                 <Input
                   type="text"
                   placeholder="Rechercher (nom, ID, email)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:ring-primary/50 rounded-xl"
                 />
               </div>
             </div>
 
             {/* Liste patients */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto scrollbar-thin">
               {loading ? (
                 <div className="flex flex-col items-center justify-center p-8 text-muted-foreground">
                   <Loader2 className="h-8 w-8 animate-spin mb-2" />
@@ -213,25 +214,25 @@ export default function Patients() {
                   <div
                     key={patient.id}
                     onClick={() => setSelectedPatient(patient)}
-                    className={`p-4 border-b border-border hover:bg-accent/50 cursor-pointer transition ${selectedPatient?.id === patient.id ? 'bg-accent' : ''
+                    className={`p-4 border-b border-white/5 hover:bg-white/5 cursor-pointer transition-all ${selectedPatient?.id === patient.id ? 'bg-primary/10 border-l-2 border-l-primary' : ''
                       }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground font-medium">
+                      <Avatar className="h-10 w-10 border border-primary/20">
+                        <AvatarFallback className="bg-gradient-to-br from-primary/30 to-accent/30 text-white font-mono-tech">
                           {patient.name ? patient.name.split(' ').map(n => n[0]).join('') : '?'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="font-medium truncate">{patient.name}</p>
-                          <Badge variant={(patient.status === 'Actif' ? 'default' : 'secondary') as "default" | "secondary"} className="text-xs">
+                          <p className={`font-medium truncate ${selectedPatient?.id === patient.id ? 'text-primary' : 'text-white'}`}>{patient.name}</p>
+                          <Badge className="text-[10px] uppercase font-bold tracking-wider bg-white/10 text-white/70 hover:bg-white/20 border-white/10">
                             {patient.status}
                           </Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground truncate">{patient.patientId || 'N/A'} • {patient.email}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Dernière visite : {patient.lastVisit}
+                        <p className="text-xs text-white/50 truncate font-mono-tech mt-1">{patient.patientId || 'N/A'} • <span className="font-sans">{patient.email}</span></p>
+                        <p className="text-[10px] text-white/40 mt-1 uppercase tracking-widest">
+                          Dernière visite : <span className="font-mono-tech">{patient.lastVisit}</span>
                         </p>
                       </div>
                     </div>
@@ -243,16 +244,18 @@ export default function Patients() {
         }
         detailPane={
           selectedPatient ? (
-            <div className="h-full flex flex-col bg-background">
+            <div className="h-full flex flex-col bg-transparent">
               {/* Header détails */}
-              <div className="border-b border-border px-6 py-5 flex items-center justify-between">
+              <div className="border-b border-white/10 px-6 py-5 flex items-center justify-between bg-black/20">
                 <div>
-                  <h2 className="text-2xl font-semibold flex items-center gap-2">
-                    <User className="h-6 w-6 text-primary" />
+                  <h2 className="text-2xl font-bold flex items-center gap-3 text-white">
+                    <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+                      <User className="h-5 w-5 text-primary" />
+                    </div>
                     {selectedPatient.name}
                   </h2>
-                  <p className="text-muted-foreground text-sm mt-1">
-                    {selectedPatient.patientId} • Dernière visite : {selectedPatient.lastVisit}
+                  <p className="text-white/50 text-xs mt-2 font-mono-tech uppercase tracking-widest">
+                    ID: {selectedPatient.patientId} <span className="mx-2">•</span> VISITE: {selectedPatient.lastVisit}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -279,67 +282,76 @@ export default function Patients() {
               </div>
 
               {/* Contenu détails */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto scrollbar-thin p-6 space-y-6">
                 {/* Infos personnelles */}
-                <Card className="p-6">
-                  <h3 className="font-semibold mb-4">Informations personnelles</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                <Card className="glass-card !bg-card border-white/10 p-6">
+                  <h3 className="font-bold text-sm tracking-widest text-primary mb-5 uppercase flex items-center gap-2">
+                    <User className="w-4 h-4" /> Informations personnelles
+                  </h3>
+                  <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Âge</p>
-                      <p className="font-medium">{selectedPatient.age} ans</p>
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Âge</p>
+                      <p className="font-mono-tech text-lg text-white">{selectedPatient.age} ans</p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Genre</p>
-                      <p className="font-medium">{selectedPatient.gender}</p>
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Genre</p>
+                      <p className="font-medium text-white">{selectedPatient.gender}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Email</p>
-                      <p className="font-medium flex items-center gap-2 text-sm">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Email</p>
+                      <p className="font-medium text-white flex items-center gap-2 text-sm">
+                        <Mail className="h-4 w-4 text-primary" />
                         {selectedPatient.email}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Téléphone</p>
-                      <p className="font-medium flex items-center gap-2 text-sm">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Téléphone</p>
+                      <p className="font-mono-tech text-white flex items-center gap-2 text-sm">
+                        <Phone className="h-4 w-4 text-primary" />
                         {selectedPatient.phone}
                       </p>
                     </div>
-                    <div className="col-span-2">
-                      <p className="text-sm text-muted-foreground mb-1">Adresse</p>
-                      <p className="font-medium">{selectedPatient.address}</p>
+                    <div className="col-span-2 mt-2">
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Adresse</p>
+                      <p className="font-medium text-white">{selectedPatient.address}</p>
                     </div>
                   </div>
                 </Card>
 
                 {/* Historique médical */}
-                <Card className="p-6">
-                  <h3 className="font-semibold mb-3">Historique médical</h3>
-                  <p className="text-sm leading-relaxed whitespace-pre-line">{selectedPatient.medicalHistory}</p>
+                <Card className="glass-card !bg-card border-white/10 p-6">
+                  <h3 className="font-bold text-sm tracking-widest text-primary mb-3 uppercase flex items-center gap-2">
+                    <FileText className="w-4 h-4" /> Historique médical
+                  </h3>
+                  <p className="text-sm leading-relaxed text-white/80 whitespace-pre-line">{selectedPatient.medicalHistory}</p>
                 </Card>
 
                 {/* Allergies */}
-                <Card className={`p-6 ${selectedPatient.allergies && selectedPatient.allergies !== 'Aucune connue' ? 'border-destructive/50 bg-destructive/10' : ''}`}>
-                  <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <AlertCircle className="h-5 w-5 text-destructive" />
+                <Card className={`glass-card p-6 ${selectedPatient.allergies && selectedPatient.allergies !== 'Aucune connue' ? 'border-destructive/30 !bg-destructive/10' : '!bg-card border-white/10'}`}>
+                  <h3 className="font-bold text-sm tracking-widest uppercase mb-3 flex items-center gap-2 text-destructive">
+                    <AlertCircle className="h-4 w-4" />
                     Allergies connues
                   </h3>
-                  <p className={`text-sm ${selectedPatient.allergies && selectedPatient.allergies !== 'Aucune connue' ? 'text-destructive' : ''}`}>
+                  <p className={`text-sm ${selectedPatient.allergies && selectedPatient.allergies !== 'Aucune connue' ? 'text-destructive' : 'text-white/80'}`}>
                     {selectedPatient.allergies}
                   </p>
                 </Card>
 
                 {/* Médicaments actuels */}
-                <Card className="p-6">
-                  <h3 className="font-semibold mb-3">Médicaments actuels</h3>
-                  <p className="text-sm leading-relaxed whitespace-pre-line">{selectedPatient.currentMedications}</p>
+                <Card className="glass-card !bg-card border-white/10 p-6">
+                  <h3 className="font-bold text-sm tracking-widest text-primary mb-3 uppercase flex items-center gap-2">
+                    <Pill className="w-4 h-4" /> Médicaments actuels
+                  </h3>
+                  <p className="text-sm leading-relaxed text-white/80 whitespace-pre-line">{selectedPatient.currentMedications}</p>
                 </Card>
 
                 {/* Notes médecin */}
-                <Card className="p-6 bg-amber-500/10 border-amber-500/50">
-                  <h3 className="font-semibold mb-3">Notes du médecin</h3>
-                  <p className="text-sm text-amber-700 dark:text-amber-300 whitespace-pre-line">{selectedPatient.notes}</p>
+                <Card className="glass-card !bg-card border-accent/30 p-6 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-accent/5" />
+                  <h3 className="font-bold text-sm tracking-widest text-accent mb-3 uppercase flex items-center gap-2 relative z-10">
+                    <Edit className="w-4 h-4" /> Notes du médecin
+                  </h3>
+                  <p className="text-sm text-white/90 whitespace-pre-line relative z-10 italic">"{selectedPatient.notes}"</p>
                 </Card>
               </div>
             </div>

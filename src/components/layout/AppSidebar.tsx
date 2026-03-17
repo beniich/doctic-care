@@ -72,21 +72,26 @@ export function AppSidebar() {
         variant="ghost"
         onClick={() => navigate(item.path)}
         className={cn(
-          "w-full justify-start gap-3 h-11 px-3 text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
-          isActive && "bg-sidebar-accent text-sidebar-primary font-medium",
+          "w-full justify-start gap-3 h-11 px-3 text-sidebar-foreground border border-transparent transition-all duration-200",
+          isActive 
+            ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20 text-primary font-semibold shadow-[inset_0_0_10px_rgba(0,200,255,0.05)]" 
+            : "hover:bg-white/5 hover:text-white",
           collapsed && "justify-center px-0"
         )}
       >
         <Icon className="h-5 w-5 flex-shrink-0" />
         {!collapsed && (
-          <>
-            <span className="flex-1 text-left">{item.label}</span>
-            {item.badge && (
-              <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
-                {item.badge}
-              </span>
-            )}
-          </>
+          <div className="flex-1 flex items-center justify-between">
+            <span className="text-left">{item.label}</span>
+            <div className="flex items-center gap-2">
+              {item.badge && (
+                <span className="bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {item.badge}
+                </span>
+              )}
+              {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_5px_rgba(0,200,255,0.8)]" />}
+            </div>
+          </div>
         )}
       </Button>
     );
@@ -113,19 +118,19 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        "outlook-sidebar flex flex-col h-screen transition-all duration-300",
+        "outlook-sidebar flex flex-col h-screen transition-all duration-300 border-r border-sidebar-border bg-black/20 backdrop-blur-md",
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Logo Header */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
-        <div className="flex items-center justify-center w-9 h-9">
-          <img src="/logo.png" alt="Doctic Logo" className="w-full h-full object-contain" />
+      {/* Logo Header Doctic Purple Style */}
+      <div className="flex items-center gap-3 px-4 py-5 mb-4 border-b border-transparent">
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/30 border border-primary/30 flex-shrink-0">
+          <svg width="18" height="18" fill="none" stroke="currentColor" className="text-primary" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         </div>
         {!collapsed && (
           <div className="flex flex-col">
-            <span className="font-bold text-lg text-sidebar-foreground">Doctic</span>
-            <span className="text-xs text-sidebar-foreground/60">Medical OS</span>
+            <span className="font-extrabold text-[17px] tracking-wide text-white leading-tight">DOCTIC</span>
+            <span className="text-[9px] text-primary tracking-[0.15em] uppercase mt-0.5">Medical OS</span>
           </div>
         )}
       </div>

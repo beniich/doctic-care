@@ -25,7 +25,7 @@ export function MarketingNavbar() {
     return (
         <nav
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                    ? "bg-blue-500/80 backdrop-blur-md border-b border-white/10 py-3 shadow-lg"
+                    ? "bg-primary/90 backdrop-blur-md border-b border-white/10 py-3 shadow-lg"
                     : "bg-transparent py-5"
                 }`}
         >
@@ -57,7 +57,7 @@ export function MarketingNavbar() {
                     {/* Desktop Actions */}
                     <div className="hidden md:flex items-center gap-4">
                         <Link to="/login">
-                            <Button className="rounded-full bg-white text-blue-600 hover:bg-white/90 font-bold px-6 shadow-lg">
+                            <Button className="rounded-full bg-white text-primary hover:bg-white/90 font-bold px-6 shadow-lg">
                                 Inscription
                             </Button>
                         </Link>
@@ -80,7 +80,7 @@ export function MarketingNavbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-blue-600 border-b border-white/10"
+                        className="md:hidden bg-primary border-b border-white/10"
                     >
                         <div className="px-4 py-6 space-y-4">
                             {navLinks.map((link) => (
@@ -95,7 +95,7 @@ export function MarketingNavbar() {
                             ))}
                             <div className="pt-4 flex flex-col gap-3">
                                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                                    <Button className="w-full justify-center rounded-full bg-white text-blue-600 font-bold">
+                                    <Button className="w-full justify-center rounded-full bg-white text-primary font-bold">
                                         Inscription
                                     </Button>
                                 </Link>

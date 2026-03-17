@@ -66,9 +66,9 @@ export default function Streaming() {
         { id: 'youtube', name: 'YouTube', color: 'bg-red-600', icon: '▶' },
         { id: 'tiktok', name: 'TikTok', color: 'bg-black', icon: '🎵' },
         { id: 'instagram', name: 'Instagram', color: 'bg-gradient-to-br from-purple-600 to-pink-600', icon: '📷' },
-        { id: 'facebook', name: 'Facebook', color: 'bg-blue-600', icon: 'f' },
+        { id: 'facebook', name: 'Facebook', color: 'bg-primary', icon: 'f' },
         { id: 'x', name: 'X (Twitter)', color: 'bg-black', icon: '𝕏' },
-        { id: 'linkedin', name: 'LinkedIn', color: 'bg-blue-700', icon: 'in' },
+        { id: 'linkedin', name: 'LinkedIn', color: 'bg-primary/90', icon: 'in' },
         { id: 'pinterest', name: 'Pinterest', color: 'bg-red-700', icon: 'P' },
         { id: 'threads', name: 'Threads', color: 'bg-gray-700', icon: '@' }
     ];

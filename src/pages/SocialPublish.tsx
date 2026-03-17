@@ -23,9 +23,9 @@ export default function SocialPublish() {
         { id: 'youtube', name: 'YouTube', color: 'bg-red-600', icon: Film },
         { id: 'tiktok', name: 'TikTok', color: 'bg-black', icon: Video },
         { id: 'instagram', name: 'Instagram Reels', color: 'bg-gradient-to-r from-pink-500 to-orange-500', icon: Film },
-        { id: 'facebook', name: 'Facebook', color: 'bg-blue-600', icon: Share2 },
+        { id: 'facebook', name: 'Facebook', color: 'bg-primary', icon: Share2 },
         { id: 'x', name: 'X (Twitter)', color: 'bg-black', icon: FileText },
-        { id: 'linkedin', name: 'LinkedIn', color: 'bg-blue-700', icon: Share2 },
+        { id: 'linkedin', name: 'LinkedIn', color: 'bg-primary/90', icon: Share2 },
         { id: 'pinterest', name: 'Pinterest', color: 'bg-red-700', icon: Share2 },
         { id: 'threads', name: 'Threads', color: 'bg-gray-700', icon: FileText }
     ];

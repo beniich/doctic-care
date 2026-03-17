@@ -57,7 +57,7 @@ export default function MedicalCareSheetPage() {
                 <div className="p-8 border-b border-border">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <div className="w-14 h-14 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
                                 <Stethoscope className="h-8 w-8 text-white" />
                             </div>
                             <div>

@@ -13,8 +13,8 @@ export function NetworkStats({ analytics }: NetworkStatsProps) {
       label: 'Cabinets',
       value: analytics.totalCabinets.toString(),
       icon: Building2,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+      color: 'text-accent',
+      bgColor: 'bg-accent/10 dark:bg-accent/20',
     },
     {
       label: 'Patients totaux',

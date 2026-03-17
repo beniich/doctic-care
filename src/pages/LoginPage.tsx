@@ -40,7 +40,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-violet-600 rounded-2xl mb-6 shadow-lg">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl mb-6 shadow-lg">
                         <Stethoscope className="h-10 w-10 text-white" />
                     </div>
                     <h1 className="text-3xl font-bold mb-2">Doctic Pro</h1>
@@ -78,7 +78,7 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full py-6 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-semibold text-lg rounded-xl shadow-lg transition">
+                    <Button type="submit" className="w-full py-6 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold text-lg rounded-xl shadow-lg transition">
                         Se connecter
                     </Button>
                 </form>
@@ -99,7 +99,7 @@ export default function LoginPage() {
                     </div>
                     <p className="mt-6 text-sm">
                         Pas de compte ?{' '}
-                        <a href="/landing#pricing" className="text-blue-500 hover:underline font-medium">
+                        <a href="/landing#pricing" className="text-primary hover:underline font-medium">
                             Découvrir les abonnements
                         </a>
                     </p>

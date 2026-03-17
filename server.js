@@ -497,11 +497,10 @@ app.get('/auth/google/callback',
 app.get('/api/me', (req, res) => {
     if (req.isAuthenticated()) {
         res.json({
-            isAuthenticated: true,
-            user: req.user
+            data: { user: req.user }
         });
     } else {
-        res.status(401).json({ isAuthenticated: false });
+        res.status(401).json({ error: 'Unauthorized' });
     }
 });
 
@@ -509,7 +508,7 @@ app.get('/api/me', (req, res) => {
 app.post('/api/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) return next(err);
-        res.json({ success: true });
+        res.json({ data: { success: true } });
     });
 });
 
@@ -519,12 +518,15 @@ app.post('/api/login', auditRequest('USER_LOGIN'), (req, res) => {
     // Mock login - accept any email/password for demo
     if (email) {
         res.json({
-            token: 'mock-jwt-token-12345',
-            user: {
-                id: '1',
-                name: 'Dr. Anderson',
-                email: email,
-                role: role || 'doctor'
+            data: {
+                token: 'mock-jwt-token-12345',
+                user: {
+                    id: '1',
+                    firstName: 'Dr. Anderson',
+                    lastName: '',
+                    email: email,
+                    role: role || 'DOCTOR' // Use CDV role standard: 'DOCTOR'
+                }
             }
         });
     } else {
@@ -552,12 +554,11 @@ app.get('/api/patients', async (req, res) => {
         } : {};
 
         const patients = await prisma.patient.findMany({ where });
-        // Map to match frontend expectations if needed (e.g. combine names)
         const mappedPatients = patients.map(p => ({
             ...p,
             name: `${p.firstName} ${p.lastName}`
         }));
-        res.json(mappedPatients);
+        res.json({ data: mappedPatients });
     } catch (error) {
         console.error('Error fetching patients:', error);
         res.status(500).json({ error: 'Failed to fetch patients' });
@@ -592,21 +593,21 @@ app.post('/api/patients', async (req, res) => {
                 tenantId: tenant.id
             }
         });
-        res.status(201).json({ ...newPatient, name: `${newPatient.firstName} ${newPatient.lastName}` });
+        res.status(201).json({ data: { ...newPatient, name: `${newPatient.firstName} ${newPatient.lastName}` } });
     } catch (error) {
         console.error('Error creating patient:', error);
         res.status(500).json({ error: 'Failed to create patient' });
     }
 });
 
-app.put('/api/patients/:id', async (req, res) => {
+app.patch('/api/patients/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const updatedPatient = await prisma.patient.update({
             where: { id },
             data: req.body
         });
-        res.json({ ...updatedPatient, name: `${updatedPatient.firstName} ${updatedPatient.lastName}` });
+        res.json({ data: { ...updatedPatient, name: `${updatedPatient.firstName} ${updatedPatient.lastName}` } });
     } catch (error) {
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'Patient not found' });
@@ -619,12 +620,39 @@ app.delete('/api/patients/:id', async (req, res) => {
     try {
         const { id } = req.params;
         await prisma.patient.delete({ where: { id } });
-        res.json({ success: true, id });
+        res.json({ data: { success: true, id } });
     } catch (error) {
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'Patient not found' });
         }
         res.status(500).json({ error: 'Failed to delete patient' });
+    }
+});
+
+app.get('/api/patients/:id/history', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const patient = await prisma.patient.findUnique({
+            where: { id },
+            include: {
+                appointments: true,
+                prescriptions: { include: { medications: true } },
+                documents: true
+            }
+        });
+        if (!patient) return res.status(404).json({ error: 'Patient not found' });
+        
+        // Return object conforming to frontend expectations
+        res.json({
+            data: {
+                appointments: patient.appointments || [],
+                prescriptions: patient.prescriptions || [],
+                invoices: [] // Missing specific invoices relation in Prisma right now
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching patient history:', error);
+        res.status(500).json({ error: 'Failed to fetch history' });
     }
 });
 
@@ -652,9 +680,37 @@ app.get('/api/appointments', async (req, res) => {
             patient: `${a.patient.firstName} ${a.patient.lastName}`,
             provider: 'Dr. Anderson' // Placeholder as appointment model doesn't have provider link yet or implicit via auth
         }));
-        res.json(mappedAppointments);
+        res.json({ data: mappedAppointments });
     } catch (err) {
         console.error('Error fetching appointments:', err);
+        res.status(500).json({ error: 'Failed to fetch appointments' });
+    }
+});
+
+app.get('/api/appointments/today', async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const appointments = await prisma.appointment.findMany({
+            where: {
+                start: { gte: today, lt: tomorrow }
+            },
+            include: {
+                patient: { select: { firstName: true, lastName: true } }
+            }
+        });
+
+        const mappedAppointments = appointments.map(a => ({
+            ...a,
+            patient: `${a.patient.firstName} ${a.patient.lastName}`,
+            provider: 'Dr. Anderson'
+        }));
+        res.json({ data: mappedAppointments });
+    } catch (err) {
+        console.error('Error fetching appointments today:', err);
         res.status(500).json({ error: 'Failed to fetch appointments' });
     }
 });
@@ -692,21 +748,21 @@ app.post('/api/appointments', async (req, res) => {
                 notes: req.body.notes
             }
         });
-        res.status(201).json(newApt);
+        res.status(201).json({ data: newApt });
     } catch (err) {
         console.error('Error creating appointment:', err);
         res.status(500).json({ error: 'Failed to create appointment' });
     }
 });
 
-app.put('/api/appointments/:id', async (req, res) => {
+app.patch('/api/appointments/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const updated = await prisma.appointment.update({
             where: { id },
             data: req.body
         });
-        res.json(updated);
+        res.json({ data: updated });
     } catch (err) {
         res.status(500).json({ error: 'Failed to update appointment' });
     }
@@ -716,7 +772,7 @@ app.delete('/api/appointments/:id', async (req, res) => {
     try {
         const { id } = req.params;
         await prisma.appointment.delete({ where: { id } });
-        res.json({ success: true });
+        res.json({ data: { success: true } });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete appointment' });
     }
@@ -726,27 +782,30 @@ app.delete('/api/appointments/:id', async (req, res) => {
 // RECORDS ROUTES
 // ============================================================================
 
-app.get('/api/records', (req, res) => res.json(records));
+app.get('/api/records', (req, res) => res.json({ data: records }));
 app.post('/api/records', (req, res) => {
     const newRecord = { id: records.length + 1, ...req.body };
     records.push(newRecord);
-    res.status(201).json(newRecord);
+    res.status(201).json({ data: newRecord });
 });
 
 // ============================================================================
-// BILLING ROUTES
+// INVOICES ROUTES
 // ============================================================================
 
-app.get('/api/billing', (req, res) => res.json(invoices));
-app.post('/api/billing', (req, res) => {
-    const newInvoice = { id: `INV-2024-${String(invoices.length + 1).padStart(3, '0')}`, ...req.body };
+// Mapped from old billing to invoices to match api.ts
+app.get('/api/invoices', (req, res) => res.json({ data: invoices }));
+app.post('/api/invoices', (req, res) => {
+    const newInvoice = { id: `INV-${Date.now()}`, ...req.body };
     invoices.push(newInvoice);
-    res.status(201).json(newInvoice);
+    res.status(201).json({ data: newInvoice });
 });
-
-// ============================================================================
-// PRESCRIPTIONS ROUTES
-// ============================================================================
+app.patch('/api/invoices/:id', (req, res) => {
+    const index = invoices.findIndex(i => i.id === req.params.id);
+    if (index === -1) return res.status(404).json({ error: 'Invoice not found' });
+    invoices[index] = { ...invoices[index], ...req.body };
+    res.json({ data: invoices[index] });
+});
 
 // ============================================================================
 // PRESCRIPTIONS ROUTES
@@ -766,7 +825,7 @@ app.get('/api/prescriptions', async (req, res) => {
             patient: `${p.patient.firstName} ${p.patient.lastName}`,
             medications: p.medications
         }));
-        res.json(mapped);
+        res.json({ data: mapped });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Failed to fetch prescriptions' });
@@ -775,10 +834,7 @@ app.get('/api/prescriptions', async (req, res) => {
 
 app.post('/api/prescriptions', async (req, res) => {
     try {
-        // Assuming Mock Frontend sends 'patient' as string name
-        // We need real doctor ID (from auth or default)
         let doctor = await prisma.user.findFirst({ where: { role: 'DOCTOR' } });
-
         let { patientId, patient: patientName, medications } = req.body;
 
         if (!patientId && patientName) {
@@ -796,13 +852,13 @@ app.post('/api/prescriptions', async (req, res) => {
                 patientId,
                 doctorId: doctor.id,
                 medications: {
-                    create: medications // Assumes medications is array of objects matching schema
+                    create: medications
                 },
                 status: 'ACTIVE'
             },
             include: { medications: true }
         });
-        res.status(201).json(newPres);
+        res.status(201).json({ data: newPres });
 
     } catch (err) {
         console.error(err);
@@ -814,11 +870,141 @@ app.post('/api/prescriptions', async (req, res) => {
 // ARCHIVES ROUTES
 // ============================================================================
 
-app.get('/api/archives', (req, res) => res.json(archives));
+app.get('/api/archives', (req, res) => res.json({ data: archives }));
 app.post('/api/archives', (req, res) => {
     const newArchive = { id: archives.length + 1, ...req.body };
     archives.push(newArchive);
-    res.status(201).json(newArchive);
+    res.status(201).json({ data: newArchive });
+});
+
+// ============================================================================
+// CDV INTEGRATED MOCK ROUTES (AI, TELECONSULT, NOTIFS, SUBSCRIPTIONS, RGPD)
+// ============================================================================
+
+// --- AI ---
+app.post('/api/ai/chat', (req, res) => {
+    const messages = req.body.messages || [];
+    const lastMessage = messages[messages.length - 1]?.content || 'Bonjour';
+    res.json({ data: { content: `**MOCK IA Doctic**\n\nJ'ai bien reçu votre message : "${lastMessage}".\nJe suis actuellement en mode hors-ligne simulé. Pour activer l'IA complète, veuillez configurer la clé API OpenAI ou Anthropic.` } });
+});
+
+app.post('/api/ai/diagnosis', (req, res) => {
+    const { symptoms } = req.body;
+    res.json({ data: { content: `### Diagnostic Différentiel Stimulé\n\nBasé sur : *${symptoms || 'Non défini'}*\n\n1. **Hypothèse A** - 40%\n2. **Hypothèse B** - 30%\n\n> Ceci est une simulation. Consultez un professionnel.` } });
+});
+
+app.post('/api/ai/medical-report', (req, res) => {
+    res.json({ data: { content: `## Compte Rendu Médical\n\n**Date :** ${new Date().toLocaleDateString()}\n**Médecin :** Dr. Anderson\n\n- Patient vu ce jour.\n- Examen clinique sans particularité majeure.\n\n*Document généré automatiquement.*` } });
+});
+app.post('/api/ai/lab-analysis', (req, res) => res.json({ data: { content: "Analyse biologique interprétée (Mock dynamique)." } }));
+app.post('/api/ai/transcribe', (req, res) => res.json({ data: { text: "Ceci est la transcription audio (Mock)." } }));
+
+// --- TELECONSULT ---
+app.get('/api/teleconsult', async (req, res) => {
+    try {
+        const sessions = await prisma.teleconsultSession.findMany({
+            include: { patient: { select: { firstName: true, lastName: true } } }
+        });
+        res.json({ data: sessions });
+    } catch (e) {
+        res.json({ data: [] });
+    }
+});
+app.post('/api/teleconsult', async (req, res) => {
+    try {
+        let doctor = await prisma.user.findFirst({ where: { role: 'DOCTOR' } });
+        const newSession = await prisma.teleconsultSession.create({
+            data: {
+                patientId: req.body.patientId,
+                doctorId: doctor.id,
+                scheduledDate: new Date(req.body.scheduledAt || Date.now()),
+                status: 'SCHEDULED'
+            }
+        });
+        res.json({ data: newSession });
+    } catch (e) {
+        res.json({ data: { id: "tele-" + Date.now() } });
+    }
+});
+app.post('/api/teleconsult/:id/join', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const roomUrl = `https://meet.jit.si/DocticRoom_${id}`;
+        await prisma.teleconsultSession.update({
+            where: { id },
+            data: { status: 'IN_PROGRESS', roomUrl }
+        });
+        res.json({ data: { roomId: id, roomToken: "tok", roomUrl } });
+    } catch (e) {
+        res.json({ data: { roomId: req.params.id, roomToken: "tok", roomUrl: "https://meet.jit.si/DocticRoom" } });
+    }
+});
+app.post('/api/teleconsult/:id/end', async (req, res) => {
+    try {
+        await prisma.teleconsultSession.update({
+            where: { id: req.params.id },
+            data: { status: 'COMPLETED' }
+        });
+        res.json({ data: { success: true } });
+    } catch(e) {
+        res.json({ data: { success: true } });
+    }
+});
+
+// --- NOTIFICATIONS & SSE ---
+const sseClients = new Set();
+app.get('/api/notifications', (req, res) => res.json({ data: [] }));
+app.patch('/api/notifications/:id/read', (req, res) => res.json({ data: { success: true } }));
+app.get('/api/notifications/stream', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders(); 
+
+    sseClients.add(res);
+
+    req.on('close', () => {
+        sseClients.delete(res);
+    });
+
+    res.write(`data: ${JSON.stringify({ type: 'connected', message: 'SSE Connection Established' })}\n\n`);
+    
+    const intervalId = setInterval(() => {
+        res.write(`data: ${JSON.stringify({ type: 'ping' })}\n\n`);
+    }, 30000);
+
+    req.on('close', () => clearInterval(intervalId));
+});
+
+// Broadcast helper for tests
+app.post('/api/notifications/test-broadcast', (req, res) => {
+    const payload = JSON.stringify({ type: 'notification', data: req.body });
+    sseClients.forEach(client => client.write(`data: ${payload}\n\n`));
+    res.json({ data: { success: true, clients: sseClients.size } });
+});
+
+// --- RGPD MOCK ---
+app.get('/api/rgpd/export/:id', (req, res) => res.json({ data: { patientId: req.params.id, message: "Export RGPD généré" } }));
+app.delete('/api/rgpd/erase/:id', (req, res) => res.json({ data: { success: true, message: "Données anonymisées conformément au RGPD" } }));
+app.get('/api/rgpd/audit-report', (req, res) => res.json({ data: [] }));
+
+// --- MINOR ---
+app.get('/api/subscriptions/current', (req, res) => res.json({ data: null }));
+app.get('/api/subscriptions/plans', (req, res) => res.json({ data: [] }));
+app.get('/api/analytics/dashboard', (req, res) => res.json({ data: { patients: {total: 42, trend: 12, newThisMonth: 5}, appointments: {today: 8, pending: 2}, revenue: {thisMonth: 12000, trend: 5}, teleconsults: {active: 2}, weeklyActivity: [], alerts: {overdueInvoices: 1} } }));
+
+app.get('/api/analytics/revenue', (req, res) => {
+    res.json({
+        data: [
+            { month: 'Jan', revenue: 4000, invoices: 12 },
+            { month: 'Fév', revenue: 5500, invoices: 18 },
+            { month: 'Mar', revenue: 8000, invoices: 24 }
+        ]
+    });
+});
+
+app.get('/api/analytics/audit', (req, res) => {
+    res.json({ data: [] });
 });
 
 // ============================================================================
