@@ -32,7 +32,7 @@ export default function Streaming() {
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const recordedChunks = useRef<Blob[]>([]);
 
-    const API_URL = 'http://localhost:5000/api/streaming';
+    const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/streaming`;
 
     useEffect(() => {
         fetchVideos();

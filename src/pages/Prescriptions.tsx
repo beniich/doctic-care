@@ -37,7 +37,7 @@ export default function Prescriptions() {
         notes: ''
     });
 
-    const API_URL = 'http://localhost:5000/api/prescriptions';
+    const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/prescriptions`;
 
     // Base médicaments mock (à remplacer par API Vidal ou autre plus tard)
     const medicationsDB = [

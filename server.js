@@ -1,7 +1,6 @@
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
 import Stripe from 'stripe';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -20,8 +19,7 @@ import prisma from './backend/config/db.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
-dotenv.config();
+// Load environment variables (already loaded at top)
 
 // Initialize Sentry
 Sentry.init({

@@ -38,7 +38,7 @@ export default function Patients() {
   const [formData, setFormData] = useState<Partial<Patient>>({});
 
   // const { toast } = useToast();
-  const API_URL = 'http://localhost:5000/api/patients';
+  const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/patients`;
 
   // Charger les patients au montage
   useEffect(() => {

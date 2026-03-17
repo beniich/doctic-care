@@ -27,7 +27,7 @@ export default function Teleconsult() {
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);
     const [formData, setFormData] = useState<Partial<TeleconsultSession>>({});
 
-    const API_URL = 'http://localhost:5000/api/teleconsult';
+    const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/teleconsult`;
 
     useEffect(() => {
         fetchSessions();

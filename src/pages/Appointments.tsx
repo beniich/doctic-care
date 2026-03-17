@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -36,8 +37,8 @@ export default function Appointments() {
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [formData, setFormData] = useState<Partial<Appointment>>({});
   const calendarRef = useRef<FullCalendar>(null);
-
-  const API_URL = 'http://localhost:5000/api/appointments';
+  const { t } = useTranslation();
+  const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/appointments`;
 
   useEffect(() => {
     fetchAppointments();

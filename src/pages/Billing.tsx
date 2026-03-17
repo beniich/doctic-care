@@ -51,7 +51,7 @@ export default function Billing() {
     total: 0
   });
 
-  const API_URL = 'http://localhost:5000/api/billing';
+  const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/billing`;
 
   useEffect(() => {
     fetchInvoices();
