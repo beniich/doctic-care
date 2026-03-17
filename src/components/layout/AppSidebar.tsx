@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 
 interface NavItem {
   icon: React.ElementType;
@@ -160,6 +161,14 @@ export function AppSidebar() {
         )}>
           <ThemeToggle />
           <LanguageSwitcher />
+        </div>
+        
+        {/* Notifications */}
+        <div className={cn(
+          "flex items-center h-11 px-3",
+          collapsed && "justify-center px-0"
+        )}>
+          <NotificationCenter />
         </div>
 
         {/* Collapse Toggle */}

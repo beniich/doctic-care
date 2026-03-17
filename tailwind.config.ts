@@ -87,6 +87,13 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        lattice: {
+          1: '#023E73',
+          2: '#024059',
+          3: '#BF6415',
+          4: '#D9CCC1',
+          5: '#8C503A',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

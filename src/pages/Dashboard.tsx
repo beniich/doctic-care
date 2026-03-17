@@ -2,6 +2,8 @@ import { OutlookLayout } from "@/components/layout/OutlookLayout";
 import { Users, Calendar, DollarSign, Activity, TrendingUp, Clock, FileText, Video, Stethoscope, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { motion } from "framer-motion";
+import { KPICard } from "@/components/dashboard/KPICard";
+import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
 
 import { useTranslation } from "react-i18next";
 
@@ -79,24 +81,11 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {kpis.map((kpi) => (
                 <motion.div key={kpi.title} variants={item}>
-                  <Card className="glass-card card-hover border-border overflow-hidden relative group">
-                    <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500`}>
-                      <kpi.icon className="w-24 h-24" />
-                    </div>
-                    <CardContent className="p-6 relative z-10">
-                      <div className={`w-12 h-12 bg-gradient-to-br ${kpi.color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
-                        <kpi.icon className="h-6 w-6 text-white" />
-                      </div>
-                      <p className="text-muted-foreground text-sm font-medium mb-1">{kpi.title}</p>
-                      <div className="flex items-end justify-between">
-                        <p className="text-3xl font-bold">{kpi.value}</p>
-                        <div className="flex items-center gap-1 text-emerald-500 text-xs font-semibold bg-emerald-500/10 px-2 py-1 rounded-full">
-                          <TrendingUp className="h-3 w-3" />
-                          {kpi.change}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <KPICard 
+                    title={kpi.title}
+                    value={kpi.value}
+                    trend={{ direction: kpi.change.startsWith('+') ? 'up' : 'down', value: parseFloat(kpi.change.replace(/[^0-9.]/g, '')) }}
+                  />
                 </motion.div>
               ))}
             </div>
@@ -218,6 +207,10 @@ export default function Dashboard() {
               </div>
 
             </div>
+            
+            <motion.div variants={item}>
+              <AnalyticsDashboard />
+            </motion.div>
           </motion.div>
         </div>
       }
