@@ -1,5 +1,5 @@
 // contexts/AuthContext.tsx — Contexte d'authentification global Doctic-Care (Version API + Hooks)
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi, type User } from '@/lib/api';
 
@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(false);
+  const splashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Utiliser hook conditionnel si à l'avenir on veut que AuthProvider soit très haut (avant Router)
   // On laisse navigate géré dans les composants qui en ont besoin, ou on le passe ici.
@@ -47,6 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     refresh();
+    // Cleanup splash timer on unmount
+    return () => {
+      if (splashTimerRef.current) clearTimeout(splashTimerRef.current);
+    };
   }, [refresh]);
 
   const login = async (email: string, password: string) => {
@@ -57,8 +62,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.data.user);
       
       // On garde le splash 1.8s pour l'effet "Wow"
-      setTimeout(() => {
+      if (splashTimerRef.current) clearTimeout(splashTimerRef.current);
+      splashTimerRef.current = setTimeout(() => {
         setShowSplash(false);
+        splashTimerRef.current = null;
       }, 1800);
 
       return { success: true };

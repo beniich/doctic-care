@@ -33,6 +33,7 @@ import SubscriptionManagement from "./pages/SubscriptionManagement";
 import { ProtectedRoute, PublicOnlyRoute } from "@/components/ProtectedRoute";
 import { HelmetProvider } from "react-helmet-async";
 import { LoadingSplash } from "./components/ui/LoadingSplash";
+import { GlobalErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const AppContent = () => {
       {showSplash && <LoadingSplash />}
       <Toaster />
       <Sonner />
+      <GlobalErrorBoundary>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -100,6 +102,7 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </GlobalErrorBoundary>
     </TooltipProvider>
   );
 };
