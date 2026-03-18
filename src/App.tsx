@@ -45,7 +45,6 @@ const AppContent = () => {
       {showSplash && <LoadingSplash />}
       <Toaster />
       <Sonner />
-      <GlobalErrorBoundary>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -108,17 +107,19 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="doctic-theme">
-        <AuthProvider>
-          <ModalProvider>
-            <AppContent />
-          </ModalProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
+  <GlobalErrorBoundary>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="doctic-theme">
+          <AuthProvider>
+            <ModalProvider>
+              <AppContent />
+            </ModalProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  </GlobalErrorBoundary>
 );
 
 export default App;
