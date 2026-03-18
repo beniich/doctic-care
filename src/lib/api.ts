@@ -1,7 +1,10 @@
 // lib/api.ts — Client API Doctic · Adapté pour Vite/React
 // Utilisé dans les composants de l'application Doctic Care
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// En production (Vercel), l'API est sur le même domaine via /api
+// En dev, on pointe vers le serveur Express local
+const API_BASE = import.meta.env.VITE_API_URL 
+  || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 export interface ApiResponse<T = unknown> {
