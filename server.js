@@ -857,7 +857,13 @@ app.post('/api/prescriptions', async (req, res) => {
                 patientId,
                 doctorId: doctor.id,
                 medications: {
-                    create: medications
+                    create: medications.map(m => ({
+                        medicationName: m.name || m.medicationName,
+                        dosage: m.dosage,
+                        frequency: m.frequency,
+                        duration: m.duration,
+                        quantity: m.quantity
+                    }))
                 },
                 status: 'ACTIVE'
             },
