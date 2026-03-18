@@ -101,7 +101,6 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-      </GlobalErrorBoundary>
     </TooltipProvider>
   );
 };
