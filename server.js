@@ -5,13 +5,15 @@ import Stripe from 'stripe';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import * as Sentry from '@sentry/node';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
+// import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { createClient } from 'redis';
 import auditRequest from './backend/middleware/auditRequest.js';
 import cookieParser from 'cookie-parser';
 import csrf from 'csurf';
 import session from 'express-session';
-import RedisStore from 'connect-redis';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import { RedisStore } from 'connect-redis';
 import passport from './backend/config/passport.js';
 import prisma from './backend/config/db.js';
 
@@ -25,7 +27,7 @@ const __dirname = path.dirname(__filename);
 Sentry.init({
     dsn: process.env.SENTRY_DSN,
     integrations: [
-        nodeProfilingIntegration(),
+        // nodeProfilingIntegration(), // disabled due to missing native module
     ],
     // Tracing
     tracesSampleRate: 1.0, //  Capture 100% of the transactions
@@ -45,9 +47,9 @@ app.get('/api/csrf-token', csrfProtection, (req, res) => {
 });
 
 // Sentry Request Handler must be the first middleware on the app
-app.use(Sentry.Handlers.requestHandler());
+// app.use(Sentry.Handlers.requestHandler());
 // TracingHandler creates a trace for every incoming request
-app.use(Sentry.Handlers.tracingHandler());
+// app.use(Sentry.Handlers.tracingHandler());
 
 // Initialize Services (DB & Cache)
 // Prisma initialized in db.js
@@ -68,9 +70,9 @@ redisClient.on('error', (err) => console.warn('⚠️ Redis Client Error', err))
 })();
 
 // Sentry Request Handler must be the first middleware on the app
-app.use(Sentry.Handlers.requestHandler());
+// app.use(Sentry.Handlers.requestHandler());
 // TracingHandler creates a trace for every incoming request
-app.use(Sentry.Handlers.tracingHandler());
+// app.use(Sentry.Handlers.tracingHandler());
 
 // Session Management
 let sessionStore = new session.MemoryStore();
@@ -110,7 +112,10 @@ if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY.startsWith('s
     console.warn('⚠️  Stripe not configured - using mock mode');
 }
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    credentials: true,
+}));
 
 // Important: Webhook endpoint needs raw body
 app.post('/api/webhooks/stripe',
@@ -494,7 +499,7 @@ app.get('/auth/google/callback',
 );
 
 // 3. Get Current User
-app.get('/api/me', (req, res) => {
+app.get('/api/auth/me', (req, res) => {
     if (req.isAuthenticated()) {
         res.json({
             data: { user: req.user }
@@ -505,7 +510,7 @@ app.get('/api/me', (req, res) => {
 });
 
 // 4. Logout
-app.post('/api/logout', (req, res, next) => {
+app.post('/api/auth/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) return next(err);
         res.json({ data: { success: true } });
@@ -513,7 +518,7 @@ app.post('/api/logout', (req, res, next) => {
 });
 
 // Legacy/Dev Mock Login (kept for fallback if needed, but protected)
-app.post('/api/login', auditRequest('USER_LOGIN'), (req, res) => {
+app.post('/api/auth/login', auditRequest('USER_LOGIN'), (req, res) => {
     const { email, password, role } = req.body;
     // Mock login - accept any email/password for demo
     if (email) {
@@ -1012,7 +1017,7 @@ app.get('/api/analytics/audit', (req, res) => {
 // ============================================================================
 
 // Sentry Error Handler must be before any other error middleware and after all controllers
-app.use(Sentry.Handlers.errorHandler());
+// app.use(Sentry.Handlers.errorHandler());
 
 // Serve static files from the "dist" directory
 app.use(express.static(path.join(__dirname, 'dist')));
