@@ -9,43 +9,39 @@ import {
     ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 
-const features = [
+const getFeatures = (t: TFunction) => [
     {
         icon: Users,
-        title: "Gestion des Patients",
-        description:
-            "Centralisez toutes les informations patients avec un dossier médical électronique complet et sécurisé.",
+        title: t("features.patient_mgmt"),
+        description: t("features.patient_mgmt_desc"),
     },
     {
         icon: Calendar,
-        title: "Agenda Intelligent",
-        description:
-            "Planifiez vos rendez-vous avec un calendrier optimisé par l'IA qui réduit les temps morts.",
+        title: t("features.smart_agenda"),
+        description: t("features.smart_agenda_desc"),
     },
     {
         icon: FileText,
-        title: "Dossiers Médicaux",
-        description:
-            "Accédez instantanément aux historiques, ordonnances et résultats d'examens de vos patients.",
+        title: t("features.medical_records"),
+        description: t("features.medical_records_desc"),
     },
     {
         icon: CreditCard,
-        title: "Facturation Automatisée",
-        description:
-            "Générez factures et tiers-payant automatiquement avec notre système de télétransmission.",
+        title: t("features.billing"),
+        description: t("features.billing_desc"),
     },
     {
         icon: Brain,
-        title: "Assistant IA",
-        description:
-            "Bénéficiez d'une aide au diagnostic, transcription vocale et génération de comptes-rendus.",
+        title: t("features.ai_assistant"),
+        description: t("features.ai_assistant_desc"),
     },
     {
         icon: ShieldCheck,
-        title: "Sécurité Maximale",
-        description:
-            "Vos données sont protégées avec un chiffrement de bout en bout et conformité RGPD / HIPAA.",
+        title: t("features.security"),
+        description: t("features.security_desc"),
     },
 ];
 
@@ -73,6 +69,8 @@ const itemVariants = {
 };
 
 export default function Features() {
+    const { t } = useTranslation();
+    const features = getFeatures(t);
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -97,16 +95,13 @@ export default function Features() {
                     className="text-center mb-20"
                 >
                     <span className="inline-block px-5 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold tracking-wide mb-5">
-                        Fonctionnalités puissantes
+                        {t("features.badge")}
                     </span>
                     <h2 className="text-4xl md:text-5xl font-extrabold text-foreground leading-tight mb-5">
-                        Tout ce dont vous avez besoin pour{" "}
-                        <span className="gradient-text">
-                            gérer votre clinique
-                        </span>
+                        {t("features.title")}
                     </h2>
                     <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                        Une plateforme complète, intuitive et sécurisée pour les professionnels de santé modernes.
+                        {t("features.subtitle")}
                     </p>
                 </motion.div>
 

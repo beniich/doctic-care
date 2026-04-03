@@ -6,6 +6,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { OutlookLayout } from '@/components/layout/OutlookLayout';
+import { Save } from 'lucide-react';
+import ReportGenerator from '@/components/ai/ReportGenerator';
 
 interface Medication {
     name: string;
@@ -385,6 +387,19 @@ export default function Prescriptions() {
                                             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                                             placeholder="Instructions particulières (ex: à prendre au millieu des repas, ne pas arrêter le traitement, etc.)"
                                             className="resize-none"
+                                        />
+                                    </div>
+
+                                    {/* Agent IA - Générateur de Rapport */}
+                                    <div className="mt-8 border-t border-border pt-6">
+                                        <ReportGenerator 
+                                            patient={{
+                                                id: formData.patient,
+                                                age: 45, // Mock age if not available
+                                                sex: 'M', // Mock sex
+                                                currentTreatments: formData.medications.map(m => m.name)
+                                            }}
+                                            defaultNotes={formData.notes}
                                         />
                                     </div>
                                 </div>

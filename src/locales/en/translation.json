@@ -94,5 +94,42 @@
             "content": "Use the AI assistant to quickly analyze your patients' latest test results.",
             "open_assistant": "Open AI Assistant"
         }
+    },
+    "features": {
+        "badge": "Powerful Features",
+        "title": "Everything you need to manage your clinic",
+        "subtitle": "A complete, intuitive and secure platform for modern healthcare professionals.",
+        "patient_mgmt": "Patient Management",
+        "patient_mgmt_desc": "Centralize all patient information with a complete and secure electronic medical record.",
+        "smart_agenda": "Smart Agenda",
+        "smart_agenda_desc": "Schedule your appointments with an AI-optimized calendar that reduces downtime.",
+        "medical_records": "Medical Records",
+        "medical_records_desc": "Instantly access patient history, prescriptions and test results.",
+        "billing": "Automated Billing",
+        "billing_desc": "Automatically generate invoices and third-party payments with our teletransmission system.",
+        "ai_assistant": "AI Assistant",
+        "ai_assistant_desc": "Benefit from diagnostic aid, voice transcription and report generation.",
+        "security": "Maximum Security",
+        "security_desc": "Your data is protected with end-to-end encryption and GDPR / HIPAA compliance."
+    },
+    "footer": {
+        "description": "The next-generation medical platform revolutionizing your practice management. Powered by AI.",
+        "product": "Product",
+        "company": "Company",
+        "legal": "Legal",
+        "features": "Features",
+        "pricing": "Pricing",
+        "testimonials": "Testimonials",
+        "roadmap": "Roadmap",
+        "about": "About",
+        "careers": "Careers",
+        "blog": "Blog",
+        "contact": "Contact",
+        "privacy": "Privacy",
+        "terms": "Terms",
+        "mentions": "Legal Mentions",
+        "security": "Security",
+        "rights": "All rights reserved.",
+        "made_with": "Made with 💙 for healthcare professionals"
     }
 }

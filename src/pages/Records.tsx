@@ -6,6 +6,7 @@ import { DetailPane } from "@/components/layout/DetailPane";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import ImageAnalysis from "@/components/ai/ImageAnalysis";
 
 interface MedicalRecord {
   id: string;
@@ -230,6 +231,14 @@ export default function Records() {
                   Share with Patient
                 </Badge>
               </div>
+
+              {selectedRecord.type === "imaging" && (
+                <div className="pt-6 border-t border-border">
+                  <ImageAnalysis 
+                    patientId={selectedRecord.patientId} 
+                  />
+                </div>
+              )}
             </div>
           )}
         </DetailPane>

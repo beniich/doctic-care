@@ -1,0 +1,244 @@
+# ============================================================
+# Doctic Care — docker-compose.yml (Production avec SSL)
+# Version : 3.0.0
+# Usage   : docker compose up -d
+# ============================================================
+version: '3.9'
+
+services:
+
+  # ─── NGINX (SSL Reverse Proxy) ─────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: doctic_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./docker/certbot/conf:/etc/letsencrypt:ro
+      - ./docker/certbot/www:/var/www/certbot:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - doctic_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─── CERTBOT (Let's Encrypt SSL) ───────────────────────────
+  certbot:
+    image: certbot/certbot:latest
+    container_name: doctic_certbot
+    volumes:
+      - ./docker/certbot/conf:/etc/letsencrypt
+      - ./docker/certbot/www:/var/www/certbot
+    command: >
+      certonly --webroot --webroot-path=/var/www/certbot
+      --email ${CERTBOT_EMAIL}
+      --agree-tos --no-eff-email
+      -d ${DOMAIN} -d www.${DOMAIN}
+    profiles:
+      - ssl  # Lance uniquement avec: docker compose --profile ssl run certbot
+
+  # ─── FRONTEND (React + Vite) ───────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    container_name: doctic_frontend
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=https://${DOMAIN}/api
+      - VITE_OLLAMA_ENABLED=true
+      - VITE_APP_VERSION=3.0.0
+    networks:
+      - doctic_net
+    depends_on:
+      - backend
+
+  # ─── BACKEND (Express API) ─────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    container_name: doctic_backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://doctic:${DB_PASSWORD}@postgres:5432/doctic_db
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_DEFAULT_MODEL=${OLLAMA_DEFAULT_MODEL:-mistral:7b}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET=${MINIO_BUCKET:-doctic-medical-files}
+      - AI_TEMPERATURE=${AI_TEMPERATURE:-0.3}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - doctic_net
+    volumes:
+      - ./uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ─── OLLAMA (Serveur LLM Local) ────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: doctic_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"  # Exposé pour debug local uniquement
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - doctic_net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]  # Supprime ce bloc si pas de GPU Nvidia
+
+  # ─── OLLAMA INIT (Pull des modèles au 1er démarrage) ───────
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: doctic_ollama_init
+    depends_on:
+      - ollama
+    entrypoint: >
+      /bin/sh -c "
+        echo 'Waiting for Ollama...' &&
+        sleep 10 &&
+        echo 'Pulling mistral:7b...' &&
+        ollama pull mistral:7b &&
+        echo 'Pulling llava:13b...' &&
+        ollama pull llava:13b &&
+        echo 'Pulling medalpaca:7b...' &&
+        ollama pull medalpaca:7b &&
+        echo 'All models ready!'
+      "
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    networks:
+      - doctic_net
+    restart: "no"
+
+  # ─── POSTGRESQL ────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: doctic_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: doctic_db
+      POSTGRES_USER: doctic
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doctic -d doctic_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - doctic_net
+
+  # ─── REDIS ─────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: doctic_redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - doctic_net
+
+  # ─── MINIO (Stockage Fichiers HIPAA) ───────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: doctic_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+    volumes:
+      - minio_data:/data
+    networks:
+      - doctic_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─── PROMETHEUS (Métriques) ────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: doctic_prometheus
+    restart: unless-stopped
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+    networks:
+      - doctic_net
+
+  # ─── GRAFANA (Dashboard) ───────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: doctic_grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - doctic_net
+
+volumes:
+  postgres_data:
+  redis_data:
+  ollama_data:
+  minio_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  doctic_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

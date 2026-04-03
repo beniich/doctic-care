@@ -94,5 +94,42 @@
             "content": "Utilisez l'assistant IA pour analyser rapidement les derniers résultats d'analyse de vos patients.",
             "open_assistant": "Ouvrir l'Assistant IA"
         }
+    },
+    "features": {
+        "badge": "Fonctionnalités puissantes",
+        "title": "Tout ce dont vous avez besoin pour gérer votre clinique",
+        "subtitle": "Une plateforme complète, intuitive et sécurisée pour les professionnels de santé modernes.",
+        "patient_mgmt": "Gestion des PatientsCenter",
+        "patient_mgmt_desc": "Centralisez toutes les informations patients avec un dossier médical électronique complet et sécurisé.",
+        "smart_agenda": "Agenda Intelligent",
+        "smart_agenda_desc": "Planifiez vos rendez-vous avec un calendrier optimisé par l'IA qui réduit les temps morts.",
+        "medical_records": "Dossiers Médicaux",
+        "medical_records_desc": "Accédez instantanément aux historiques, ordonnances et résultats d'examens de vos patients.",
+        "billing": "Facturation Automatisée",
+        "billing_desc": "Générez factures et tiers-payant automatiquement avec notre système de télétransmission.",
+        "ai_assistant": "Assistant IA",
+        "ai_assistant_desc": "Bénéficiez d'une aide au diagnostic, transcription vocale et génération de comptes-rendus.",
+        "security": "Sécurité Maximale",
+        "security_desc": "Vos données sont protégées avec un chiffrement de bout en bout et conformité RGPD / HIPAA."
+    },
+    "footer": {
+        "description": "La plateforme médicale nouvelle génération qui révolutionne la gestion de votre cabinet. Propulsée par l'IA.",
+        "product": "Produit",
+        "company": "Entreprise",
+        "legal": "Légal",
+        "features": "Fonctionnalités",
+        "pricing": "Tarifs",
+        "testimonials": "Témoignages",
+        "roadmap": "Roadmap",
+        "about": "À propos",
+        "careers": "Carrières",
+        "blog": "Blog",
+        "contact": "Contact",
+        "privacy": "Confidentialité",
+        "terms": "CGU",
+        "mentions": "Mentions légales",
+        "security": "Sécurité",
+        "rights": "Tous droits réservés.",
+        "made_with": "Fait avec 💙 pour les professionnels de santé"
     }
 }

@@ -1,0 +1,62 @@
+# ============================================================
+# Doctic Care — docker-compose.dev.yml
+# Version de développement (SANS SSL, avec Hot-Reload)
+# Usage : docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# ============================================================
+
+version: '3.9'
+
+services:
+
+  # Surcharge Frontend : Utilise Dockerfile.dev (si existant) ou CMD dev
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile # Note : On utilise le même mais avec montage volumes
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:5000/api
+    ports:
+      - "3001:3001"
+    command: npm run dev -- --host 0.0.0.0 --port 3001
+
+  # Surcharge Backend : Utilise Dockerfile.dev avec nodemon
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile.dev
+    volumes:
+      - ./backend:/app/backend
+      - ./prisma:/app/prisma
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://doctic:doctic_pass@db:5432/doctic_db
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_BASE_URL=http://ollama:11434
+    ports:
+      - "5000:5000"
+      - "9229:9229" # Debugger VS Code
+
+  # Nginx simplifié pour le dev (pas de SSL Let's Encrypt requis localement)
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./docker/nginx/dev.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+
+  # Ollama reste le même mais on peut forcer le GPU si dispo
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

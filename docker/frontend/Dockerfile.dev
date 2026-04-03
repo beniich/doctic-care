@@ -1,0 +1,19 @@
+# ============================================================
+# Doctic Care — Frontend Dockerfile (Développement)
+# Hot-reload Vite activé, volume monté depuis l'hôte
+# ============================================================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Dépendances en premier (cache Docker)
+COPY package*.json ./
+RUN npm ci
+
+# Copie source (sera écrasé par le volume en dev)
+COPY . .
+
+EXPOSE 3001
+
+# Vite dev server avec host 0.0.0.0 pour accès externe
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3001"]

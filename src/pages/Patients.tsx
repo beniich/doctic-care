@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit, Trash2, Printer, Archive, MessageSquare, User, Mail, Phone, AlertCircle, Users, Loader2, X } from 'lucide-react'; // Added X icon
+import { Search, Plus, Edit, Trash2, Printer, Archive, MessageSquare, User, Mail, Phone, AlertCircle, Users, Loader2, X, FileText, Pill } from 'lucide-react'; // Added icons
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { OutlookLayout } from '@/components/layout/OutlookLayout';
+import DiagnosisPanel from '@/components/ai/DiagnosisPanel';
 // import { useToast } from '@/components/ui/use-toast'; // Commented out to avoid errors if not configured, using console/alert fallback
 
 // Type Patient
@@ -353,6 +354,15 @@ export default function Patients() {
                   </h3>
                   <p className="text-sm text-white/90 whitespace-pre-line relative z-10 italic">"{selectedPatient.notes}"</p>
                 </Card>
+
+                {/* Agent IA - Aide au Diagnostic */}
+                <DiagnosisPanel 
+                  patientId={selectedPatient.patientId || selectedPatient.id.toString()}
+                  patientAge={selectedPatient.age}
+                  patientSex={selectedPatient.gender === 'Homme' ? 'M' : 'F'}
+                  existingConditions={selectedPatient.medicalHistory.split(',')}
+                  currentMedications={selectedPatient.currentMedications.split(',')}
+                />
               </div>
             </div>
           ) : (

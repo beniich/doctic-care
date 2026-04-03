@@ -1,0 +1,28 @@
+# ============================================================
+# Doctic Care — Prometheus Configuration
+# ============================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Monitoring du backend Node.js
+  - job_name: 'doctic-backend'
+    static_configs:
+      - targets: ['backend:5000']
+
+  # Monitoring du reverse proxy Nginx
+  - job_name: 'doctic-nginx'
+    static_configs:
+      - targets: ['nginx:80']
+
+  # Monitoring de la base de données via exporter si configuré
+  - job_name: 'doctic-db'
+    static_configs:
+      - targets: ['db:5432']
+
+  # Monitoring de Ollama (Metrics natives sur /metrics)
+  - job_name: 'ollama'
+    static_configs:
+      - targets: ['ollama:11434']

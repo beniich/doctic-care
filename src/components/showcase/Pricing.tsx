@@ -4,58 +4,60 @@ import { useRef } from "react";
 import { Check, Sparkles, Crown, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 
-const plans = [
+const getPlans = (t: TFunction) => [
     {
         name: "Silver",
         price: "23",
         icon: Star,
-        description: "Idéal pour démarrer votre pratique numérique",
+        description: t("pricing.ideal_for"),
         features: [
-            "Jusqu'à 100 patients",
-            "Agenda basique",
-            "Dossiers médicaux",
-            "Support email",
-            "1 utilisateur",
+            t("pricing.features.patients_100"),
+            t("pricing.features.basic_agenda"),
+            t("pricing.features.medical_records"),
+            t("pricing.features.email_support"),
+            t("pricing.features.user_1"),
         ],
         highlighted: false,
-        buttonText: "Commencer",
+        buttonText: t("pricing.start_btn"),
         buttonVariant: "outline" as const,
     },
     {
         name: "Master",
         price: "79",
         icon: Sparkles,
-        description: "Pour les cabinets en croissance avec IA intégrée",
+        description: t("pricing.growth_ai"),
         features: [
-            "Patients illimités",
-            "Agenda intelligent IA",
-            "Transcription vocale",
-            "Aide au diagnostic IA",
-            "3 utilisateurs",
-            "Support prioritaire",
-            "Télétransmission",
+            t("pricing.features.patients_unlimited"),
+            t("pricing.features.ai_agenda"),
+            t("pricing.features.voice_transcription"),
+            t("pricing.features.ai_diagnosis"),
+            t("pricing.features.users_3"),
+            t("pricing.features.priority_support"),
+            t("pricing.features.teletransmission"),
         ],
         highlighted: true,
-        buttonText: "Essai gratuit 14 jours",
+        buttonText: t("pricing.trial_btn"),
         buttonVariant: "default" as const,
     },
     {
         name: "Gold",
         price: "120",
         icon: Crown,
-        description: "Solution complète pour les établissements",
+        description: t("pricing.complete_solution"),
         features: [
-            "Tout Master inclus",
-            "Utilisateurs illimités",
-            "API personnalisée",
-            "Formation dédiée",
-            "Support VIP 24/7",
-            "Intégrations sur mesure",
-            "Audit de sécurité",
+            t("pricing.features.all_master"),
+            t("pricing.features.users_unlimited"),
+            t("pricing.features.custom_api"),
+            t("pricing.features.training"),
+            t("pricing.features.support_vip"),
+            t("pricing.features.custom_integrations"),
+            t("pricing.features.security_audit"),
         ],
         highlighted: false,
-        buttonText: "Contacter les ventes",
+        buttonText: t("pricing.contact_btn"),
         buttonVariant: "outline" as const,
     },
 ];
@@ -83,6 +85,8 @@ const itemVariants = {
 };
 
 const Pricing = () => {
+    const { t } = useTranslation();
+    const plans = getPlans(t);
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -102,15 +106,13 @@ const Pricing = () => {
                     className="text-center mb-16"
                 >
                     <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-                        Tarifs
+                        {t("pricing.badge")}
                     </span>
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                        Choisissez{" "}
-                        <span className="gradient-text">Votre Plan</span>
+                        {t("pricing.title")}
                     </h2>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                        Des tarifs transparents adaptés à la taille de votre cabinet.
-                        Tous les plans incluent les mises à jour et l'hébergement sécurisé.
+                        {t("pricing.subtitle")}
                     </p>
                 </motion.div>
 
@@ -132,7 +134,7 @@ const Pricing = () => {
                             {plan.highlighted && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                                     <span className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-xl">
-                                        Plus populaire
+                                        {t("pricing.popular")}
                                     </span>
                                 </div>
                             )}
@@ -156,7 +158,7 @@ const Pricing = () => {
                                     <span className="text-4xl md:text-5xl font-bold text-foreground">
                                         {plan.price}€
                                     </span>
-                                    <span className="text-muted-foreground">/mois</span>
+                                    <span className="text-muted-foreground">{t("pricing.month")}</span>
                                 </div>
 
                                 {/* Description */}
@@ -202,9 +204,9 @@ const Pricing = () => {
                     transition={{ duration: 0.6, delay: 0.4 }}
                     className="text-center text-muted-foreground text-sm mt-12"
                 >
-                    Tous les prix sont hors taxes. Annulation possible à tout moment.{" "}
+                    {t("pricing.disclaimer")}{" "}
                     <a href="#" className="text-primary hover:underline">
-                        Voir les conditions générales
+                        {t("pricing.terms")}
                     </a>
                 </motion.p>
             </div>

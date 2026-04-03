@@ -1,0 +1,25 @@
+# ============================================================
+# Doctic Care — Backend Dockerfile (Développement)
+# nodemon hot-reload + debugger Node.js activé
+# ============================================================
+FROM node:20-alpine
+
+RUN apk add --no-cache openssl libc6-compat
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY backend/ ./backend/
+COPY prisma/ ./prisma/
+
+RUN npx prisma generate
+
+RUN mkdir -p /app/uploads
+
+EXPOSE 5000
+EXPOSE 9229  # Port debugger VS Code
+
+# Lance nodemon avec --inspect pour debugger VS Code
+CMD ["npx", "nodemon", "--inspect=0.0.0.0:9229", "--watch", "backend", "backend/server.js"]

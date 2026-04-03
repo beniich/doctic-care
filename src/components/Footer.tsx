@@ -1,29 +1,31 @@
 import { Stethoscope, Twitter, Linkedin, Github, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 
 const currentYear = new Date().getFullYear();
 
-const footerLinks = {
+const getFooterLinks = (t: TFunction) => ({
     product: [
-        { name: "Fonctionnalités", href: "#features" },
-        { name: "Tarifs", href: "/pricing" },
-        { name: "Témoignages", href: "#" },
-        { name: "Roadmap", href: "#" },
+        { name: t("footer.features"), href: "#features" },
+        { name: t("footer.pricing"), href: "/pricing" },
+        { name: t("footer.testimonials"), href: "#" },
+        { name: t("footer.roadmap"), href: "#" },
     ],
     company: [
-        { name: "À propos", href: "#" },
-        { name: "Carrières", href: "#" },
-        { name: "Blog", href: "#" },
-        { name: "Contact", href: "#" },
+        { name: t("footer.about"), href: "#" },
+        { name: t("footer.careers"), href: "#" },
+        { name: t("footer.blog"), href: "#" },
+        { name: t("footer.contact"), href: "#" },
     ],
     legal: [
-        { name: "Confidentialité", href: "/privacy" },
-        { name: "CGU", href: "/terms" },
-        { name: "Mentions légales", href: "#" },
-        { name: "Sécurité", href: "#" },
+        { name: t("footer.privacy"), href: "/privacy" },
+        { name: t("footer.terms"), href: "/terms" },
+        { name: t("footer.mentions"), href: "#" },
+        { name: t("footer.security"), href: "#" },
     ],
-};
+});
 
 const socialLinks = [
     { icon: Twitter, href: "#", label: "Twitter" },
@@ -33,6 +35,9 @@ const socialLinks = [
 ];
 
 const Footer = () => {
+    const { t } = useTranslation();
+    const footerLinks = getFooterLinks(t);
+
     return (
         <footer className="bg-card border-t border-border">
             <div className="container mx-auto px-4 py-16">
@@ -44,13 +49,12 @@ const Footer = () => {
                             className="flex items-center gap-2 mb-4 group"
                         >
                             <div className="flex items-center justify-center w-10 h-10 group-hover:scale-105 transition-transform">
-                                <img src="/logo.png" alt="Doctic Pro" className="w-full h-full object-contain" />
+                                <img src="/logo.png" alt={t("app.title")} className="w-full h-full object-contain" />
                             </div>
-                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Doctic Pro</span>
+                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">{t("app.title")}</span>
                         </Link>
                         <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-sm">
-                            La plateforme médicale nouvelle génération qui révolutionne
-                            la gestion de votre cabinet. Propulsée par l'IA.
+                            {t("footer.description")}
                         </p>
                         <div className="flex gap-3">
                             {socialLinks.map((social) => (
@@ -69,7 +73,7 @@ const Footer = () => {
 
                     {/* Links */}
                     <div>
-                        <h4 className="font-semibold text-foreground mb-4">Produit</h4>
+                        <h4 className="font-semibold text-foreground mb-4">{t("footer.product")}</h4>
                         <ul className="space-y-3">
                             {footerLinks.product.map((link) => (
                                 <li key={link.name}>
@@ -85,7 +89,7 @@ const Footer = () => {
                     </div>
 
                     <div>
-                        <h4 className="font-semibold text-foreground mb-4">Entreprise</h4>
+                        <h4 className="font-semibold text-foreground mb-4">{t("footer.company")}</h4>
                         <ul className="space-y-3">
                             {footerLinks.company.map((link) => (
                                 <li key={link.name}>
@@ -101,7 +105,7 @@ const Footer = () => {
                     </div>
 
                     <div>
-                        <h4 className="font-semibold text-foreground mb-4">Légal</h4>
+                        <h4 className="font-semibold text-foreground mb-4">{t("footer.legal")}</h4>
                         <ul className="space-y-3">
                             {footerLinks.legal.map((link) => (
                                 <li key={link.name}>
@@ -120,10 +124,10 @@ const Footer = () => {
                 {/* Bottom bar */}
                 <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-muted-foreground text-sm">
-                        © {currentYear} Doctic Pro. Tous droits réservés.
+                        © {currentYear} {t("app.title")}. {t("footer.rights")}
                     </p>
                     <p className="text-muted-foreground text-sm">
-                        Fait avec 💙 pour les professionnels de santé
+                        {t("footer.made_with")}
                     </p>
                 </div>
             </div>
