@@ -13,6 +13,8 @@ Plateforme complète de gestion pour cabinets médicaux avec conformité HIPAA/R
 
 [Documentation](./docs) · [Installation](#-installation) · [Sécurité](#-sécurité) · [Tests](#-tests)
 
+**Dernière mise à jour industrielle : 3 Avril 2026**
+
 </div>
 
 ---
