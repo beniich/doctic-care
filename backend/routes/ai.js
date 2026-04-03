@@ -15,6 +15,7 @@ import {
 } from '../services/ollamaService.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { auditLog } from '../services/auditService.js';
+import { validate, aiChatSchema, aiImageSchema } from '../middleware/validate.middleware.js';
 
 const router = express.Router();
 
@@ -55,7 +56,7 @@ router.get('/status', authMiddleware, async (req, res) => {
 // Chat médical en streaming SSE (Server-Sent Events)
 // Body: { messages: [{role, content}], model?: string }
 // ─────────────────────────────────────────────────────────────
-router.post('/chat', authMiddleware, async (req, res) => {
+router.post('/chat', authMiddleware, validate(aiChatSchema), async (req, res) => {
   const { messages, model = 'mistral:7b', sessionId } = req.body;
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -173,7 +174,7 @@ router.post('/diagnosis', authMiddleware, async (req, res) => {
 // Analyse d'image médicale avec LLaVA
 // Body: { image: base64, imageType, clinicalContext, patientId }
 // ─────────────────────────────────────────────────────────────
-router.post('/analyze-image', authMiddleware, async (req, res) => {
+router.post('/analyze-image', authMiddleware, validate(aiImageSchema), async (req, res) => {
   const { image, imageType = 'autre', clinicalContext = '', patientId } = req.body;
 
   if (!image) {

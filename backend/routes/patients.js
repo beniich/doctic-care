@@ -1,6 +1,7 @@
 import express from 'express';
 import auditRequest from '../middleware/auditRequest.js';
 import prisma from '../config/db.js';
+import { validate, patientSchema } from '../middleware/validate.middleware.js';
 
 const router = express.Router();
 
@@ -33,7 +34,7 @@ router.get('/', async (req, res) => {
 });
 
 // 2. Create new patient
-router.post('/', auditRequest('PATIENT_CREATE'), async (req, res) => {
+router.post('/', auditRequest('PATIENT_CREATE'), validate(patientSchema), async (req, res) => {
     try {
         // Basic validation - check if tenant exists, defaulting to first one for migration context
         let tenant = await prisma.tenant.findFirst();
