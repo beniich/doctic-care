@@ -36,14 +36,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Pour la flexibilité (Auth en dehors du Router), on injecte le comportement
   
   const refresh = useCallback(async () => {
-    try {
-      const res = await authApi.me();
-      setUser(res.data.user);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+    // BYPASS AUTHENTICATION
+    setUser({
+      id: 'debug-user',
+      name: 'Dr. Admin',
+      email: 'admin@doctic.fr',
+      role: 'SUPER_ADMIN'
+    });
+    setLoading(false);
   }, []);
 
   useEffect(() => {

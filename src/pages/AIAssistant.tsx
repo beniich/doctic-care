@@ -1,12 +1,13 @@
 // ============================================================
 // Doctic Care — src/pages/AIAssistant.tsx
-// Interface chat IA avec streaming SSE temps réel
+// Interface chat IA SSE — Style unifié Doctic Dark Theme
 // ============================================================
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Bot, User, AlertCircle, Loader2, Mic, Image, FileText, Activity } from 'lucide-react';
+import { Send, Bot, User, AlertCircle, Loader2, Activity, StopCircle, Trash2, Sparkles, Zap, Shield } from 'lucide-react';
+import { OutlookLayout } from '@/components/layout/OutlookLayout';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// ─── Types ──────────────────────────────────────────────────
 interface Message {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -23,70 +24,35 @@ interface AIStatus {
   status: 'ready' | 'incomplete' | 'offline';
 }
 
-// ─── Hook : useSSEChat ──────────────────────────────────────
+// ─── Hook SSE Chat ───────────────────────────────────────────
 function useSSEChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const sendMessage = useCallback(async (
-    userContent: string,
-    model: string = 'mistral:7b'
-  ) => {
+  const sendMessage = useCallback(async (userContent: string, model = 'mistral:7b') => {
     if (isStreaming) return;
-
     setError(null);
 
-    // Ajoute le message utilisateur
-    const userMessage: Message = {
-      id: crypto.randomUUID(),
-      role: 'user',
-      content: userContent,
-      timestamp: new Date(),
-    };
+    const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: userContent, timestamp: new Date() };
+    setMessages(prev => [...prev, userMsg]);
 
-    setMessages(prev => [...prev, userMessage]);
-
-    // Prépare le message assistant (streaming)
     const assistantId = crypto.randomUUID();
-    const assistantMessage: Message = {
-      id: assistantId,
-      role: 'assistant',
-      content: '',
-      timestamp: new Date(),
-      model,
-      isStreaming: true,
-    };
-
-    setMessages(prev => [...prev, assistantMessage]);
+    setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: '', timestamp: new Date(), model, isStreaming: true }]);
     setIsStreaming(true);
-
-    // Annulation possible
     abortControllerRef.current = new AbortController();
 
     try {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map(m => ({
-            role: m.role,
-            content: m.content,
-          })),
-          model,
-        }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify({ messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })), model }),
         signal: abortControllerRef.current.signal,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      // Lecture du stream SSE
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
@@ -94,346 +60,257 @@ function useSSEChat() {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n');
         buffer = lines.pop() || '';
-
         for (const line of lines) {
           if (!line.startsWith('data: ')) continue;
           const data = line.slice(6).trim();
-          if (data === '[DONE]') continue;
-          if (data.startsWith(':')) continue; // heartbeat
-
+          if (data === '[DONE]' || data.startsWith(':')) continue;
           try {
             const parsed = JSON.parse(data);
-
-            if (parsed.error) {
-              setError(parsed.error);
-              break;
-            }
-
             if (parsed.type === 'token' && parsed.content) {
-              // Accumule les tokens en temps réel
-              setMessages(prev => prev.map(m =>
-                m.id === assistantId
-                  ? { ...m, content: m.content + parsed.content }
-                  : m
-              ));
+              setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: m.content + parsed.content } : m));
             }
-          } catch {
-            // JSON partiel — ignoré
-          }
+          } catch { /* partial JSON */ }
         }
       }
-
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        console.log('[AI] Stream annulé par l\'utilisateur');
-      } else {
-        setError(err.message || 'Erreur lors de la communication avec l\'IA');
-        console.error('[AI Chat] Error:', err);
-      }
+    } catch (err: unknown) {
+      const e = err as Error;
+      if (e.name !== 'AbortError') setError(e.message || 'Erreur de communication IA');
     } finally {
-      // Marque le message comme terminé
-      setMessages(prev => prev.map(m =>
-        m.id === assistantId
-          ? { ...m, isStreaming: false }
-          : m
-      ));
+      setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, isStreaming: false } : m));
       setIsStreaming(false);
     }
   }, [messages, isStreaming]);
 
-  const stopStreaming = useCallback(() => {
-    abortControllerRef.current?.abort();
-  }, []);
-
-  const clearMessages = useCallback(() => {
-    setMessages([]);
-    setError(null);
-  }, []);
-
-  return { messages, isStreaming, error, sendMessage, stopStreaming, clearMessages };
+  return {
+    messages,
+    isStreaming,
+    error,
+    sendMessage,
+    stopStreaming: () => abortControllerRef.current?.abort(),
+    clearMessages: () => { setMessages([]); setError(null); },
+  };
 }
 
-// ─── Composant Message ──────────────────────────────────────
+// ─── Bulle de message ────────────────────────────────────────
 function MessageBubble({ message }: { message: Message }) {
   const isAssistant = message.role === 'assistant';
-
   return (
-    <div className={`flex gap-3 ${isAssistant ? 'flex-row' : 'flex-row-reverse'} mb-4`}>
-      {/* Avatar */}
-      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center
-        ${isAssistant ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
-        {isAssistant ? <Bot size={16} /> : <User size={16} />}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`flex gap-3 mb-4 ${isAssistant ? 'flex-row' : 'flex-row-reverse'}`}
+    >
+      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border ${isAssistant ? 'bg-primary/20 border-primary/30 text-primary' : 'bg-accent/20 border-accent/30 text-accent'}`}>
+        {isAssistant ? <Bot size={15} /> : <User size={15} />}
       </div>
-
-      {/* Bulle */}
-      <div className={`max-w-[75%] rounded-2xl px-4 py-3 
-        ${isAssistant
-          ? 'bg-white border border-gray-200 text-gray-800 rounded-tl-none'
-          : 'bg-blue-600 text-white rounded-tr-none'
-        }`}>
-        {/* Contenu */}
+      <div className={`max-w-[78%] rounded-2xl px-4 py-3 ${isAssistant ? 'glass-card rounded-tl-none text-foreground' : 'bg-primary/20 border border-primary/30 text-foreground rounded-tr-none'}`}>
         <div className="text-sm whitespace-pre-wrap leading-relaxed">
-          {message.content || (message.isStreaming ? '' : '...')}
-          {/* Curseur clignotant pendant le streaming */}
-          {message.isStreaming && (
-            <span className="inline-block w-0.5 h-4 bg-blue-600 ml-0.5 animate-pulse" />
-          )}
+          {message.content || (message.isStreaming ? '' : <span className="text-muted-foreground italic">Réflexion...</span>)}
+          {message.isStreaming && <span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse" />}
         </div>
-
-        {/* Footer */}
-        <div className={`flex items-center gap-2 mt-1 text-xs
-          ${isAssistant ? 'text-gray-400' : 'text-blue-200'}`}>
+        <div className={`flex items-center gap-2 mt-1.5 text-xs ${isAssistant ? 'text-muted-foreground' : 'text-primary/60'}`}>
           <span>{message.timestamp.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
-          {message.model && <span>· {message.model}</span>}
+          {message.model && <span className="font-mono-tech">· {message.model}</span>}
           {message.isStreaming && <span className="flex items-center gap-1"><Loader2 size={10} className="animate-spin" /> génération...</span>}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-// ─── Composant AIStatus Badge ───────────────────────────────
+// ─── Badge statut IA ─────────────────────────────────────────
 function AIStatusBadge({ status }: { status: AIStatus | null }) {
   if (!status) return null;
-
-  const colors = {
-    ready: 'bg-green-100 text-green-700',
-    incomplete: 'bg-yellow-100 text-yellow-700',
-    offline: 'bg-red-100 text-red-700',
-  };
-
-  const labels = {
-    ready: 'IA opérationnelle',
-    incomplete: 'Modèles manquants',
-    offline: 'IA hors ligne',
-  };
-
+  const cfg = {
+    ready: { cls: 'text-success bg-success/10 border-success/30', label: 'IA Opérationnelle' },
+    incomplete: { cls: 'text-warning bg-warning/10 border-warning/30', label: 'Modèles manquants' },
+    offline: { cls: 'text-destructive bg-destructive/10 border-destructive/30', label: 'IA Hors ligne' },
+  }[status.status];
   return (
-    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${colors[status.status]}`}>
-      <Activity size={12} />
-      {labels[status.status]}
+    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${cfg.cls}`}>
+      <Activity size={11} className="animate-pulse" />
+      {cfg.label}
     </div>
   );
 }
 
-// ─── Composant Principal AIAssistant ────────────────────────
+// ─── Page principale ─────────────────────────────────────────
 export default function AIAssistant() {
   const { messages, isStreaming, error, sendMessage, stopStreaming, clearMessages } = useSSEChat();
-  const [inputValue, setInputValue] = useState('');
+  const [input, setInput] = useState('');
   const [selectedModel, setSelectedModel] = useState('mistral:7b');
   const [aiStatus, setAIStatus] = useState<AIStatus | null>(null);
-  const [isLoadingStatus, setIsLoadingStatus] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Prompts rapides médicaux
   const quickPrompts = [
-    { icon: '🫀', label: 'Urgence cardiaque', prompt: 'Patient avec douleur thoracique irradiant dans le bras gauche, dyspnée et sueurs. Conduite à tenir ?' },
-    { icon: '💊', label: 'Interaction médicamenteuse', prompt: 'Quelles sont les interactions à surveiller entre warfarine et aspirine ?' },
-    { icon: '🔬', label: 'Interprétation bilan', prompt: 'Aide-moi à interpréter ce bilan sanguin avec une CRP élevée et leucocytose.' },
-    { icon: '📋', label: 'Protocole HAS', prompt: 'Rappelle-moi le protocole HAS pour la prise en charge de l\'HTA de l\'adulte.' },
+    { icon: '🫀', label: 'Urgence cardiaque', prompt: "Patient avec douleur thoracique irradiant dans le bras gauche, dyspnée et sueurs. Conduite à tenir ?" },
+    { icon: '💊', label: 'Interaction méd.', prompt: "Quelles sont les interactions à surveiller entre warfarine et aspirine ?" },
+    { icon: '🔬', label: 'Bilan sanguin', prompt: "Aide-moi à interpréter ce bilan avec une CRP élevée et leucocytose." },
+    { icon: '📋', label: 'Protocole HAS', prompt: "Rappelle-moi le protocole HAS pour la prise en charge de l'HTA de l'adulte." },
   ];
 
-  // Récupère le statut IA au chargement
   useEffect(() => {
-    async function fetchStatus() {
-      try {
-        const res = await fetch('/api/ai/status', {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setAIStatus(data);
-          if (data.models.length > 0) {
-            setSelectedModel(data.models[0].name);
-          }
-        }
-      } catch {
-        setAIStatus({ available: false, models: [], missingModels: [], status: 'offline' });
-      } finally {
-        setIsLoadingStatus(false);
-      }
-    }
-    fetchStatus();
+    fetch('/api/ai/status', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) { setAIStatus(data); if (data.models.length > 0) setSelectedModel(data.models[0].name); }
+        else setAIStatus({ available: false, models: [], missingModels: [], status: 'offline' });
+      })
+      .catch(() => setAIStatus({ available: false, models: [], missingModels: [], status: 'offline' }));
   }, []);
 
-  // Auto-scroll vers le bas
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  // Auto-resize textarea
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 180)}px`;
     }
-  }, [inputValue]);
+  }, [input]);
 
   const handleSend = () => {
-    const trimmed = inputValue.trim();
-    if (!trimmed || isStreaming) return;
-    setInputValue('');
-    sendMessage(trimmed, selectedModel);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+    const t = input.trim();
+    if (!t || isStreaming) return;
+    setInput('');
+    sendMessage(t, selectedModel);
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-
-      {/* ── Header ── */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-            <Bot className="text-white" size={20} />
-          </div>
-          <div>
-            <h1 className="font-semibold text-gray-900">DoctIA — Assistant Médical</h1>
-            <p className="text-xs text-gray-500">Alimenté par Ollama · Données locales HIPAA</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Sélecteur de modèle */}
-          <select
-            value={selectedModel}
-            onChange={e => setSelectedModel(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700"
-            disabled={isStreaming}
-          >
-            {aiStatus?.models.map(m => (
-              <option key={m.name} value={m.name}>{m.name}</option>
-            ))}
-            {(!aiStatus || aiStatus.models.length === 0) && (
-              <option value="mistral:7b">mistral:7b</option>
-            )}
-          </select>
-
-          <AIStatusBadge status={aiStatus} />
-
-          {messages.length > 0 && (
-            <button
-              onClick={clearMessages}
-              className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded"
-              disabled={isStreaming}
-            >
-              Effacer
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* ── Zone Messages ── */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="max-w-3xl mx-auto">
-
-          {/* Message de bienvenue */}
-          {messages.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Bot className="text-blue-600" size={32} />
+    <OutlookLayout
+      singlePane={
+        <div className="flex flex-col h-full">
+          {/* ── Header ── */}
+          <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center shadow-[0_0_15px_rgba(0,200,255,0.2)]">
+                <Sparkles className="text-primary" size={20} />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Bonjour, Docteur</h2>
-              <p className="text-gray-500 mb-8 max-w-md mx-auto">
-                Je suis DoctIA, votre assistant médical IA. Je peux vous aider avec des informations cliniques,
-                des diagnostics différentiels et la rédaction de comptes rendus.
-              </p>
+              <div>
+                <h1 className="font-bold text-foreground">DoctIA — Assistant Médical</h1>
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Shield size={10} className="text-success" /> Données 100% locales · HIPAA compliant
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <select
+                title="Sélection du modèle IA"
+                value={selectedModel}
+                onChange={e => setSelectedModel(e.target.value)}
+                disabled={isStreaming}
+                className="text-xs border border-border rounded-lg px-3 py-1.5 bg-background text-foreground focus:border-primary outline-none"
+              >
+                {aiStatus?.models.map(m => <option key={m.name} value={m.name}>{m.name}</option>)}
+                {(!aiStatus || aiStatus.models.length === 0) && <option value="mistral:7b">mistral:7b</option>}
+              </select>
+              <AIStatusBadge status={aiStatus} />
+              {messages.length > 0 && (
+                <button
+                  onClick={clearMessages}
+                  disabled={isStreaming}
+                  title="Effacer la conversation"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <Trash2 size={15} />
+                </button>
+              )}
+            </div>
+          </div>
 
-              {/* Prompts rapides */}
-              <div className="grid grid-cols-2 gap-3 max-w-lg mx-auto">
-                {quickPrompts.map((qp, i) => (
+          {/* ── Messages ── */}
+          <div className="flex-1 overflow-y-auto px-6 py-6">
+            <div className="max-w-3xl mx-auto">
+              {/* Welcome state */}
+              {messages.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(0,200,255,0.15)]">
+                    <Bot className="text-primary" size={36} />
+                  </div>
+                  <h2 className="text-xl font-bold text-foreground mb-2">Bonjour, Docteur</h2>
+                  <p className="text-muted-foreground mb-8 max-w-md mx-auto text-sm leading-relaxed">
+                    Je suis <span className="text-primary font-medium">DoctIA</span>, votre assistant médical IA. Diagnostic différentiel, interprétation de bilans, rédaction de comptes rendus — je suis là.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 max-w-lg mx-auto">
+                    {quickPrompts.map((qp, i) => (
+                      <button
+                        key={i}
+                        onClick={() => sendMessage(qp.prompt, selectedModel)}
+                        className="group text-left p-4 glass-card rounded-xl hover:border-primary/40 hover:shadow-[0_0_15px_rgba(0,200,255,0.1)] transition-all duration-200"
+                      >
+                        <span className="text-2xl">{qp.icon}</span>
+                        <p className="text-sm font-medium text-foreground mt-2 group-hover:text-primary transition-colors">{qp.label}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <AnimatePresence>
+                {messages.map(message => <MessageBubble key={message.id} message={message} />)}
+              </AnimatePresence>
+
+              {/* Offline warning */}
+              {aiStatus?.status === 'offline' && (
+                <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-xl mb-4">
+                  <AlertCircle size={16} className="text-destructive flex-shrink-0" />
+                  <p className="text-sm text-destructive">L'agent IA est hors ligne. Lancez <code className="bg-destructive/20 px-1 rounded text-xs">docker compose up ollama</code></p>
+                </div>
+              )}
+
+              {/* Error */}
+              {error && (
+                <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-xl mb-4">
+                  <AlertCircle size={16} className="text-destructive flex-shrink-0" />
+                  <p className="text-sm text-destructive">{error}</p>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {/* ── Input Zone ── */}
+          <div className="flex-shrink-0 border-t border-border bg-card/50 backdrop-blur-sm px-6 py-4">
+            <div className="max-w-3xl mx-auto">
+              <div className="flex items-end gap-3 glass-card rounded-2xl px-4 py-3 focus-within:border-primary/50 focus-within:shadow-[0_0_20px_rgba(0,200,255,0.1)] transition-all duration-200">
+                <textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                  placeholder="Décrivez la situation clinique... (Entrée pour envoyer, Maj+Entrée pour nouvelle ligne)"
+                  className="flex-1 bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground max-h-44"
+                  rows={1}
+                />
+                {isStreaming ? (
                   <button
-                    key={i}
-                    onClick={() => sendMessage(qp.prompt, selectedModel)}
-                    className="text-left p-3 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                    onClick={stopStreaming}
+                    title="Arrêter la génération"
+                    className="flex-shrink-0 w-9 h-9 bg-destructive/20 hover:bg-destructive/30 text-destructive border border-destructive/30 rounded-xl flex items-center justify-center transition-colors"
                   >
-                    <span className="text-lg">{qp.icon}</span>
-                    <p className="text-sm font-medium text-gray-700 mt-1">{qp.label}</p>
+                    <StopCircle size={16} />
                   </button>
-                ))}
+                ) : (
+                  <button
+                    onClick={handleSend}
+                    disabled={!input.trim() || aiStatus?.status === 'offline'}
+                    title="Envoyer (Entrée)"
+                    className="flex-shrink-0 w-9 h-9 bg-primary/20 hover:bg-primary/30 disabled:opacity-30 text-primary border border-primary/30 rounded-xl flex items-center justify-center transition-colors shadow-[0_0_10px_rgba(0,200,255,0.2)]"
+                  >
+                    {isStreaming ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+                  </button>
+                )}
               </div>
-            </div>
-          )}
-
-          {/* Messages */}
-          {messages.map(message => (
-            <MessageBubble key={message.id} message={message} />
-          ))}
-
-          {/* Avertissement IA hors ligne */}
-          {aiStatus?.status === 'offline' && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl mb-4">
-              <AlertCircle size={16} className="text-red-500 flex-shrink-0" />
-              <p className="text-sm text-red-700">
-                L'agent IA est hors ligne. Vérifiez qu'Ollama est démarré avec <code className="bg-red-100 px-1 rounded">docker compose up ollama</code>
+              <p className="text-center text-xs text-muted-foreground mt-2 flex items-center justify-center gap-1">
+                <Zap size={10} className="text-warning" />
+                DoctIA est un outil d'aide à la décision. Les réponses ne remplacent pas le jugement clinique.
               </p>
             </div>
-          )}
-
-          {/* Erreur */}
-          {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl mb-4">
-              <AlertCircle size={16} className="text-red-500 flex-shrink-0" />
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
-
-      {/* ── Zone de Saisie ── */}
-      <div className="bg-white border-t border-gray-200 px-4 py-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-end gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-100">
-            {/* Textarea auto-resize */}
-            <textarea
-              ref={textareaRef}
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Décrivez la situation clinique... (Entrée pour envoyer, Maj+Entrée pour nouvelle ligne)"
-              className="flex-1 bg-transparent resize-none outline-none text-sm text-gray-800 placeholder-gray-400 max-h-48"
-              rows={1}
-              disabled={isStreaming && false} // Laisse taper pendant le stream
-            />
-
-            {/* Bouton stop ou send */}
-            {isStreaming ? (
-              <button
-                onClick={stopStreaming}
-                className="flex-shrink-0 w-9 h-9 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl flex items-center justify-center transition-colors"
-                title="Arrêter la génération"
-              >
-                <div className="w-3 h-3 bg-red-600 rounded-sm" />
-              </button>
-            ) : (
-              <button
-                onClick={handleSend}
-                disabled={!inputValue.trim() || aiStatus?.status === 'offline'}
-                className="flex-shrink-0 w-9 h-9 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded-xl flex items-center justify-center transition-colors"
-                title="Envoyer (Entrée)"
-              >
-                <Send size={15} />
-              </button>
-            )}
           </div>
-
-          <p className="text-center text-xs text-gray-400 mt-2">
-            DoctIA est un outil d'aide à la décision. Les réponses ne remplacent pas le jugement clinique.
-          </p>
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 }
