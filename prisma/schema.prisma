@@ -5,7 +5,7 @@
 // ========================================
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-1.1.x", "rhel-openssl-1.0.x"]
 }
 
@@ -17,18 +17,39 @@ datasource db {
 // MULTI-TENANT
 // ========================================
 
+enum Plan {
+  STARTER
+  PRO
+  BUSINESS
+  ENTERPRISE
+}
+
 model Tenant {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
+  id   String  @id @default(uuid())
+  name String
+  slug String  @unique
+  logo String?
+  plan Plan    @default(STARTER)
+
+  // Billing Stripe
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  subscriptionStatus   String    @default("active")
+  currentPeriodEnd     DateTime?
+
   active    Boolean  @default(true)
   metadata  Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     User[]
-  patients  Patient[]
-  
+  users               User[]
+  patients            Patient[]
+  appointments        Appointment[]
+  prescriptions       Prescription[]
+  teleconsultSessions TeleconsultSession[]
+  medicalRecords      MedicalRecord[]
+  invoices            Invoice[]
+
   @@index([slug])
   @@index([active])
 }
@@ -46,41 +67,41 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  password      String?   // Null si OAuth uniquement
-  
+  id            String  @id @default(uuid())
+  email         String  @unique
+  emailVerified Boolean @default(false)
+  password      String? // Null si OAuth uniquement
+
   // OAuth
-  googleId      String?   @unique
-  
+  googleId String? @unique
+
   // Profile
-  firstName     String?
-  lastName      String?
-  name          String?
-  avatar        String?
-  phone         String?
-  
+  firstName String?
+  lastName  String?
+  name      String?
+  avatar    String?
+  phone     String?
+
   // Role & Permissions
-  role          Role      @default(DOCTOR)
-  tenantId      String?
-  tenant        Tenant?   @relation(fields: [tenantId], references: [id])
-  
+  role     Role    @default(DOCTOR)
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+
   // Security
-  active        Boolean   @default(true)
-  lastLogin     DateTime?
-  failedLoginAttempts Int @default(0)
-  lockedUntil   DateTime?
-  
+  active              Boolean   @default(true)
+  lastLogin           DateTime?
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+
   // Timestamps
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
   auditLogs           AuditLog[]
   prescriptions       Prescription[]
   teleconsultSessions TeleconsultSession[] @relation("DoctorSessions")
-  
+
   @@index([email])
   @@index([googleId])
   @@index([tenantId])
@@ -92,42 +113,42 @@ model User {
 // ========================================
 
 model Patient {
-  id              String    @id @default(uuid())
-  tenantId        String
-  tenant          Tenant    @relation(fields: [tenantId], references: [id])
-  
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
   // Identity
-  firstName       String
-  lastName        String
-  dateOfBirth     DateTime?
-  gender          String?
-  ssn             String?   // Encrypted - Numéro Sécurité Sociale
-  
+  firstName   String
+  lastName    String
+  dateOfBirth DateTime?
+  gender      String?
+  ssn         String? // Encrypted - Numéro Sécurité Sociale
+
   // Contact
-  email           String?
-  phone           String?
-  address         String?
-  city            String?
-  postalCode      String?
-  country         String    @default("FR")
-  
+  email      String?
+  phone      String?
+  address    String?
+  city       String?
+  postalCode String?
+  country    String  @default("FR")
+
   // Medical
   bloodType       String?
   allergies       String[]
   chronicDiseases String[]
-  
+
   // Metadata
-  active          Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  appointments       Appointment[]
-  prescriptions      Prescription[]
-  medicalRecords     MedicalRecord[]
+  appointments        Appointment[]
+  prescriptions       Prescription[]
+  medicalRecords      MedicalRecord[]
   teleconsultSessions TeleconsultSession[]
-  invoices           Invoice[]
-  
+  invoices            Invoice[]
+
   @@index([tenantId])
   @@index([lastName, firstName])
   @@index([active])
@@ -146,20 +167,24 @@ enum AppointmentStatus {
 }
 
 model Appointment {
-  id          String            @id @default(uuid())
-  patientId   String
-  patient     Patient           @relation(fields: [patientId], references: [id])
-  
-  start       DateTime
-  end         DateTime
-  status      AppointmentStatus @default(PENDING)
-  
-  motif       String?
-  notes       String?
-  
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  start  DateTime
+  end    DateTime
+  status AppointmentStatus @default(PENDING)
+
+  motif String?
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
   @@index([patientId])
   @@index([start])
   @@index([status])
@@ -177,26 +202,30 @@ enum PrescriptionStatus {
 }
 
 model Prescription {
-  id              String              @id @default(uuid())
-  patientId       String
-  patient         Patient             @relation(fields: [patientId], references: [id])
-  doctorId        String
-  doctor          User                @relation(fields: [doctorId], references: [id])
-  
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+  doctorId  String
+  doctor    User    @relation(fields: [doctorId], references: [id])
+
   prescriptionDate DateTime           @default(now())
   expiryDate       DateTime?
   status           PrescriptionStatus @default(ACTIVE)
-  
-  notes            String?
-  signatureUrl     String?
-  pdfUrl           String?
-  
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  
+
+  notes        String?
+  signatureUrl String?
+  pdfUrl       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  medications      PrescriptionItem[]
-  
+  medications PrescriptionItem[]
+
+  @@index([tenantId])
   @@index([patientId])
   @@index([doctorId])
   @@index([prescriptionDate])
@@ -204,20 +233,20 @@ model Prescription {
 }
 
 model PrescriptionItem {
-  id              String        @id @default(uuid())
-  prescriptionId  String
-  prescription    Prescription  @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
-  
-  medicationName  String
-  dosage          String
-  frequency       String
-  duration        String
-  quantity        Int
-  refills         Int           @default(0)
-  instructions    String?
-  
-  createdAt       DateTime      @default(now())
-  
+  id             String       @id @default(uuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+
+  medicationName String
+  dosage         String
+  frequency      String
+  duration       String
+  quantity       Int
+  refills        Int     @default(0)
+  instructions   String?
+
+  createdAt DateTime @default(now())
+
   @@index([prescriptionId])
 }
 
@@ -233,30 +262,34 @@ enum TeleconsultStatus {
 }
 
 model TeleconsultSession {
-  id              String            @id @default(uuid())
-  patientId       String
-  patient         Patient           @relation(fields: [patientId], references: [id])
-  doctorId        String
-  doctor          User              @relation("DoctorSessions", fields: [doctorId], references: [id])
-  
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+  doctorId  String
+  doctor    User    @relation("DoctorSessions", fields: [doctorId], references: [id])
+
   scheduledDate   DateTime
   actualStart     DateTime?
   actualEnd       DateTime?
   durationMinutes Int?
-  
-  roomUrl         String?
-  recordingUrl    String?
-  
-  status          TeleconsultStatus @default(SCHEDULED)
-  motif           String?
-  notes           String?
-  
+
+  roomUrl      String?
+  recordingUrl String?
+
+  status TeleconsultStatus @default(SCHEDULED)
+  motif  String?
+  notes  String?
+
   // Billing
-  invoiceId       String?
-  
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  
+  invoiceId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
   @@index([patientId])
   @@index([doctorId])
   @@index([scheduledDate])
@@ -268,18 +301,22 @@ model TeleconsultSession {
 // ========================================
 
 model MedicalRecord {
-  id          String   @id @default(uuid())
-  patientId   String
-  patient     Patient  @relation(fields: [patientId], references: [id])
-  
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
   recordDate  DateTime @default(now())
   title       String
   content     String
   attachments String[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
   @@index([patientId])
   @@index([recordDate])
 }
@@ -297,46 +334,50 @@ enum InvoiceStatus {
 }
 
 model Invoice {
-  id          String        @id @default(uuid())
-  patientId   String
-  patient     Patient       @relation(fields: [patientId], references: [id])
-  
-  invoiceNumber String      @unique
-  invoiceDate   DateTime    @default(now())
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  invoiceNumber String    @unique
+  invoiceDate   DateTime  @default(now())
   dueDate       DateTime?
-  
-  subtotal      Decimal     @db.Decimal(10, 2)
-  taxRate       Decimal     @default(20) @db.Decimal(5, 2)
-  taxAmount     Decimal     @db.Decimal(10, 2)
-  total         Decimal     @db.Decimal(10, 2)
-  
-  status        InvoiceStatus @default(DRAFT)
-  paidAt        DateTime?
-  
-  notes         String?
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
-  items         InvoiceItem[]
-  
+
+  subtotal  Decimal @db.Decimal(10, 2)
+  taxRate   Decimal @default(20) @db.Decimal(5, 2)
+  taxAmount Decimal @db.Decimal(10, 2)
+  total     Decimal @db.Decimal(10, 2)
+
+  status InvoiceStatus @default(DRAFT)
+  paidAt DateTime?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items InvoiceItem[]
+
+  @@index([tenantId])
   @@index([patientId])
   @@index([invoiceNumber])
   @@index([status])
 }
 
 model InvoiceItem {
-  id          String   @id @default(uuid())
-  invoiceId   String
-  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  
+  id        String  @id @default(uuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
   description String
   quantity    Int
-  unitPrice   Decimal  @db.Decimal(10, 2)
-  total       Decimal  @db.Decimal(10, 2)
-  
-  createdAt   DateTime @default(now())
-  
+  unitPrice   Decimal @db.Decimal(10, 2)
+  total       Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+
   @@index([invoiceId])
 }
 
@@ -345,20 +386,23 @@ model InvoiceItem {
 // ========================================
 
 model AuditLog {
-  id        String   @id @default(uuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  
-  action    String   // USER_LOGIN, PRESCRIPTION_CREATED, etc.
-  resource  String?  // Ex: "Patient:uuid"
-  outcome   String   @default("SUCCESS") // SUCCESS, FAILURE, DENIED
-  
+  id       String  @id @default(uuid())
+  tenantId String?
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  action   String // USER_LOGIN, PRESCRIPTION_CREATED, etc.
+  resource String? // Ex: "Patient:uuid"
+  outcome  String  @default("SUCCESS") // SUCCESS, FAILURE, DENIED
+
   ipAddress String?
   userAgent String?
   metadata  Json?
-  
+
   timestamp DateTime @default(now())
-  
+
+  @@index([tenantId])
   @@index([userId])
   @@index([action])
   @@index([timestamp])
@@ -374,6 +418,6 @@ model Session {
   sid       String   @unique
   data      String
   expiresAt DateTime
-  
+
   @@index([expiresAt])
 }

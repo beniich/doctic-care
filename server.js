@@ -18,6 +18,14 @@ import passport from './backend/config/passport.js';
 import prisma from './backend/config/db.js';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
+import authRoutes from './backend/routes/auth.js';
+import clinicalRoutes from './backend/routes/clinical.js';
+import billingRoutes from './backend/routes/billing.js';
+import teleconsultRoutes from './backend/routes/teleconsult.js';
+import aiRoutes from './backend/routes/ai.js';
+import notificationsRoutes from './backend/routes/notifications.js';
+import analyticsRoutes from './backend/routes/analytics.js';
+import { tenantMiddleware } from './backend/middleware/tenant.js';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
@@ -151,6 +159,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// 3. Multi-Tenant context injected into every request (must be after passport auth)
+app.use(tenantMiddleware);
+
 const PORT = process.env.PORT || 5000;
 
 // Initialize Stripe only if properly configured
@@ -243,6 +254,9 @@ app.post('/api/webhooks/stripe',
 // Regular JSON parsing for all other routes
 // Regular JSON parsing for all other routes
 app.use(bodyParser.json());
+
+import tenantsRoutes from './backend/routes/tenants.js';
+app.use('/api/tenants', tenantsRoutes);
 
 // ============================================================================
 // HEALTH CHECK (Monitoring)

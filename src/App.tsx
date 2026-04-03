@@ -21,6 +21,7 @@ import Streaming from "./pages/Streaming";
 import NotFound from "./pages/NotFound";
 
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { TenantProvider } from "@/contexts/TenantContext";
 import { ModalProvider } from "@/contexts/ModalContext";
 import SocialPublish from "./pages/SocialPublish";
 import Landing from "./pages/Landing";
@@ -110,11 +111,13 @@ const App = () => (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="doctic-theme">
-          <AuthProvider>
-            <ModalProvider>
-              <AppContent />
-            </ModalProvider>
-          </AuthProvider>
+          <TenantProvider>
+            <AuthProvider>
+              <ModalProvider>
+                <AppContent />
+              </ModalProvider>
+            </AuthProvider>
+          </TenantProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </HelmetProvider>
