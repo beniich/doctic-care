@@ -16,6 +16,11 @@ import bodyParser from 'body-parser';
 import { RedisStore } from 'connect-redis';
 import passport from './backend/config/passport.js';
 import prisma from './backend/config/db.js';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import hpp from 'hpp';
 
 // Define __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -36,6 +41,53 @@ Sentry.init({
 });
 
 const app = express();
+
+// 1. GLOBAL SECURITY HEADERS (Helmet)
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            imgSrc: ["'self'", "data:", "https://*"],
+            connectSrc: ["'self'", "https://api.stripe.com", process.env.OLLAMA_BASE_URL || "http://localhost:11434"],
+            frameSrc: ["'self'", "https://js.stripe.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        },
+    },
+}));
+
+// 2. RATE LIMITING
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per window
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes'
+});
+
+const authLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 10, // Limit each IP to 10 auth attempts per hour
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: 'Too many login attempts, please try again after an hour'
+});
+
+// Apply global limiter to all routes
+app.use('/api/', globalLimiter);
+// Apply stricter limit to auth and AI routes
+app.use('/api/auth/', authLimiter);
+app.use('/api/ai/', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: 'Too many AI requests, please pace yourself'
+}));
+
+// 3. DATA SANITIZATION
+app.use(mongoSanitize()); // Prevent NoSQL Injection (even on Postgres, good practice for JSON fields)
+app.use(xss()); // Prevent XSS attacks
+app.use(hpp()); // Prevent HTTP Parameter Pollution
 
 app.use(cookieParser());
 // Setup CSRF protection

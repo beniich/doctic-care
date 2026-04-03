@@ -161,4 +161,13 @@ ssl/*.crt
 # Ne pas commit config avec credentials
 nginx.conf.local
 apache.conf.local
-*.conf.backup
+# ========================================
+# Data Persistence (Volumes)
+# ========================================
+ollama_data/
+postgres_data/
+redis_data/
+minio_data/
+prometheus_data/
+grafana_data/
+uploads/

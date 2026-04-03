@@ -51,6 +51,9 @@ services:
     build:
       context: .
       dockerfile: docker/frontend/Dockerfile
+      args:
+        - VITE_API_URL=https://${DOMAIN}/api
+        - VITE_OLLAMA_ENABLED=true
     container_name: doctic_frontend
     restart: unless-stopped
     environment:
