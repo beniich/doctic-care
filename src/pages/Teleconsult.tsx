@@ -269,7 +269,7 @@ export default function Teleconsult() {
                 )
             }
         >
-            {/* Modal est rendu via Portal ou au niveau root normalement, mais ici on peut le laisser dans le render tree si position:fixed */}
+            {/* Modal */}
             {isNewModalOpen && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
                     <Card className="w-full max-w-lg bg-background border-border p-0 shadow-2xl flex flex-col">
@@ -341,6 +341,7 @@ export default function Teleconsult() {
                     </Card>
                 </div>
             )}
+        </OutlookLayout>
         </UpgradeGate>
     );
 }
