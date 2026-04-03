@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { OutlookLayout } from '@/components/layout/OutlookLayout';
+import { UpgradeGate } from '@/components/common/UpgradeGate';
 
 interface TeleconsultSession {
     id: number;
@@ -108,8 +109,9 @@ export default function Teleconsult() {
     };
 
     return (
-        <OutlookLayout
-            listPane={
+        <UpgradeGate feature="Téléconsultation Vidéo" allowedPlans={['PRO', 'BUSINESS', 'ENTERPRISE']}>
+            <OutlookLayout
+                listPane={
                 <div className="flex flex-col h-full bg-background">
                     {/* Header List */}
                     <div className="border-b border-border px-6 py-4 flex items-center justify-between">
@@ -339,6 +341,6 @@ export default function Teleconsult() {
                     </Card>
                 </div>
             )}
-        </OutlookLayout>
+        </UpgradeGate>
     );
 }

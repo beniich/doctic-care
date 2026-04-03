@@ -1,5 +1,6 @@
 import express from 'express';
 import { stripe, isStripeConfigured } from '../config/stripe.js';
+import prisma from '../config/db.js';
 import { subscriptionsData } from '../data/mocks.js';
 
 const router = express.Router();
@@ -17,33 +18,66 @@ const mockCreatePortal = () => ({
     url: `${process.env.FRONTEND_URL || 'http://localhost:3001'}/subscription?portal_acting=true`
 });
 
-// 1. Create Checkout Session
+// 1. Create Checkout Session for a Tenant
 router.post('/create-checkout-session', async (req, res) => {
-    const { plan, billingPeriod, email, userId } = req.body;
+    // Dans le SaaS, c'est le Tenant (Clinique) qui s'abonne, ou on l'identifie par le compte admin
+    const { plan, billingPeriod, email, tenantId, userId } = req.body;
+    
+    // Fallback on request tenantId
+    const targetTenantId = tenantId || req.tenantId || req.user?.tenantId;
+
     if (!email) return res.status(400).json({ error: 'Email required' });
+    if (!targetTenantId && !userId) return res.status(400).json({ error: 'Tenant ID ou User ID requis' });
 
     // ⚠️ MOCK MODE if Stripe not configured
     if (!isStripeConfigured()) {
-        const mockSubId = `sub_mock_${Date.now()}`;
-        subscriptionsData[userId || 'demo-user'] = {
-            id: mockSubId,
-            plan: plan,
-            status: 'active',
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            cancelAtPeriodEnd: false
-        };
+        try {
+            if (targetTenantId) {
+                // Update Tenant in DB
+                await prisma.tenant.update({
+                    where: { id: targetTenantId },
+                    data: {
+                        plan: plan.toUpperCase(),
+                        stripeSubscriptionId: `sub_mock_${Date.now()}`,
+                        subscriptionStatus: 'active',
+                        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                    }
+                });
+            } else {
+                subscriptionsData[userId || 'demo-user'] = {
+                    id: `sub_mock_${Date.now()}`, plan, status: 'active',
+                    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), cancelAtPeriodEnd: false
+                };
+            }
+        } catch(e) {
+            console.error("Mock Stripe error saving to DB:", e);
+        }
         return res.json(mockCheckout(plan, billingPeriod));
     }
 
-    // ✅ REAL STRIPE LOGIC
+    // ✅ REAL STRIPE LOGIC (Map internal plan names to Stripe Price IDs)
     let priceId;
-    if (plan === 'professional') {
+    const normalizedPlan = plan.toUpperCase();
+
+    if (normalizedPlan === 'STARTER' || normalizedPlan === 'SILVER') {
+        priceId = billingPeriod === 'annual'
+            ? process.env.STRIPE_PRICE_STARTER_ANNUAL
+            : process.env.STRIPE_PRICE_STARTER_MONTHLY;
+    } else if (normalizedPlan === 'PRO' || normalizedPlan === 'MASTER') {
         priceId = billingPeriod === 'annual'
             ? process.env.STRIPE_PRICE_PRO_ANNUAL
             : process.env.STRIPE_PRICE_PRO_MONTHLY;
+    } else if (normalizedPlan === 'BUSINESS' || normalizedPlan === 'GOLD') {
+        priceId = billingPeriod === 'annual'
+            ? process.env.STRIPE_PRICE_BUSINESS_ANNUAL
+            : process.env.STRIPE_PRICE_BUSINESS_MONTHLY;
     }
 
-    if (!priceId) return res.status(400).json({ error: 'Invalid plan or billing period' });
+    if (!priceId && !isStripeConfigured()) {
+        // Fallback for mock if priceId missing
+    } else if (!priceId) {
+        return res.status(400).json({ error: `Plan '${plan}' not mapped to a Stripe Price ID for ${billingPeriod} billing.` });
+    }
 
     try {
         const session = await stripe.checkout.sessions.create({
@@ -51,9 +85,14 @@ router.post('/create-checkout-session', async (req, res) => {
             payment_method_types: ['card'],
             line_items: [{ price: priceId, quantity: 1 }],
             customer_email: email,
-            success_url: `${process.env.FRONTEND_URL}/pricing?success=true&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.FRONTEND_URL}/pricing?canceled=true`,
-            metadata: { plan, billingPeriod, userId: userId || '' },
+            success_url: `${process.env.FRONTEND_URL || 'http://localhost:3001'}/pricing?success=true&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3001'}/pricing?canceled=true`,
+            metadata: { 
+                plan: normalizedPlan, 
+                billingPeriod, 
+                tenantId: targetTenantId || '', 
+                userId: userId || '' 
+            },
             subscription_data: { trial_period_days: 14 },
         });
         res.json({ url: session.url });

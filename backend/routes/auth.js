@@ -73,4 +73,47 @@ router.post('/login', auditRequest('USER_LOGIN'), (req, res) => {
     }
 });
 
+// 7. Accept Invitation
+router.post('/accept-invite', async (req, res) => {
+    const { token, firstName, lastName, password } = req.body;
+
+    if (!token) return res.status(400).json({ error: 'Token is required' });
+
+    try {
+        const invitation = await prisma.invitation.findUnique({
+            where: { token },
+            include: { tenant: true }
+        });
+
+        if (!invitation || invitation.acceptedAt || invitation.expiresAt < new Date()) {
+            return res.status(400).json({ error: 'Invalid or expired invitation' });
+        }
+
+        const newUser = await prisma.user.create({
+            data: {
+                email: invitation.email,
+                firstName,
+                lastName,
+                role: invitation.role,
+                tenantId: invitation.tenantId,
+                active: true
+            }
+        });
+
+        await prisma.invitation.update({
+            where: { id: invitation.id },
+            data: { acceptedAt: new Date() }
+        });
+
+        res.json({ 
+            success: true, 
+            message: 'Compte créé avec succès',
+            data: { email: newUser.email }
+        });
+    } catch (error) {
+        console.error('Accept invite error:', error);
+        res.status(500).json({ error: 'Failed to accept invitation' });
+    }
+});
+
 export default router;

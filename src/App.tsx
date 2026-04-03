@@ -19,6 +19,12 @@ import Prescriptions from "./pages/Prescriptions";
 import Teleconsult from "./pages/Teleconsult";
 import Streaming from "./pages/Streaming";
 import NotFound from "./pages/NotFound";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import TenantOnboarding from "./pages/TenantOnboarding";
+import AcceptInvite from "./pages/AcceptInvite";
+import PatientLoginPage from "./pages/patient/PatientLoginPage";
+import PatientPortal from "./pages/patient/PatientPortal";
+import PublicBooking from "./pages/PublicBooking";
 
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { TenantProvider } from "@/contexts/TenantContext";
@@ -83,6 +89,17 @@ const AppContent = () => {
           <Route path="/billing" element={<Billing />} />
           <Route path="/saas-billing" element={<SaasBilling />} />
           <Route path="/network" element={<MultiTenantDashboard />} />
+          <Route path="/admin" element={<SuperAdminDashboard />} />
+          <Route path="/onboarding" element={<TenantOnboarding />} />
+          <Route path="/accept-invite/:token" element={<AcceptInvite />} />
+          
+          {/* Public Booking */}
+          <Route path="/book/:slug" element={<PublicBooking />} />
+          
+          {/* Patient Routes */}
+          <Route path="/patient/login" element={<PatientLoginPage />} />
+          <Route path="/patient/dashboard" element={<PatientPortal />} />
+
           <Route path="/assistant" element={<AIAssistant />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/publish-social" element={<SocialPublish />} />

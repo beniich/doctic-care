@@ -6,9 +6,16 @@ import { KPICard } from "@/components/dashboard/KPICard";
 import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
 
 import { useTranslation } from "react-i18next";
+import { useTenant } from "@/contexts/TenantContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Sparkles } from "lucide-react";
 
 export default function Dashboard() {
   const { t } = useTranslation();
+  const { currentTenant } = useTenant();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -56,7 +63,36 @@ export default function Dashboard() {
             initial="hidden"
             animate="show"
           >
-            {/* KPI Cards */}
+            {/* SaaS Banner */}
+            {currentTenant?.plan === 'STARTER' && (
+              <motion.div 
+                variants={item}
+                className="relative overflow-hidden p-6 rounded-2xl bg-gradient-to-r from-rose-500/20 to-orange-500/20 border border-white/10 backdrop-blur-xl group cursor-pointer hover:border-rose-500/30 transition-all duration-500 shadow-2xl shadow-rose-500/10"
+                onClick={() => navigate('/saas-billing')}
+              >
+                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Sparkles className="w-32 h-32 text-rose-500 group-hover:rotate-12 transition-transform duration-1000" />
+                </div>
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-rose-400 to-orange-500 bg-clip-text text-transparent">Passez à la version Pro</h2>
+                    <p className="text-white/60 max-w-lg">Débloquez l'IA générative, la téléconsultation illimitée et la gestion d'équipe avancée pour votre clinique <span className="text-white font-semibold">{currentTenant?.name}</span>.</p>
+                  </div>
+                  <Button className="bg-white text-black hover:bg-neutral-200 rounded-xl px-8 h-12 font-bold shadow-xl">
+                    Voir les Plans <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
+              <div>
+                <h1 className="text-3xl font-light text-white tracking-tight">Bonjour, <span className="font-bold">{user?.firstName || 'Docteur'}</span></h1>
+                <p className="text-white/40 mt-1 uppercase tracking-widest text-[10px] font-bold">
+                  {currentTenant?.name || 'VOTRE CLINIQUE'} · ÉTAT : {currentTenant?.subscriptionStatus === 'active' ? '✅ OPÉRATIONNEL' : '⚠️ MAINTENANCE'}
+                </p>
+              </div>
+            </div>            {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {kpis.map((kpi) => (
                 <motion.div key={kpi.title} variants={item}>

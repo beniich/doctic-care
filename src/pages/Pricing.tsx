@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Link, useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTenant } from "@/contexts/TenantContext";
+import { api } from "@/lib/api";
 
 const plans = [
     {
@@ -105,6 +107,7 @@ const Pricing = () => {
     const [searchParams] = useSearchParams();
     const { toast } = useToast();
     const { user } = useAuth();
+    const { currentTenant } = useTenant();
 
     useEffect(() => {
         if (searchParams.get("success")) {
@@ -141,23 +144,18 @@ const Pricing = () => {
         setLoadingPlan(planName);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/create-checkout-session`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    plan: planName.toLowerCase(),
-                    billingPeriod: isAnnual ? "annual" : "monthly",
-                    email: user.email,
-                    userId: user.id || "demo-user",
-                }),
+            const response = await api.post("/create-checkout-session", {
+                plan: planName.toLowerCase(),
+                billingPeriod: isAnnual ? "annual" : "monthly",
+                email: user.email,
+                tenantId: currentTenant?.id || user.tenantId,
+                userId: user.id || "demo-user",
             });
 
-            const data = await response.json();
-
-            if (data.url) {
-                window.location.href = data.url;
+            if (response.data?.url) {
+                window.location.href = response.data.url;
             } else {
-                throw new Error(data.error || "Failed to create checkout session");
+                throw new Error("Failed to create checkout session");
             }
         } catch (error) {
             console.error("Checkout error:", error);

@@ -18,6 +18,7 @@ import {
   Film,
   Share2,
   MessageSquare,
+  ShieldAlert,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,26 +26,29 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavItem {
   icon: React.ElementType;
   label: string;
   path: string;
   badge?: number;
+  allowedRoles?: string[];
 }
 
 const navItems: NavItem[] = [
+  { icon: ShieldAlert, label: "Doctic Control", path: "/admin", allowedRoles: ['SUPER_ADMIN'] },
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: Users, label: "Patients", path: "/patients", badge: 12 },
-  { icon: Calendar, label: "Appointments", path: "/appointments", badge: 5 },
-  { icon: FileText, label: "Medical Records", path: "/records" },
-  { icon: Pill, label: "Prescriptions", path: "/prescriptions" },
-  { icon: Video, label: "Teleconsultation", path: "/teleconsult" },
-  { icon: Package, label: "Products", path: "/products" },
-  { icon: CreditCard, label: "Patient Billing", path: "/billing" },
-  { icon: Building2, label: "SaaS Billing", path: "/saas-billing" },
-  { icon: Network, label: "Multi-Tenant", path: "/network" },
-  { icon: Bot, label: "AI Assistant", path: "/assistant" },
+  { icon: Users, label: "Patients", path: "/patients", badge: 12, allowedRoles: ['SUPER_ADMIN', 'ADMIN', 'DOCTOR', 'ASSISTANT'] },
+  { icon: Calendar, label: "Appointments", path: "/appointments", badge: 5, allowedRoles: ['SUPER_ADMIN', 'ADMIN', 'DOCTOR', 'ASSISTANT'] },
+  { icon: FileText, label: "Medical Records", path: "/records", allowedRoles: ['SUPER_ADMIN', 'ADMIN', 'DOCTOR'] },
+  { icon: Pill, label: "Prescriptions", path: "/prescriptions", allowedRoles: ['SUPER_ADMIN', 'ADMIN', 'DOCTOR'] },
+  { icon: Video, label: "Teleconsultation", path: "/teleconsult", allowedRoles: ['SUPER_ADMIN', 'ADMIN', 'DOCTOR'] },
+  { icon: Package, label: "Products", path: "/products", allowedRoles: ['SUPER_ADMIN', 'ADMIN'] },
+  { icon: CreditCard, label: "Patient Billing", path: "/billing", allowedRoles: ['SUPER_ADMIN', 'ADMIN', 'DOCTOR'] },
+  { icon: Building2, label: "SaaS Billing", path: "/saas-billing", allowedRoles: ['SUPER_ADMIN', 'ADMIN'] },
+  { icon: Network, label: "Multi-Tenant", path: "/network", allowedRoles: ['SUPER_ADMIN'] },
+  { icon: Bot, label: "AI Assistant", path: "/assistant", allowedRoles: ['SUPER_ADMIN', 'ADMIN', 'DOCTOR'] },
 ];
 
 const bottomNavItems: NavItem[] = [
@@ -62,6 +66,20 @@ export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const filterNavItems = (items: NavItem[]) => {
+    if (!user) return [];
+    return items.filter(item => {
+      // If no roles specified, it's public
+      if (!item.allowedRoles) return true;
+      return item.allowedRoles.includes(user.role);
+    });
+  };
+
+  const filteredNavItems = filterNavItems(navItems);
+  const filteredBottomNavItems = filterNavItems(bottomNavItems);
+  const filteredContentItems = filterNavItems(contentItems);
 
   const NavItemButton = ({ item }: { item: NavItem }) => {
     const isActive = location.pathname === item.path;
@@ -139,7 +157,7 @@ export function AppSidebar() {
         {/* Main Modules */}
         <div className="space-y-1">
           {!collapsed && <h3 className="px-3 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2">Principal</h3>}
-          {navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <NavItemButton key={item.path} item={item} />
           ))}
         </div>
@@ -147,7 +165,7 @@ export function AppSidebar() {
         {/* Content Modules */}
         <div className="space-y-1">
           {!collapsed && <h3 className="px-3 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2">Contenu & Partage</h3>}
-          {contentItems.map((item) => (
+          {filteredContentItems.map((item) => (
             <NavItemButton key={item.path} item={item} />
           ))}
         </div>
@@ -155,7 +173,7 @@ export function AppSidebar() {
 
       {/* Bottom Navigation */}
       <div className="py-4 px-2 border-t border-sidebar-border space-y-1">
-        {bottomNavItems.map((item) => (
+        {filteredBottomNavItems.map((item) => (
           <NavItemButton key={item.path} item={item} />
         ))}
 

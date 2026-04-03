@@ -29,6 +29,7 @@ import { tenantMiddleware } from './backend/middleware/tenant.js';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
+import { tenantRateLimit } from './backend/middleware/tenantRateLimit.js';
 
 // Define __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -161,6 +162,12 @@ app.use(passport.session());
 
 // 3. Multi-Tenant context injected into every request (must be after passport auth)
 app.use(tenantMiddleware);
+// 4. Rate Limiting par Tenant (Isolation)
+app.use('/api/', (req, res, next) => {
+    // On ne rate-limite pas les routes d'authentification avec ça (elles ont leur propre limite)
+    if (req.path.includes('/auth/')) return next();
+    return tenantRateLimit(req, res, next);
+});
 
 const PORT = process.env.PORT || 5000;
 
@@ -200,48 +207,67 @@ app.post('/api/webhooks/stripe',
 
         // Handle the event
         switch (event.type) {
-            case 'checkout.session.completed':
+            case 'checkout.session.completed': {
                 const session = event.data.object;
-                console.log('✅ Payment successful:', session.id);
-                // TODO: Update your database - mark user as subscribed
-                // Example: await updateUserSubscription(session.metadata.userId, session.subscription);
-                break;
+                const tenantId = session.metadata?.tenantId;
+                const plan = session.metadata?.plan || 'PRO';
 
-            case 'invoice.paid':
-                const paidInvoice = event.data.object;
-                console.log('💰 Invoice paid:', paidInvoice.id);
-                // TODO: Extend subscription, send receipt email
+                console.log('✅ Payment successful for Tenant:', tenantId, 'Session:', session.id);
+                
+                if (tenantId) {
+                    try {
+                        await prisma.tenant.update({
+                            where: { id: tenantId },
+                            data: {
+                                stripeCustomerId: session.customer,
+                                stripeSubscriptionId: session.subscription,
+                                plan: plan.toUpperCase(),
+                                subscriptionStatus: 'active'
+                            }
+                        });
+                        console.log(`✓ Tenant ${tenantId} upgraded to ${plan}`);
+                    } catch (e) {
+                         console.error(`Erreur maj plan Tenant:`, e);
+                    }
+                }
                 break;
+            }
 
-            case 'invoice.payment_failed':
-                const failedInvoice = event.data.object;
-                console.log('❌ Invoice payment failed:', failedInvoice.id);
-                // TODO: Notify user, attempt retry, or suspend service
+            case 'customer.subscription.updated': {
+                const subscription = event.data.object;
+                console.log('🔄 Subscription updated:', subscription.id);
+                
+                try {
+                    await prisma.tenant.updateMany({
+                        where: { stripeSubscriptionId: subscription.id },
+                        data: {
+                            subscriptionStatus: subscription.status,
+                            currentPeriodEnd: new Date(subscription.current_period_end * 1000)
+                        }
+                    });
+                } catch (e) {
+                    console.error('Erreur webhook subscription updated', e);
+                }
                 break;
+            }
 
-            case 'customer.subscription.created':
-                const createdSubscription = event.data.object;
-                console.log('🆕 Subscription created:', createdSubscription.id);
-                // TODO: Activate features for user
-                break;
-
-            case 'customer.subscription.updated':
-                const updatedSubscription = event.data.object;
-                console.log('🔄 Subscription updated:', updatedSubscription.id);
-                // TODO: Update subscription status, handle plan changes
-                break;
-
-            case 'customer.subscription.deleted':
+            case 'customer.subscription.deleted': {
                 const deletedSubscription = event.data.object;
                 console.log('🗑️ Subscription deleted:', deletedSubscription.id);
-                // TODO: Mark subscription as canceled in database, downgrade to free
+                
+                try {
+                    await prisma.tenant.updateMany({
+                        where: { stripeSubscriptionId: deletedSubscription.id },
+                        data: {
+                            subscriptionStatus: 'canceled',
+                            plan: 'STARTER' // Rétrograde l'accès au bout de la période
+                        }
+                    });
+                } catch (e) {
+                    console.error('Erreur webhook subscription deleted', e);
+                }
                 break;
-
-            case 'customer.subscription.trial_will_end':
-                const trialEndingSub = event.data.object;
-                console.log('⏰ Trial ending soon:', trialEndingSub.id);
-                // TODO: Send reminder email about trial ending
-                break;
+            }
 
             default:
                 console.log(`Unhandled event type ${event.type}`);
@@ -256,7 +282,14 @@ app.post('/api/webhooks/stripe',
 app.use(bodyParser.json());
 
 import tenantsRoutes from './backend/routes/tenants.js';
+import usersRoutes from './backend/routes/users.js';
+import patientAuthRoutes from './backend/routes/patientAuth.js';
+import patientPortalRoutes from './backend/routes/patientPortal.js';
 app.use('/api/tenants', tenantsRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/patient/auth', patientAuthRoutes);
+app.use('/api/patient/portal', patientPortalRoutes);
+app.use('/api', billingRoutes); // Mount Stripe billing routes 
 
 // ============================================================================
 // HEALTH CHECK (Monitoring)
@@ -353,185 +386,8 @@ let archives = [
     { id: 1, patient: 'John Doe', type: 'Dossier médical', date: '15/01/2023', reason: 'Patient déménagé', size: '12 MB' }
 ];
 
-// Mock subscriptions database
-let subscriptions = {};
-
-// ============================================================================
-// STRIPE ROUTES (WITH MOCK FALLBACK)
-// ============================================================================
-
-const isStripeConfigured = () =>
-    process.env.STRIPE_SECRET_KEY &&
-    process.env.STRIPE_SECRET_KEY.startsWith('sk_') &&
-    !process.env.STRIPE_SECRET_KEY.includes('YOUR_SECRET_KEY');
-
-// Mock helpers
-const mockCheckout = (plan, billingPeriod) => {
-    return {
-        url: `${process.env.FRONTEND_URL || 'http://localhost:3001'}/pricing?success=true&session_id=mock_session_${Date.now()}`
-    };
-};
-
-const mockCreatePortal = () => {
-    return {
-        url: `${process.env.FRONTEND_URL || 'http://localhost:3001'}/subscription?portal_acting=true`
-    };
-};
-
-// Create Checkout Session
-app.post('/api/create-checkout-session', async (req, res) => {
-    const { plan, billingPeriod, email, userId } = req.body;
-
-    if (!email) return res.status(400).json({ error: 'Email required' });
-
-    // MOCK MODE if Stripe not configured
-    if (!isStripeConfigured()) {
-        console.log('⚠️ Stripe not configured. Using MOCK RESPONSE.');
-
-        // Update mock DB to simulate successful subscription immediately for testing
-        const mockSubId = `sub_mock_${Date.now()}`;
-        subscriptions[userId || 'demo-user'] = {
-            id: mockSubId,
-            plan: plan,
-            status: 'active',
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            cancelAtPeriodEnd: false
-        };
-
-        return res.json(mockCheckout(plan, billingPeriod));
-    }
-
-    // REAL STRIPE LOGIC
-    let priceId;
-    if (plan === 'professional') {
-        priceId = billingPeriod === 'annual'
-            ? process.env.STRIPE_PRICE_PRO_ANNUAL
-            : process.env.STRIPE_PRICE_PRO_MONTHLY;
-    }
-
-    if (!priceId) return res.status(400).json({ error: 'Invalid plan or billing period' });
-
-    try {
-        const session = await stripe.checkout.sessions.create({
-            mode: 'subscription',
-            payment_method_types: ['card'],
-            line_items: [{ price: priceId, quantity: 1 }],
-            customer_email: email,
-            success_url: `${process.env.FRONTEND_URL}/pricing?success=true&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.FRONTEND_URL}/pricing?canceled=true`,
-            metadata: { plan, billingPeriod, userId: userId || '' },
-            subscription_data: { trial_period_days: 14 },
-        });
-
-        res.json({ url: session.url });
-    } catch (error) {
-        console.error('Stripe error:', error);
-        res.status(500).json({ error: error.message || 'Internal server error' });
-    }
-});
-
-// Create Stripe Customer Portal Session
-app.post('/api/create-portal-session', async (req, res) => {
-    // MOCK MODE
-    if (!isStripeConfigured()) {
-        return res.json(mockCreatePortal());
-    }
-
-    const { customerId } = req.body;
-    if (!customerId) return res.status(400).json({ error: 'Customer ID required' });
-
-    try {
-        const session = await stripe.billingPortal.sessions.create({
-            customer: customerId,
-            return_url: `${process.env.FRONTEND_URL}/subscription`,
-        });
-        res.json({ url: session.url });
-    } catch (error) {
-        console.error('Error creating portal session:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Upgrade subscription
-app.post('/api/upgrade-subscription', async (req, res) => {
-    // MOCK MODE
-    if (!isStripeConfigured()) {
-        const { subscriptionId, newPriceId } = req.body;
-        // Mock update
-        return res.json({ success: true, subscription: { id: subscriptionId, items: { data: [{ price: { id: newPriceId } }] } } });
-    }
-
-    const { subscriptionId, newPriceId } = req.body;
-    if (!subscriptionId || !newPriceId) return res.status(400).json({ error: 'Subscription ID and new price ID required' });
-
-    try {
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-        const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
-            items: [{
-                id: subscription.items.data[0].id,
-                price: newPriceId,
-            }],
-            proration_behavior: 'create_prorations',
-        });
-        res.json({ success: true, subscription: updatedSubscription });
-    } catch (error) {
-        console.error('Error upgrading subscription:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Get subscription info
-app.get('/api/subscription', async (req, res) => {
-    // Mock: In production, get userId from authenticated session
-    const userId = req.query.userId || 'user-1';
-    // Fallback to demo-user if user-1 has no sub (for easy testing)
-    const mockSubscription = subscriptions[userId] || subscriptions['demo-user'] || null;
-
-    res.json({
-        subscription: mockSubscription || {
-            plan: 'free',
-            status: 'active',
-            currentPeriodEnd: null,
-            cancelAtPeriodEnd: false
-        }
-    });
-});
-
-// Cancel subscription
-app.post('/api/cancel-subscription', async (req, res) => {
-    const userId = req.body.userId || 'user-1';
-
-    // MOCK MODE logic included in main flow via mock DB update
-    if (!isStripeConfigured()) {
-        if (subscriptions[userId]) {
-            subscriptions[userId].cancelAtPeriodEnd = true;
-            return res.json({ success: true, subscription: subscriptions[userId] });
-        } else if (subscriptions['demo-user']) {
-            subscriptions['demo-user'].cancelAtPeriodEnd = true;
-            return res.json({ success: true, subscription: subscriptions['demo-user'] });
-        }
-        return res.json({ success: true });
-    }
-
-    const subscriptionId = req.body.subscriptionId;
-    if (!subscriptionId) return res.status(400).json({ error: 'Subscription ID required' });
-
-    try {
-        const subscription = await stripe.subscriptions.update(subscriptionId, {
-            cancel_at_period_end: true,
-        });
-
-        // Update local mock DB
-        if (subscriptions[userId]) {
-            subscriptions[userId] = { ...subscriptions[userId], cancelAtPeriodEnd: true };
-        }
-
-        res.json({ success: true, subscription });
-    } catch (error) {
-        console.error('Error canceling subscription:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
+// STRIPE ROUTES have been migrated to backend/routes/billing.js
+// and mounted at /api
 
 // ============================================================================
 // AUTHENTICATION

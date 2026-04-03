@@ -15,7 +15,10 @@ import {
   Database,
   Wifi,
   WifiOff,
+  UserPlus,
 } from "lucide-react";
+import { TeamManagement } from "@/components/settings/TeamManagement";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Settings() {
   return (
@@ -28,6 +31,19 @@ export default function Settings() {
               Manage your clinic preferences and system configuration
             </p>
           </div>
+
+          {/* Team Management - Only for ADMIN or SUPER_ADMIN */}
+          {(useAuth().user?.role === 'ADMIN' || useAuth().user?.role === 'SUPER_ADMIN') && (
+            <section className="space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <UserPlus className="h-6 w-6 text-primary" />
+                <h2 className="text-xl font-bold">Gestion d'Équipe</h2>
+              </div>
+              <TeamManagement />
+            </section>
+          )}
+
+          <Separator className="bg-white/5" />
 
           {/* Profile Settings */}
           <Card className="glass-card">

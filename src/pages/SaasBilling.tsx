@@ -33,6 +33,8 @@ import {
 } from '@/data/saas-billing-mock';
 import type { SaasInvoice, PaymentMethodConfig } from '@/types/saas-billing';
 import { toast } from 'sonner';
+import { api } from '@/lib/api';
+import { useTenant } from '@/contexts/TenantContext';
 
 type SectionType = 'overview' | 'plans' | 'invoices' | 'payment-methods';
 
@@ -57,19 +59,42 @@ export default function SaasBilling() {
   const [selectedInvoice, setSelectedInvoice] = useState<SaasInvoice | null>(null);
   const [showPlanDialog, setShowPlanDialog] = useState(false);
   const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
+  const [isProcessingPlan, setIsProcessingPlan] = useState(false);
+  const { currentTenant } = useTenant();
 
-  const currentPlan = getPlanById(mockTenant.planId);
+  const currentPlan = getPlanById(currentTenant?.plan || mockTenant.planId) || getPlanById(mockTenant.planId);
 
   const handlePlanSelect = (planId: string) => {
-    if (planId === mockTenant.planId) return;
+    if (planId === (currentTenant?.plan || mockTenant.planId)) return;
     setPendingPlanId(planId);
     setShowPlanDialog(true);
   };
 
-  const confirmPlanChange = () => {
-    toast.success('Demande de changement de plan envoyée. Un conseiller vous contactera.');
-    setShowPlanDialog(false);
-    setPendingPlanId(null);
+  const confirmPlanChange = async () => {
+    if (!pendingPlanId) return;
+    
+    setIsProcessingPlan(true);
+    try {
+      // Call backend to generate Stripe Checkout URL
+      const res = await api.post('/create-checkout-session', {
+        plan: pendingPlanId,
+        billingPeriod: billingCycle,
+        email: 'billing@doctic.com', // Typically from current user auth
+        tenantId: currentTenant?.id || 'demo-tenant-id'
+      });
+      
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      } else {
+        toast.success('Demande de changement de plan validée.');
+        setShowPlanDialog(false);
+        setPendingPlanId(null);
+      }
+    } catch (error) {
+      toast.error((error as Error).message || 'Erreur lors du changement de plan');
+    } finally {
+      setIsProcessingPlan(false);
+    }
   };
 
   const handleSetDefaultPayment = (id: string) => {
@@ -377,11 +402,11 @@ export default function SaasBilling() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setShowPlanDialog(false)}>
+            <Button variant="outline" onClick={() => setShowPlanDialog(false)} disabled={isProcessingPlan}>
               Annuler
             </Button>
-            <Button onClick={confirmPlanChange}>
-              Confirmer le changement
+            <Button onClick={confirmPlanChange} disabled={isProcessingPlan}>
+              {isProcessingPlan ? 'Redirection Stripe...' : 'Confirmer le changement'}
             </Button>
           </div>
         </DialogContent>

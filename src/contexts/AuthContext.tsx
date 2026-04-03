@@ -36,14 +36,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Pour la flexibilité (Auth en dehors du Router), on injecte le comportement
   
   const refresh = useCallback(async () => {
-    // BYPASS AUTHENTICATION
-    setUser({
-      id: 'debug-user',
-      name: 'Dr. Admin',
-      email: 'admin@doctic.fr',
-      role: 'SUPER_ADMIN'
-    });
-    setLoading(false);
+    setLoading(true);
+    try {
+      const res = await authApi.me();
+      setUser(res.data.user);
+    } catch (err) {
+      console.warn("Auth check failed or no session:", err);
+      // Fallback only in development to have a SUPER_ADMIN for testing
+      if (process.env.NODE_ENV === 'development') {
+        setUser({
+          id: 'dev-super-admin',
+          firstName: 'Super',
+          lastName: 'Admin',
+          email: 'admin@doctic.care',
+          role: 'SUPER_ADMIN',
+          tenantId: 'system'
+        } as any);
+      } else {
+        setUser(null);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
