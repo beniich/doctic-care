@@ -1,9 +1,11 @@
 import express from 'express';
 import { stripe, isStripeConfigured } from '../config/stripe.js';
 import prisma from '../config/db.js';
-import { subscriptionsData } from '../data/mocks.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 /**
  * 💳 STRIPE / BILLING ROUTES
@@ -43,11 +45,6 @@ router.post('/create-checkout-session', async (req, res) => {
                         currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
                     }
                 });
-            } else {
-                subscriptionsData[userId || 'demo-user'] = {
-                    id: `sub_mock_${Date.now()}`, plan, status: 'active',
-                    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), cancelAtPeriodEnd: false
-                };
             }
         } catch(e) {
             console.error("Mock Stripe error saving to DB:", e);
@@ -144,23 +141,31 @@ router.post('/upgrade-subscription', async (req, res) => {
 
 // 4. Get Subscription Info
 router.get('/subscription', async (req, res) => {
-    const userId = req.query.userId || 'demo-user';
-    const mockSubscription = subscriptionsData[userId] || subscriptionsData['demo-user'] || null;
-    res.json({ subscription: mockSubscription || { plan: 'free', status: 'active', currentPeriodEnd: null, cancelAtPeriodEnd: false } });
+    try {
+        const tenant = await prisma.tenant.findUnique({
+            where: { id: req.user.tenantId }
+        });
+        res.json({ subscription: tenant || { plan: 'free', status: 'active', currentPeriodEnd: null, cancelAtPeriodEnd: false } });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch subscription' });
+    }
 });
 
 // 5. Cancel Subscription
 router.post('/cancel-subscription', async (req, res) => {
-    const userId = req.body.userId || 'demo-user';
+    const targetTenantId = req.user.tenantId;
+
     if (!isStripeConfigured()) {
-        if (subscriptionsData[userId]) subscriptionsData[userId].cancelAtPeriodEnd = true;
-        return res.json({ success: true, subscription: subscriptionsData[userId] });
+        await prisma.tenant.update({
+            where: { id: targetTenantId },
+            data: { subscriptionStatus: 'canceled' }
+        });
+        return res.json({ success: true });
     }
 
     const { subscriptionId } = req.body;
     try {
         const subscription = await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true });
-        if (subscriptionsData[userId]) subscriptionsData[userId].cancelAtPeriodEnd = true;
         res.json({ success: true, subscription });
     } catch (error) {
         res.status(500).json({ error: error.message });

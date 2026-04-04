@@ -30,6 +30,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
 import { tenantRateLimit } from './backend/middleware/tenantRateLimit.js';
+import rgpdRoutes from './backend/routes/rgpd.js';
 
 // Define __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -289,8 +290,14 @@ app.use('/api/tenants', tenantsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/patient/auth', patientAuthRoutes);
 app.use('/api/patient/portal', patientPortalRoutes);
-app.use('/api', billingRoutes); // Mount Stripe billing routes 
-
+app.use('/api/auth', authRoutes);
+app.use('/api/clinical', clinicalRoutes);
+app.use('/api/billing', billingRoutes);
+app.use('/api/teleconsult', teleconsultRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/rgpd', rgpdRoutes);
 // ============================================================================
 // HEALTH CHECK (Monitoring)
 // ============================================================================
@@ -795,144 +802,8 @@ app.post('/api/prescriptions', async (req, res) => {
 
 // ============================================================================
 // ARCHIVES ROUTES
-// ============================================================================
-
-app.get('/api/archives', (req, res) => res.json({ data: archives }));
-app.post('/api/archives', (req, res) => {
-    const newArchive = { id: archives.length + 1, ...req.body };
-    archives.push(newArchive);
-    res.status(201).json({ data: newArchive });
-});
-
-// ============================================================================
-// CDV INTEGRATED MOCK ROUTES (AI, TELECONSULT, NOTIFS, SUBSCRIPTIONS, RGPD)
-// ============================================================================
-
-// --- AI ---
-app.post('/api/ai/chat', (req, res) => {
-    const messages = req.body.messages || [];
-    const lastMessage = messages[messages.length - 1]?.content || 'Bonjour';
-    res.json({ data: { content: `**MOCK IA Doctic**\n\nJ'ai bien reçu votre message : "${lastMessage}".\nJe suis actuellement en mode hors-ligne simulé. Pour activer l'IA complète, veuillez configurer la clé API OpenAI ou Anthropic.` } });
-});
-
-app.post('/api/ai/diagnosis', (req, res) => {
-    const { symptoms } = req.body;
-    res.json({ data: { content: `### Diagnostic Différentiel Stimulé\n\nBasé sur : *${symptoms || 'Non défini'}*\n\n1. **Hypothèse A** - 40%\n2. **Hypothèse B** - 30%\n\n> Ceci est une simulation. Consultez un professionnel.` } });
-});
-
-app.post('/api/ai/medical-report', (req, res) => {
-    res.json({ data: { content: `## Compte Rendu Médical\n\n**Date :** ${new Date().toLocaleDateString()}\n**Médecin :** Dr. Anderson\n\n- Patient vu ce jour.\n- Examen clinique sans particularité majeure.\n\n*Document généré automatiquement.*` } });
-});
-app.post('/api/ai/lab-analysis', (req, res) => res.json({ data: { content: "Analyse biologique interprétée (Mock dynamique)." } }));
-app.post('/api/ai/transcribe', (req, res) => res.json({ data: { text: "Ceci est la transcription audio (Mock)." } }));
-
-// --- TELECONSULT ---
-app.get('/api/teleconsult', async (req, res) => {
-    try {
-        const sessions = await prisma.teleconsultSession.findMany({
-            include: { patient: { select: { firstName: true, lastName: true } } }
-        });
-        res.json({ data: sessions });
-    } catch (e) {
-        res.json({ data: [] });
-    }
-});
-app.post('/api/teleconsult', async (req, res) => {
-    try {
-        let doctor = await prisma.user.findFirst({ where: { role: 'DOCTOR' } });
-        const newSession = await prisma.teleconsultSession.create({
-            data: {
-                patientId: req.body.patientId,
-                doctorId: doctor.id,
-                scheduledDate: new Date(req.body.scheduledAt || Date.now()),
-                status: 'SCHEDULED'
-            }
-        });
-        res.json({ data: newSession });
-    } catch (e) {
-        res.json({ data: { id: "tele-" + Date.now() } });
-    }
-});
-app.post('/api/teleconsult/:id/join', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const roomUrl = `https://meet.jit.si/DocticRoom_${id}`;
-        await prisma.teleconsultSession.update({
-            where: { id },
-            data: { status: 'IN_PROGRESS', roomUrl }
-        });
-        res.json({ data: { roomId: id, roomToken: "tok", roomUrl } });
-    } catch (e) {
-        res.json({ data: { roomId: req.params.id, roomToken: "tok", roomUrl: "https://meet.jit.si/DocticRoom" } });
-    }
-});
-app.post('/api/teleconsult/:id/end', async (req, res) => {
-    try {
-        await prisma.teleconsultSession.update({
-            where: { id: req.params.id },
-            data: { status: 'COMPLETED' }
-        });
-        res.json({ data: { success: true } });
-    } catch(e) {
-        res.json({ data: { success: true } });
-    }
-});
-
-// --- NOTIFICATIONS & SSE ---
-const sseClients = new Set();
-app.get('/api/notifications', (req, res) => res.json({ data: [] }));
-app.patch('/api/notifications/:id/read', (req, res) => res.json({ data: { success: true } }));
-app.get('/api/notifications/stream', (req, res) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders(); 
-
-    sseClients.add(res);
-
-    req.on('close', () => {
-        sseClients.delete(res);
-    });
-
-    res.write(`data: ${JSON.stringify({ type: 'connected', message: 'SSE Connection Established' })}\n\n`);
-    
-    const intervalId = setInterval(() => {
-        res.write(`data: ${JSON.stringify({ type: 'ping' })}\n\n`);
-    }, 30000);
-
-    req.on('close', () => clearInterval(intervalId));
-});
-
-// Broadcast helper for tests
-app.post('/api/notifications/test-broadcast', (req, res) => {
-    const payload = JSON.stringify({ type: 'notification', data: req.body });
-    sseClients.forEach(client => client.write(`data: ${payload}\n\n`));
-    res.json({ data: { success: true, clients: sseClients.size } });
-});
-
-// --- RGPD MOCK ---
-app.get('/api/rgpd/export/:id', (req, res) => res.json({ data: { patientId: req.params.id, message: "Export RGPD généré" } }));
-app.delete('/api/rgpd/erase/:id', (req, res) => res.json({ data: { success: true, message: "Données anonymisées conformément au RGPD" } }));
-app.get('/api/rgpd/audit-report', (req, res) => res.json({ data: [] }));
-
-// --- MINOR ---
-app.get('/api/subscriptions/current', (req, res) => res.json({ data: null }));
-app.get('/api/subscriptions/plans', (req, res) => res.json({ data: [] }));
-app.get('/api/analytics/dashboard', (req, res) => res.json({ data: { patients: {total: 42, trend: 12, newThisMonth: 5}, appointments: {today: 8, pending: 2}, revenue: {thisMonth: 12000, trend: 5}, teleconsults: {active: 2}, weeklyActivity: [], alerts: {overdueInvoices: 1} } }));
-
-app.get('/api/analytics/revenue', (req, res) => {
-    res.json({
-        data: [
-            { month: 'Jan', revenue: 4000, invoices: 12 },
-            { month: 'Fév', revenue: 5500, invoices: 18 },
-            { month: 'Mar', revenue: 8000, invoices: 24 }
-        ]
-    });
-});
-
-app.get('/api/analytics/audit', (req, res) => {
-    res.json({ data: [] });
-});
+// ======================================// Modular Routes mounted above take precedence.
+// The code below is being removed to migrate to the modular architecture.
 
 // ============================================================================
 // SERVE FRONTEND (MUST BE LAST)

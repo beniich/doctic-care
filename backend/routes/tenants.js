@@ -1,7 +1,10 @@
 import express from 'express';
 import prisma from '../config/db.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 // Middleware de vérification SUPER_ADMIN
 const requireSuperAdmin = (req, res, next) => {

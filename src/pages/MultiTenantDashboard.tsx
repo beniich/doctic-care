@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Building2, BarChart3, Map, Plus, Search, Filter, Download } from 'lucide-react';
 import { OutlookLayout } from '@/components/layout/OutlookLayout';
 import { ListPane } from '@/components/layout/ListPane';
@@ -25,15 +25,13 @@ import {
 import { TenantCard } from '@/components/multi-tenant/TenantCard';
 import { NetworkStats } from '@/components/multi-tenant/NetworkStats';
 import { NetworkCharts } from '@/components/multi-tenant/NetworkCharts';
-import {
-  mockTenants,
-  mockNetworkAnalytics,
-  getCountryFlag,
-  getCountryName,
-  type TenantWithMetrics,
-} from '@/data/multi-tenant-mock';
 import { formatCurrency, getStatusColor, getPlanById } from '@/data/saas-billing-mock';
 import { toast } from 'sonner';
+
+// Keep types for compatibility
+import { type TenantWithMetrics } from '@/data/multi-tenant-mock';
+
+const API_BASE = '/api';
 
 type ViewType = 'analytics' | 'cabinets' | 'map';
 
@@ -56,16 +54,49 @@ export default function MultiTenantDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [planFilter, setPlanFilter] = useState<string>('all');
   const [selectedTenant, setSelectedTenant] = useState<TenantWithMetrics | null>(null);
+  
+  const [tenants, setTenants] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredTenants = mockTenants.filter((tenant) => {
-    const matchesSearch = tenant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tenant.adminEmail.toLowerCase().includes(searchQuery.toLowerCase());
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [tenantsRes, analyticsRes] = await Promise.all([
+          fetch(`${API_BASE}/tenants`),
+          fetch(`${API_BASE}/analytics/dashboard`)
+        ]);
+
+        if (tenantsRes.ok) {
+          const tenantsJson = await tenantsRes.json();
+          setTenants(tenantsJson.data || []);
+        }
+
+        if (analyticsRes.ok) {
+          const analyticsJson = await analyticsRes.json();
+          setAnalytics(analyticsJson.data);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        toast.error('Erreur lors du chargement des données');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const filteredTenants = tenants.filter((tenant) => {
+    const matchesSearch = (tenant.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (tenant.adminEmail || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || tenant.subscriptionStatus === statusFilter;
     const matchesPlan = planFilter === 'all' || tenant.planId === planFilter;
     return matchesSearch && matchesStatus && matchesPlan;
   });
 
-  const countries = [...new Set(mockTenants.map(t => t.country))];
+  const countries = [...new Set(tenants.map(t => t.country))];
 
   const renderListPane = () => (
     <ListPane
@@ -74,7 +105,7 @@ export default function MultiTenantDashboard() {
       onSearch={() => {}}
       actions={
         <Badge variant="secondary">
-          {mockTenants.length} cabinets
+          {tenants.length} cabinets
         </Badge>
       }
     >
@@ -106,16 +137,16 @@ export default function MultiTenantDashboard() {
           <CardContent className="p-4 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Revenu total</span>
-              <span className="font-bold text-primary">{formatCurrency(mockNetworkAnalytics.totalRevenue)}</span>
+              <span className="font-bold text-primary">{formatCurrency(analytics?.revenue?.thisMonth || 0)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Patients</span>
-              <span className="font-semibold">{mockNetworkAnalytics.totalPatients.toLocaleString('fr-FR')}</span>
+              <span className="font-semibold">{(analytics?.patients?.total || 0).toLocaleString('fr-FR')}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Croissance</span>
               <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                +{mockNetworkAnalytics.growthRate}%
+                +{analytics?.patients?.trend || 0}%
               </Badge>
             </div>
           </CardContent>
@@ -144,8 +175,12 @@ export default function MultiTenantDashboard() {
         </Button>
       </div>
 
-      <NetworkStats analytics={mockNetworkAnalytics} />
-      <NetworkCharts analytics={mockNetworkAnalytics} />
+      {analytics && (
+        <>
+          <NetworkStats analytics={analytics} />
+          <NetworkCharts analytics={analytics} />
+        </>
+      )}
     </div>
   );
 

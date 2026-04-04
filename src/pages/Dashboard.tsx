@@ -10,6 +10,7 @@ import { useTenant } from "@/contexts/TenantContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const { t } = useTranslation();

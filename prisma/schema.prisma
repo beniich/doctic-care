@@ -11,6 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // ========================================
@@ -50,6 +51,7 @@ model Tenant {
   medicalRecords      MedicalRecord[]
   invoices            Invoice[]
   invitations         Invitation[]
+  notifications       Notification[]
 
   @@index([slug])
   @@index([active])
@@ -102,6 +104,7 @@ model User {
   auditLogs           AuditLog[]
   prescriptions       Prescription[]
   teleconsultSessions TeleconsultSession[] @relation("DoctorSessions")
+  notifications       Notification[]
 
   @@index([email])
   @@index([googleId])
@@ -445,4 +448,33 @@ model Session {
   expiresAt DateTime
 
   @@index([expiresAt])
+}
+
+// ========================================
+// NOTIFICATIONS (Real-time storage)
+// ========================================
+
+model Notification {
+  id        String   @id @default(uuid())
+  tenantId  String?
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id])
+  
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ERROR, APPOINTMENT, BILLING
+  isRead    Boolean  @default(false)
+  
+  link      String?  // CTA link (e.g. "/appointments/123")
+  metadata  Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
 }

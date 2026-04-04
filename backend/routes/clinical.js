@@ -1,8 +1,10 @@
 import express from 'express';
 import prisma from '../config/db.js';
-import { archivesData } from '../data/mocks.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 /**
  * 📝 CLINICAL & PRESCRIPTIONS ROUTES
@@ -12,6 +14,7 @@ const router = express.Router();
 router.get('/prescriptions', async (req, res) => {
     try {
         const prescriptions = await prisma.prescription.findMany({
+            where: { tenantId: req.user.tenantId },
             include: {
                 patient: { select: { firstName: true, lastName: true } },
                 medications: true
@@ -25,7 +28,7 @@ router.get('/prescriptions', async (req, res) => {
         }));
         res.json({ data: mapped });
     } catch (err) {
-        console.error(err);
+        console.error('Prescription Fetch Error:', err);
         res.status(500).json({ error: 'Failed to fetch prescriptions' });
     }
 });
@@ -33,23 +36,26 @@ router.get('/prescriptions', async (req, res) => {
 // 2. Create new prescription
 router.post('/prescriptions', async (req, res) => {
     try {
-        let doctor = await prisma.user.findFirst({ where: { role: 'DOCTOR' } });
         let { patientId, patient: patientName, medications } = req.body;
 
         if (!patientId && patientName) {
             const parts = patientName.split(' ');
             const p = await prisma.patient.findFirst({
-                where: { firstName: { contains: parts[0], mode: 'insensitive' } }
+                where: { 
+                    firstName: { contains: parts[0], mode: 'insensitive' },
+                    tenantId: req.user.tenantId
+                }
             });
             if (p) patientId = p.id;
         }
 
-        if (!patientId || !doctor) return res.status(400).json({ error: 'Patient or Doctor not found' });
+        if (!patientId) return res.status(400).json({ error: 'Patient not found' });
 
         const newPres = await prisma.prescription.create({
             data: {
+                tenantId: req.user.tenantId,
                 patientId,
-                doctorId: doctor.id,
+                doctorId: req.user.id,
                 medications: {
                     create: medications
                 },
@@ -60,22 +66,24 @@ router.post('/prescriptions', async (req, res) => {
         res.status(201).json({ data: newPres });
 
     } catch (err) {
-        console.error(err);
+        console.error('Prescription Create Error:', err);
         res.status(500).json({ error: 'Failed to create prescription' });
     }
 });
 
 // 3. Archives
-router.get('/archives', (req, res) => res.json({ data: archivesData }));
-router.post('/archives', (req, res) => {
-    const newArchive = { id: archivesData.length + 1, ...req.body };
-    archivesData.push(newArchive);
-    res.status(201).json({ data: newArchive });
+router.get('/archives', async (req, res) => {
+    try {
+        // Archives logic: typically old medical records or specific archived patients
+        const records = await prisma.medicalRecord.findMany({
+            where: { tenantId: req.user.tenantId },
+            include: { patient: true },
+            take: 100
+        });
+        res.json({ data: records });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch archives' });
+    }
 });
-
-// 4. RGPD Support (Mocks)
-router.get('/rgpd/export/:id', (req, res) => res.json({ data: { patientId: req.params.id, message: "Export RGPD généré" } }));
-router.delete('/rgpd/erase/:id', (req, res) => res.json({ data: { success: true, message: "Données anonymisées conformément au RGPD" } }));
-router.get('/rgpd/audit-report', (req, res) => res.json({ data: [] }));
 
 export default router;

@@ -1,11 +1,6 @@
 // ============================================================
 // Doctic Care — backend/services/auditService.js
-// Service d'audit HIPAA / RGPD
-// ============================================================
-
-import { PrismaClient } from '@prisma/prisma-client';
-// Note: Dans un environnement réel, on utiliserait le client partagé
-const prisma = new PrismaClient();
+import prisma from '../config/db.js';
 
 /**
  * Enregistre une action dans les logs d'audit (Table audit_logs)

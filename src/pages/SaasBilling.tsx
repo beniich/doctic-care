@@ -22,11 +22,7 @@ import { PaymentMethodCard } from '@/components/saas-billing/PaymentMethodCard';
 import { SaasInvoiceList } from '@/components/saas-billing/SaasInvoiceList';
 import {
   mockPlans,
-  mockTenant,
-  mockSubscription,
-  mockInvoices,
   mockPaymentMethods,
-  mockUsageMetrics,
   getPlanById,
   formatCurrency,
   getStatusColor,
@@ -35,6 +31,7 @@ import type { SaasInvoice, PaymentMethodConfig } from '@/types/saas-billing';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { useTenant } from '@/contexts/TenantContext';
+import { useEffect } from 'react';
 
 type SectionType = 'overview' | 'plans' | 'invoices' | 'payment-methods';
 
@@ -60,9 +57,35 @@ export default function SaasBilling() {
   const [showPlanDialog, setShowPlanDialog] = useState(false);
   const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
   const [isProcessingPlan, setIsProcessingPlan] = useState(false);
+  const [invoices, setInvoices] = useState<SaasInvoice[]>([]);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [usage, setUsage] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   const { currentTenant } = useTenant();
 
-  const currentPlan = getPlanById(currentTenant?.plan || mockTenant.planId) || getPlanById(mockTenant.planId);
+  useEffect(() => {
+    const fetchBillingData = async () => {
+      setLoading(true);
+      try {
+        const [subRes, invRes] = await Promise.all([
+          api.get('/billing/subscription'),
+          api.get('/clinical/invoices') // Assuming invoices are here per Sprint B
+        ]);
+
+        if (subRes.data) setSubscription(subRes.data.subscription);
+        if (invRes.data) setInvoices(invRes.data.data);
+      } catch (error) {
+        console.error('Error fetching billing data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBillingData();
+  }, []);
+
+  const currentPlan = getPlanById(currentTenant?.plan || subscription?.plan || 'STARTER') || getPlanById('STARTER');
 
   const handlePlanSelect = (planId: string) => {
     if (planId === (currentTenant?.plan || mockTenant.planId)) return;
@@ -120,8 +143,8 @@ export default function SaasBilling() {
       searchPlaceholder="Rechercher..."
       onSearch={() => {}}
       actions={
-        <Badge className={getStatusColor(mockTenant.subscriptionStatus)}>
-          {mockTenant.subscriptionStatus.toUpperCase()}
+        <Badge className={getStatusColor(currentTenant?.subscriptionStatus || subscription?.status || 'active')}>
+          {(currentTenant?.subscriptionStatus || subscription?.status || 'active').toUpperCase()}
         </Badge>
       }
     >
@@ -152,7 +175,7 @@ export default function SaasBilling() {
         <Card>
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Cabinet</p>
-            <p className="font-semibold">{mockTenant.name}</p>
+            <p className="font-semibold">{currentTenant?.name || 'Ma Clinique'}</p>
             <p className="text-sm text-muted-foreground mt-2">Plan actuel</p>
             <p className="font-semibold">{currentPlan?.name}</p>
           </CardContent>
@@ -169,11 +192,11 @@ export default function SaasBilling() {
       </div>
 
       {currentPlan && (
-        <SubscriptionStatus
-          tenant={mockTenant}
-          subscription={mockSubscription}
+        <SubscriptionStatus 
+          tenant={currentTenant || { name: 'Clinique', plan: 'STARTER', subscriptionStatus: 'active' } as any}
+          subscription={subscription || { status: 'active', currentPeriodEnd: null }}
           plan={currentPlan}
-          usage={mockUsageMetrics}
+          usage={usage || { patientsCount: 0, appointmentsMonth: 0, storageUsed: 0 }}
           onManage={() => setSelectedSection('plans')}
         />
       )}
@@ -183,12 +206,12 @@ export default function SaasBilling() {
           <CardTitle className="text-lg">Dernières factures</CardTitle>
         </CardHeader>
         <CardContent>
-          <SaasInvoiceList
-            invoices={mockInvoices.slice(0, 3)}
+          <SaasInvoiceList 
+            invoices={invoices.slice(0, 3)} 
             onViewInvoice={setSelectedInvoice}
           />
-          <Button
-            variant="link"
+          <Button 
+            variant="link" 
             className="mt-2"
             onClick={() => setSelectedSection('invoices')}
           >
@@ -230,7 +253,7 @@ export default function SaasBilling() {
           <PlanCard
             key={plan.id}
             plan={plan}
-            currentPlanId={mockTenant.planId}
+            currentPlanId={currentTenant?.plan || subscription?.plan || 'STARTER'}
             billingCycle={billingCycle}
             onSelect={handlePlanSelect}
           />
@@ -251,7 +274,7 @@ export default function SaasBilling() {
       <Card>
         <CardContent className="p-0">
           <SaasInvoiceList
-            invoices={mockInvoices}
+            invoices={invoices}
             onViewInvoice={setSelectedInvoice}
           />
         </CardContent>

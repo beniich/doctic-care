@@ -1,6 +1,9 @@
 import express from 'express';
 import passport from '../config/passport.js';
 import auditRequest from '../middleware/auditRequest.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import prisma from '../config/db.js';
 
 const router = express.Router();
 
@@ -51,25 +54,77 @@ router.get('/csrf-token', (req, res) => {
     }
 });
 
-// 6. Legacy/Dev Mock Login (Demo fallback)
-router.post('/login', auditRequest('USER_LOGIN'), (req, res) => {
-    const { email, password, role } = req.body;
-    // Mock login - accept any email/password for demo
-    if (email) {
+// 6. Real JWT Login (Production Ready)
+router.post('/login', auditRequest('USER_LOGIN'), async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { email },
+            include: { tenant: true }
+        });
+
+        if (!user || !user.active) {
+            return res.status(401).json({ error: 'Invalid credentials or inactive account' });
+        }
+
+        // Si l'utilisateur n'a pas de mot de passe (OAuth uniquement)
+        if (!user.password) {
+            return res.status(401).json({ error: 'Please use Google Login for this account' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            // Update failed attempts
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { failedLoginAttempts: { increment: 1 } }
+            });
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Reset failed attempts on success
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { 
+                failedLoginAttempts: 0,
+                lastLogin: new Date()
+            }
+        });
+
+        // Generate JWT
+        const token = jwt.sign(
+            { 
+                id: user.id, 
+                email: user.email, 
+                role: user.role,
+                tenantId: user.tenantId 
+            },
+            process.env.JWT_SECRET || 'your-fallback-secret',
+            { expiresIn: '24h' }
+        );
+
         res.json({
             data: {
-                token: 'mock-jwt-token-12345',
+                token,
                 user: {
-                    id: '1',
-                    firstName: 'Dr. Anderson',
-                    lastName: '',
-                    email: email,
-                    role: role || 'DOCTOR'
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    role: user.role,
+                    tenantId: user.tenantId,
+                    tenantName: user.tenant?.name
                 }
             }
         });
-    } else {
-        res.status(401).json({ error: 'Invalid credentials' });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

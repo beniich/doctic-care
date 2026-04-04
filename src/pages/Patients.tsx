@@ -11,7 +11,7 @@ import DiagnosisPanel from '@/components/ai/DiagnosisPanel';
 
 // Type Patient
 export interface Patient {
-  id: number;
+  id: string; // UUID from Prisma
   name: string;
   patientId?: string;
   email: string;
@@ -52,8 +52,9 @@ export default function Patients() {
     try {
       const response = await fetch(API_URL);
       if (!response.ok) throw new Error('Erreur lors du chargement des patients');
-      const data = await response.json();
-      setPatients(data);
+      const json = await response.json();
+      // Handle the { data: [...] } structure from modular backend
+      setPatients(json.data || json);
     } catch (err) {
       setError('Impossible de charger les patients. Vérifiez que le backend est lancé.');
       console.error(err);
@@ -106,10 +107,11 @@ export default function Patients() {
 
       if (!response.ok) throw new Error('Erreur lors de la sauvegarde');
 
-      const savedPatient = await response.json();
+      const json = await response.json();
+      const savedPatient = json.data || json;
+      
       if (editingPatient) {
         setPatients(prev => prev.map(p => p.id === editingPatient.id ? savedPatient : p));
-        // Update selected if needed
         if (selectedPatient?.id === editingPatient.id) {
           setSelectedPatient(savedPatient);
         }
@@ -117,16 +119,14 @@ export default function Patients() {
         setPatients(prev => [...prev, savedPatient]);
       }
 
-      // toast?.({ title: 'Succès', description: 'Patient sauvegardé avec succès' });
       setIsNewModalOpen(false);
     } catch (err) {
       console.error(err);
-      // toast?.({ title: 'Erreur', description: 'Échec de la sauvegarde', variant: 'destructive' });
       alert('Erreur lors de la sauvegarde');
     }
   };
 
-  const handleDeletePatient = async (id: number) => {
+  const handleDeletePatient = async (id: string) => {
     if (!window.confirm('Supprimer définitivement ce patient ?')) return;
 
     try {
@@ -135,16 +135,27 @@ export default function Patients() {
 
       setPatients(prev => prev.filter(p => p.id !== id));
       if (selectedPatient?.id === id) setSelectedPatient(null);
-      // toast?.({ title: 'Succès', description: 'Patient supprimé' });
     } catch (err) {
       console.error(err);
-      // toast?.({ title: 'Erreur', description: 'Échec suppression', variant: 'destructive' });
       alert('Erreur lors de la suppression');
     }
   };
 
-  const handleArchivePatient = async (id: number) => {
-    alert('Fonctionnalité archivage à implémenter (API /api/archives)');
+  const handleArchivePatient = async (id: string) => {
+    if (!window.confirm('Archiver ce patient ?')) return;
+    try {
+      const response = await fetch(`${API_URL}/${id}/archive`, { method: 'PATCH' });
+      if (!response.ok) throw new Error('Erreur archivage');
+      
+      const json = await response.json();
+      const archivedPatient = json.data || json;
+      
+      setPatients(prev => prev.map(p => p.id === id ? archivedPatient : p));
+      if (selectedPatient?.id === id) setSelectedPatient(archivedPatient);
+    } catch (err) {
+      console.error(err);
+      alert('Erreur lors de l\'archivage');
+    }
   };
 
   const handlePrintFiche = () => {

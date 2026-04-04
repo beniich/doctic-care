@@ -1,17 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import pg from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
 import pkg from '@prisma/client';
 
-const { Pool } = pg;
 const { PrismaClient } = pkg;
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/doctic_care';
-
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const basePrisma = new PrismaClient({ adapter });
+process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/doctic_care';
+const basePrisma = new PrismaClient({ datasourceUrl: process.env.DATABASE_URL });
 
 import { tenantContext } from '../middleware/tenant.js';
 

@@ -1,7 +1,10 @@
 import express from 'express';
 import prisma from '../config/db.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 /**
  * 📹 TELECONSULTATION ROUTES
@@ -11,44 +14,61 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const sessions = await prisma.teleconsultSession.findMany({
-            include: { patient: { select: { firstName: true, lastName: true } } }
+            where: { tenantId: req.user.tenantId },
+            include: { patient: { select: { firstName: true, lastName: true } } },
+            orderBy: { scheduledDate: 'asc' }
         });
         res.json({ data: sessions });
     } catch (e) {
-        res.json({ data: [] });
+        console.error('Teleconsult Fetch Error:', e);
+        res.status(500).json({ error: 'Failed to fetch sessions' });
     }
 });
 
 // 2. Schedule new session
 router.post('/', async (req, res) => {
     try {
-        let doctor = await prisma.user.findFirst({ where: { role: 'DOCTOR' } });
+        const { patientId, scheduledAt } = req.body;
         const newSession = await prisma.teleconsultSession.create({
             data: {
-                patientId: req.body.patientId,
-                doctorId: doctor.id,
-                scheduledDate: new Date(req.body.scheduledAt || Date.now()),
+                tenantId: req.user.tenantId,
+                patientId,
+                doctorId: req.user.id,
+                scheduledDate: new Date(scheduledAt || Date.now()),
                 status: 'SCHEDULED'
             }
         });
         res.json({ data: newSession });
     } catch (e) {
-        res.json({ data: { id: "tele-" + Date.now() } });
+        console.error('Teleconsult Create Error:', e);
+        res.status(500).json({ error: 'Failed to schedule session' });
     }
 });
 
-// 3. Join session (Generate room URL)
+// 3. Join session (Generate Daily.io / Jitsi room URL)
 router.post('/:id/join', async (req, res) => {
     try {
         const { id } = req.params;
-        const roomUrl = `https://meet.jit.si/DocticRoom_${id}`;
-        await prisma.teleconsultSession.update({
-            where: { id },
+        
+        // Use Daily.co API if Key exists, otherwise fallback to Jitsi
+        const dailyApiKey = process.env.DAILY_API_KEY;
+        let roomUrl = `https://meet.jit.si/DocticRoom_${id}`;
+        let roomToken = "dev-token";
+
+        if (dailyApiKey) {
+            // Placeholder: await daily.createRoom(...)
+            // roomUrl = dailyRoom.url;
+        }
+
+        const session = await prisma.teleconsultSession.update({
+            where: { id, tenantId: req.user.tenantId },
             data: { status: 'IN_PROGRESS', roomUrl }
         });
-        res.json({ data: { roomId: id, roomToken: "tok", roomUrl } });
+
+        res.json({ data: { roomId: id, roomToken, roomUrl: session.roomUrl } });
     } catch (e) {
-        res.json({ data: { roomId: req.params.id, roomToken: "tok", roomUrl: "https://meet.jit.si/DocticRoom" } });
+        console.error('Teleconsult Join Error:', e);
+        res.status(500).json({ error: 'Failed to join session' });
     }
 });
 
@@ -56,12 +76,12 @@ router.post('/:id/join', async (req, res) => {
 router.post('/:id/end', async (req, res) => {
     try {
         await prisma.teleconsultSession.update({
-            where: { id: req.params.id },
+            where: { id: req.params.id, tenantId: req.user.tenantId },
             data: { status: 'COMPLETED' }
         });
         res.json({ data: { success: true } });
     } catch(e) {
-        res.json({ data: { success: true } });
+        res.status(500).json({ error: 'Failed to end session' });
     }
 });
 
