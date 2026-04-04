@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Building2, BarChart3, Map, Plus, Search, Filter, Download } from 'lucide-react';
+import { Building2, BarChart3, Map, Plus, Search, Filter, Download, Shield } from 'lucide-react';
 import { OutlookLayout } from '@/components/layout/OutlookLayout';
 import { ListPane } from '@/components/layout/ListPane';
 import { DetailPane } from '@/components/layout/DetailPane';
@@ -33,7 +33,7 @@ import { type TenantWithMetrics } from '@/data/multi-tenant-mock';
 
 const API_BASE = '/api';
 
-type ViewType = 'analytics' | 'cabinets' | 'map';
+type ViewType = 'analytics' | 'cabinets' | 'map' | 'audit';
 
 interface NavItem {
   id: ViewType;
@@ -46,6 +46,7 @@ const navItems: NavItem[] = [
   { id: 'analytics', label: 'Analytics réseau', icon: BarChart3, description: 'Vue consolidée' },
   { id: 'cabinets', label: 'Cabinets', icon: Building2, description: 'Liste des tenants' },
   { id: 'map', label: 'Carte', icon: Map, description: 'Vue géographique' },
+  { id: 'audit', label: 'Logs d\'Audit', icon: Shield, description: 'Sécurité & Conformité' },
 ];
 
 export default function MultiTenantDashboard() {
@@ -57,7 +58,10 @@ export default function MultiTenantDashboard() {
   
   const [tenants, setTenants] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<any>(null);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newTenantData, setNewTenantData] = useState({ name: '', slug: '', plan: 'STARTER', adminEmail: '' });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,6 +80,12 @@ export default function MultiTenantDashboard() {
         if (analyticsRes.ok) {
           const analyticsJson = await analyticsRes.json();
           setAnalytics(analyticsJson.data);
+        }
+
+        const auditRes = await fetch(`${API_BASE}/analytics/audit`);
+        if (auditRes.ok) {
+          const auditJson = await auditRes.json();
+          setAuditLogs(auditJson.data || []);
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -154,13 +164,33 @@ export default function MultiTenantDashboard() {
       </div>
 
       <div className="mt-4">
-        <Button className="w-full" onClick={() => toast.info('Fonctionnalité en développement')}>
+        <Button className="w-full" onClick={() => setIsCreateModalOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nouveau cabinet
         </Button>
       </div>
     </ListPane>
   );
+
+  const handleCreateTenant = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/tenants`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTenantData)
+      });
+      if (res.ok) {
+        toast.success('Cabinet créé avec succès');
+        setIsCreateModalOpen(false);
+        // Page reload or state refresh
+        window.location.reload();
+      } else {
+        toast.error('Erreur lors de la création');
+      }
+    } catch (e) {
+      toast.error('Impossible de créer le cabinet');
+    }
+  };
 
   const renderAnalyticsView = () => (
     <div className="space-y-6">
@@ -175,10 +205,10 @@ export default function MultiTenantDashboard() {
         </Button>
       </div>
 
-      {analytics && (
+      {analytics && analytics.network && (
         <>
-          <NetworkStats analytics={analytics} />
-          <NetworkCharts analytics={analytics} />
+          <NetworkStats analytics={analytics.network} />
+          <NetworkCharts analytics={analytics.network} />
         </>
       )}
     </div>
@@ -251,6 +281,60 @@ export default function MultiTenantDashboard() {
     </div>
   );
 
+  const renderAuditLogsView = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Logs d'Activités Fleet</h2>
+        <p className="text-slate-500">Dernières actions sur l'ensemble de l'infrastructure</p>
+      </div>
+
+      <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight text-[10px]">Horodatage</th>
+                <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight text-[10px]">Utilisateur</th>
+                <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight text-[10px]">Action</th>
+                <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-tight text-[10px]">Détails</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+              {auditLogs.map((log) => (
+                <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="py-3 px-4 text-slate-500 font-mono text-xs">
+                    {new Date(log.timestamp).toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-slate-900 dark:text-slate-200">
+                        {log.user?.firstName} {log.user?.lastName}
+                      </span>
+                      <span className="text-[10px] text-slate-400">{log.user?.email}</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <Badge variant={log.action === 'LOGIN' ? 'secondary' : 'outline'} className="text-[10px]">
+                      {log.action}
+                    </Badge>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600 dark:text-slate-400 max-w-xs truncate">
+                    {log.details || '-'}
+                  </td>
+                </tr>
+              ))}
+              {auditLogs.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-12 text-center text-slate-400">Aucun log récent</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+
   const renderMapView = () => (
     <div className="space-y-6">
       <div>
@@ -260,9 +344,9 @@ export default function MultiTenantDashboard() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {countries.map((country) => {
-          const countryTenants = mockTenants.filter(t => t.country === country);
-          const totalRevenue = countryTenants.reduce((sum, t) => sum + t.revenue, 0);
-          const totalPatients = countryTenants.reduce((sum, t) => sum + t.usage.patientsCount, 0);
+          const countryTenants = tenants.filter(t => t.country === country);
+          const totalRevenue = countryTenants.reduce((sum, t) => sum + (t.revenue || 0), 0);
+          const totalPatients = countryTenants.reduce((sum, t) => sum + (t.usage?.patientsCount || 0), 0);
           
           return (
             <Card key={country} className="hover:shadow-md transition-shadow">
@@ -310,6 +394,8 @@ export default function MultiTenantDashboard() {
         return renderCabinetsView();
       case 'map':
         return renderMapView();
+      case 'audit':
+        return renderAuditLogsView();
       default:
         return renderAnalyticsView();
     }
@@ -377,6 +463,55 @@ export default function MultiTenantDashboard() {
               </Button>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* New Tenant Dialog */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nouveau Cabinet</DialogTitle>
+            <DialogDescription>Créez une nouvelle instance Doctic Care</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nom de la clinique</label>
+              <Input 
+                placeholder="Ex: Clinique du Soleil" 
+                value={newTenantData.name} 
+                onChange={e => setNewTenantData({...newTenantData, name: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Sous-domaine (slug)</label>
+              <Input 
+                placeholder="Ex: clinique-soleil" 
+                value={newTenantData.slug} 
+                onChange={e => setNewTenantData({...newTenantData, slug: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Email Administrateur</label>
+              <Input 
+                type="email"
+                placeholder="Ex: admin@clinique.com" 
+                value={newTenantData.adminEmail} 
+                onChange={e => setNewTenantData({...newTenantData, adminEmail: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Plan</label>
+              <Select value={newTenantData.plan} onValueChange={v => setNewTenantData({...newTenantData, plan: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="STARTER">Starter</SelectItem>
+                  <SelectItem value="PRO">Pro</SelectItem>
+                  <SelectItem value="NETWORK">Network</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button className="w-full mt-4" onClick={handleCreateTenant}>Créer la clinique</Button>
+          </div>
         </DialogContent>
       </Dialog>
     </>

@@ -21,6 +21,7 @@ import Streaming from "./pages/Streaming";
 import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import TenantOnboarding from "./pages/TenantOnboarding";
+import Messages from "./pages/Messages";
 import AcceptInvite from "./pages/AcceptInvite";
 import PatientLoginPage from "./pages/patient/PatientLoginPage";
 import PatientPortal from "./pages/patient/PatientPortal";
@@ -92,6 +93,7 @@ const AppContent = () => {
           <Route path="/admin" element={<SuperAdminDashboard />} />
           <Route path="/onboarding" element={<TenantOnboarding />} />
           <Route path="/accept-invite/:token" element={<AcceptInvite />} />
+          <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
           
           {/* Public Booking */}
           <Route path="/book/:slug" element={<PublicBooking />} />

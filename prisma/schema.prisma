@@ -52,6 +52,7 @@ model Tenant {
   invoices            Invoice[]
   invitations         Invitation[]
   notifications       Notification[]
+  conversations       Conversation[]
 
   @@index([slug])
   @@index([active])
@@ -105,6 +106,7 @@ model User {
   prescriptions       Prescription[]
   teleconsultSessions TeleconsultSession[] @relation("DoctorSessions")
   notifications       Notification[]
+  conversations       Conversation[]
 
   @@index([email])
   @@index([googleId])
@@ -152,6 +154,7 @@ model Patient {
   medicalRecords      MedicalRecord[]
   teleconsultSessions TeleconsultSession[]
   invoices            Invoice[]
+  conversations       Conversation[]
 
   @@index([tenantId])
   @@index([lastName, firstName])
@@ -478,3 +481,53 @@ model Notification {
   @@index([isRead])
   @@index([createdAt])
 }
+
+// ========================================
+// MESSAGES & CONVERSATIONS
+// ========================================
+
+model Conversation {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  
+  // A conversation is between a staff member (User) and a Patient
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  
+  subjects  String?  // Ex: "Regarding Appointment #123"
+  
+  messages  Message[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([patientId])
+  @@unique([userId, patientId]) // Force-one conversation per user-patient pair for simplicity
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  senderId       String       // Can be User.id or Patient.id
+  senderRole     Role         // DOCTOR, PATIENT, etc.
+  
+  content        String
+  attachments    String[]
+  
+  isRead         Boolean      @default(false)
+  readAt         DateTime?
+  
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
