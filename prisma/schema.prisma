@@ -508,7 +508,6 @@ model Conversation {
   @@index([tenantId])
   @@index([userId])
   @@index([patientId])
-  @@unique([userId, patientId]) // Force-one conversation per user-patient pair for simplicity
 }
 
 model Message {
