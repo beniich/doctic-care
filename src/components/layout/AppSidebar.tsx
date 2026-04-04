@@ -23,9 +23,6 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogoIcon } from "./LogoIcon";
 
@@ -99,10 +96,10 @@ export function AppSidebar() {
         )}
       >
         <div className={cn(
-          "p-1.5 rounded-md transition-all duration-300",
-          isActive ? "bg-primary/20" : "bg-transparent group-hover:bg-white/5"
+          "h-8 w-8 transition-all duration-300 glass-neon-icon",
+          isActive ? "border-primary/60 scale-110 shadow-glow" : "border-white/5 opacity-70 group-hover:opacity-100"
         )}>
-          <Icon className={cn("h-4 w-4 flex-shrink-0 transition-all duration-300", isActive ? "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.6)]" : "text-inherit")} />
+          <Icon className={cn("h-4 w-4 flex-shrink-0 transition-all duration-300", isActive ? "text-primary neon-pulse" : "text-inherit")} />
         </div>
         {!collapsed && (
           <div className="flex-1 flex items-center justify-between overflow-hidden">
@@ -177,28 +174,15 @@ export function AppSidebar() {
           ))}
         </div>
 
-        {/* Language & Notifications */}
-        <div className={cn(
-          "flex items-center justify-between gap-2 px-1",
-          collapsed && "flex-col h-auto py-2"
-        )}>
-          <div className="flex items-center gap-1">
-            <LanguageSwitcher />
-            <ThemeToggle />
-          </div>
-          <NotificationCenter />
-        </div>
-
-        {/* Footer Info */}
+        {/* Footer Info — Minimalist */}
         {!collapsed && (
-          <div className="px-2 py-3 mt-2 border-t border-sidebar-border/50 space-y-2">
-            <div className="flex items-center justify-between text-[10px] text-foreground/30 font-medium whitespace-nowrap">
+          <div className="px-3 py-3 mt-2 border-t border-white/5 space-y-1">
+            <div className="flex items-center justify-between text-[10px] text-white/30 font-medium whitespace-nowrap">
                <span>{new Date().toLocaleDateString('fr-FR')}</span>
-               <span className="truncate ml-2 text-primary/50">{user?.tenant?.name || 'Doctic Organization'}</span>
+               <span className="font-bold text-primary/60 tracking-wider">DOCTICE</span>
             </div>
-            <div className="text-[10px] text-foreground/20 font-bold flex items-center justify-between">
-               <span>DocticCare v2.2</span>
-               <span className="flex items-center gap-1">© {new Date().getFullYear()}</span>
+            <div className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
+               <span>v2.2 Stable</span>
             </div>
           </div>
         )}

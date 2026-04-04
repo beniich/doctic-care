@@ -8,152 +8,91 @@
 
 @layer base {
   :root {
-    /* Doctic Navy & Coral Theme — Dark Mode */
-    --background: 240 48% 17%;    /* #16163F — navy profond */
-    --background-2: 222 34% 21%;  /* #242F49 — navy mid */
-    --background-3: 220 22% 28%;  /* #384358 — navy steel */
-
-    --foreground: 0 0% 98%;       /* blanc cassé */
-    --foreground-muted: 0 0% 98% / 0.6;
-    --foreground-subtle: 0 0% 98% / 0.3;
-
-    /* Cards with sleek elevation */
-    --card: 222 34% 21% / 0.7;    /* navy mid glass */
-    --card-hover: 222 34% 21% / 0.9;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 240 48% 17%;
-    --popover-foreground: 0 0% 98%;
-
-    /* Primary = Coral (#FFA586) */
-    --primary: 15 100% 76%;
-    --primary-foreground: 240 48% 12%;
-
-    /* Secondary = Navy Steel */
-    --secondary: 220 22% 28% / 0.4;
-    --secondary-foreground: 0 0% 98%;
-
-    /* Muted elements */
-    --muted: 220 22% 28% / 0.2;
-    --muted-foreground: 0 0% 98% / 0.5;
-
-    /* Accent = Crimson (#B51A2B) */
-    --accent: 355 64% 44%;
-    --accent-foreground: 0 0% 98%;
-
-    /* Status Colors — Medical Crimson & Warm Coral */
-    --destructive: 340 36% 21%;    /* Burgundy profond #541A2E */
-    --destructive-foreground: 0 0% 98%;
-
-    --success: 158 64% 52%;      /* Vert émeraude adouci */
-    --success-foreground: 240 48% 12%;
-
-    --warning: 15 100% 76%;       /* Coral comme warning (plus doux) */
-    --warning-foreground: 240 48% 12%;
-
-    --info: 15 100% 76%;
-    --info-foreground: 240 48% 12%;
-
-    /* UI Elements */
-    --border: 15 100% 76% / 0.15;
-    --input: 15 100% 76% / 0.1;
-    --ring: 15 100% 76%;
+    /* Theme Santé Connect V2 (Dark Mode - Default) — Deep Indigo & Neon */
+    --background: 255 60% 8%;     /* #0c051a Deepest Indigo */
+    --foreground: 210 40% 98%;
+    --card: 255 55% 12% / 0.8;    /* Indigo glass */
+    --card-foreground: 210 40% 98%;
+    --popover: 255 60% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 193 100% 50%;      /* #00c8ff Neon Cyan */
+    --primary-foreground: 255 60% 8%;
+    --secondary: 255 50% 25% / 0.5;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 255 30% 20% / 0.4;
+    --muted-foreground: 215 20% 65%;
+    --accent: 25 100% 50%;        /* #ff6b00 Neon Orange */
+    --accent-foreground: 210 40% 98%;
+    --destructive: 355 85% 60%;
+    --border: 255 50% 20%;
+    --input: 255 50% 20%;
+    --ring: 193 100% 50%;
     --radius: 1.25rem;
+    
+    /* Status Colors (Dark) */
+    --success: 145 100% 45%;      /* #00e676 Neon Green */
+    --warning: 25 100% 50%;       /* #ff6b00 Neon Orange */
+    
+    /* Sidebar — Deep Indigo */
+    --sidebar-background: 255 60% 6% / 0.95;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 193 100% 50%;
+    --sidebar-primary-foreground: 255 60% 8%;
+    --sidebar-accent: 193 100% 50% / 0.1;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 255 50% 15%;
+    --sidebar-ring: 193 100% 50%;
 
-    /* Sidebar — Navy Steel Glass */
-    --sidebar-background: 220 22% 24% / 0.95;
-    --sidebar-foreground: 0 0% 98% / 0.6;
-    --sidebar-primary: 15 100% 76%;
-    --sidebar-primary-foreground: 240 48% 12%;
-    --sidebar-accent: 15 100% 76% / 0.08;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 15 100% 76% / 0.1;
-    --sidebar-ring: 15 100% 76%;
-
-    /* Glass Effects */
-    --glass: 240 48% 17% / 0.8;
-    --glass-border: 15 100% 76% / 0.15;
-
-    /* Glows */
-    --glow-coral: 15 100% 76% / 0.3;
-    --glow-crimson: 355 64% 44% / 0.2;
-
-    /* Chart Colors — Palette Coral/Crimson/Navy */
-    --chart-1: 15 100% 76%;
-    --chart-2: 355 64% 44%;
-    --chart-3: 340 36% 21%;
-    --chart-4: 220 22% 28%;
-    --chart-5: 0 0% 98%;
+    /* Chart Colors — Neon Palette */
+    --chart-1: 193 100% 50%;      /* Cyan */
+    --chart-2: 25 100% 50%;       /* Orange */
+    --chart-3: 145 100% 45%;      /* Green */
+    --chart-4: 280 100% 70%;      /* Purple */
+    --chart-5: 200 100% 50%;
   }
 
   .light {
-    /* Premium Sand & Crimson — Light Mode */
-    --background: 30 35% 98%;     /* Crème très clair #fafaf8 */
-    --background-2: 0 0% 100%;   /* Blanc pur */
-    --background-3: 30 20% 94%;   /* Sable doux #f4f2f0 */
-
-    --foreground: 240 48% 17%;    /* Navy profond pour le texte */
-    --foreground-muted: 240 48% 17% / 0.65;
-    --foreground-subtle: 240 48% 17% / 0.35;
-
+    /* Theme Wordex Suite (Light Mode) — Sable & Cuivre */
+    --background: 60 20% 98%;      /* #fafaf8 Cream */
+    --foreground: 25 25% 15%;     /* Deep Coffee/Grey */
     --card: 0 0% 100% / 0.9;
-    --card-hover: 0 0% 100% / 1;
-    --card-foreground: 240 48% 17%;
-
+    --card-foreground: 25 25% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 48% 17%;
-
-    /* Primary = Crimson Médical (#B51A2B) */
-    --primary: 355 64% 44%;
-    --primary-foreground: 0 0% 100%;
-
-    /* Secondary = Sable */
-    --secondary: 30 20% 94%;
-    --secondary-foreground: 240 48% 17%;
-
-    --muted: 30 20% 94%;
-    --muted-foreground: 240 20% 45%;
-
-    /* Accent = Coral doux */
-    --accent: 15 100% 85%;
-    --accent-foreground: 240 48% 17%;
-
-    --destructive: 340 36% 21%;
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 158 64% 35%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 15 100% 50%;
-    --warning-foreground: 0 0% 100%;
-
-    --info: 355 64% 44%;
-    --info-foreground: 0 0% 100%;
-
-    --border: 30 15% 90%;
-    --input: 30 15% 90%;
-    --ring: 355 64% 44%;
-
-    --sidebar-background: 30 25% 96%;
-    --sidebar-foreground: 240 48% 25%;
-    --sidebar-primary: 355 64% 44%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 355 64% 44% / 0.06;
-    --sidebar-accent-foreground: 240 48% 17%;
-    --sidebar-border: 30 15% 88%;
-    --sidebar-ring: 355 64% 44%;
-
-    --glass: 0 0% 100% / 0.85;
-    --glass-border: 30 15% 90%;
-
-    --glow-coral: 15 100% 76% / 0.15;
-    --glow-crimson: 355 64% 44% / 0.1;
+    --popover-foreground: 25 25% 15%;
+    --primary: 30 42% 39%;        /* #8c6239 Copper */
+    --primary-foreground: 60 20% 98%;
+    --secondary: 42 63% 55%;      /* #d4a843 Gold/Sand */
+    --secondary-foreground: 25 25% 15%;
+    --muted: 25 15% 90%;
+    --muted-foreground: 25 20% 45%;
+    --accent: 42 63% 55%;
+    --accent-foreground: 25 25% 15%;
+    --destructive: 0 84% 60%;
+    --border: 25 20% 85%;
+    --input: 25 20% 90%;
+    --ring: 30 42% 39%;
+    --radius: 1.25rem;
     
-    --chart-1: 355 64% 44%;
-    --chart-2: 15 100% 76%;
-    --chart-3: 158 64% 35%;
-    --chart-4: 30 20% 45%;
-    --chart-5: 0 0% 40%;
+    /* Status Colors (Light) */
+    --success: 145 50% 40%;
+    --warning: 25 100% 45%;
+    
+    /* Sidebar — Deep Coffee (Wordex Header style) */
+    --sidebar-background: 25 35% 18%;   /* #3c2415 */
+    --sidebar-foreground: 60 20% 90%;
+    --sidebar-primary: 30 42% 39%;
+    --sidebar-primary-foreground: 60 20% 100%;
+    --sidebar-accent: 42 63% 55% / 0.2;
+    --sidebar-accent-foreground: 60 20% 100%;
+    --sidebar-border: 25 35% 25%;
+    --sidebar-ring: 30 42% 39%;
+
+    /* Chart Colors — Warm Palette */
+    --chart-1: 30 42% 39%;        /* Copper */
+    --chart-2: 42 63% 55%;        /* Gold */
+    --chart-3: 25 25% 15%;        /* Coffee */
+    --chart-4: 15 100% 50%;       /* Terracotta */
+    --chart-5: 60 10% 40%;
   }
 }
 
@@ -619,4 +558,48 @@ body {
       background-position: 200% 0;
     }
   }
+  @keyframes iconPulse {
+    0%, 100% { 
+      filter: drop-shadow(0 0 4px hsla(var(--primary) / 0.6)); 
+      transform: scale(1); 
+    }
+    50% { 
+      filter: drop-shadow(0 0 10px hsla(var(--primary) / 0.9)); 
+      transform: scale(1.05); 
+    }
+  }
+
+  /* Neon Medical Icons — Inspired by Reference Image */
+  .glass-neon-icon {
+    @apply relative flex items-center justify-center rounded-xl overflow-hidden transition-all duration-300;
+    background: linear-gradient(135deg, hsla(var(--primary) / 0.15) 0%, hsla(var(--accent) / 0.08) 100%);
+    border: 1.5px solid hsla(var(--primary) / 0.35);
+    box-shadow: 
+      0 0 15px hsla(var(--primary) / 0.1),
+      inset 0 0 10px hsla(var(--primary) / 0.05);
+    backdrop-filter: blur(8px);
+  }
+
+  .glass-neon-icon::after {
+    content: "";
+    @apply absolute inset-0 opacity-20 pointer-events-none;
+    background: linear-gradient(45deg, transparent 40%, hsla(var(--primary) / 0.4) 50%, transparent 60%);
+    background-size: 200% 200%;
+    animation: shimmer 3s infinite linear;
+  }
+
+  .glass-neon-icon:hover {
+    border-color: hsla(var(--primary) / 0.6);
+    box-shadow: 
+      0 0 25px hsla(var(--primary) / 0.2),
+      inset 0 0 15px hsla(var(--primary) / 0.1);
+    transform: translateY(-2px);
+  }
+
+  .neon-pulse {
+    @apply relative;
+    filter: drop-shadow(0 0 5px hsla(var(--primary) / 0.8));
+    animation: iconPulse 2s ease-in-out infinite;
+  }
 }
+

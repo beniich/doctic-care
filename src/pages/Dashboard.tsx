@@ -33,17 +33,17 @@ export default function Dashboard() {
   };
 
   const kpis = [
-    { title: t('dashboard.kpi.active_patients'), value: '1 245', change: '+12%', icon: Users, glowColor: 'coral' as const },
-    { title: t('dashboard.kpi.appointments_today'), value: '24', change: '+5', icon: Calendar, glowColor: 'steel' as const },
-    { title: t('dashboard.kpi.monthly_revenue'), value: '€25 767', change: '+18%', icon: DollarSign, glowColor: 'green' as const },
-    { title: t('dashboard.kpi.satisfaction'), value: '98%', change: '+2%', icon: Activity, glowColor: 'crimson' as const }
+    { title: t('dashboard.kpi.active_patients'), value: '1 245', statusLabel: 'OPTIMUM', icon: Users, glowColor: 'cyan' as const },
+    { title: t('dashboard.kpi.appointments_today'), value: '24', statusLabel: 'TENSION', icon: Calendar, glowColor: 'orange' as const },
+    { title: t('dashboard.kpi.monthly_revenue'), value: '€25 767', statusLabel: 'STABLE', icon: DollarSign, glowColor: 'green' as const },
+    { title: t('dashboard.kpi.satisfaction'), value: '98%', statusLabel: 'OPTIMAL', icon: Activity, glowColor: 'cyan' as const }
   ];
 
   const recentActivities = [
-    { icon: FileText, text: `${t('dashboard.recent_activity.consultation_finished')} - Sarah Johnson`, time: '5 min', color: 'bg-primary/20 text-primary shadow-[0_0_10px_hsla(15,100%,76%,0.4)]' },
-    { icon: FileText, text: `${t('dashboard.recent_activity.new_prescription')} - Michael Chen`, time: '15 min', color: 'bg-accent/20 text-accent shadow-[0_0_10px_hsla(355,64%,44%,0.4)]' },
-    { icon: Video, text: t('dashboard.recent_activity.teleconsult_planned'), time: '2h', color: 'bg-warning/20 text-warning shadow-[0_0_10px_hsla(15,100%,76%,0.4)]' },
-    { icon: Video, text: t('dashboard.recent_activity.video_published'), time: '1h', color: 'bg-success/20 text-success shadow-[0_0_10px_hsla(158,64%,52%,0.4)]' }
+    { icon: FileText, text: `${t('dashboard.recent_activity.consultation_finished')} - Sarah Johnson`, time: '5 min', color: 'glass-neon-icon border-primary/20 text-primary shadow-glow' },
+    { icon: FileText, text: `${t('dashboard.recent_activity.new_prescription')} - Michael Chen`, time: '15 min', color: 'glass-neon-icon border-accent/20 text-accent shadow-glow' },
+    { icon: Video, text: t('dashboard.recent_activity.teleconsult_planned'), time: '2h', color: 'glass-neon-icon border-warning/20 text-warning shadow-glow' },
+    { icon: Video, text: t('dashboard.recent_activity.video_published'), time: '1h', color: 'glass-neon-icon border-success/20 text-success shadow-glow' }
   ];
 
   const upcomingAppointments = [
@@ -117,7 +117,9 @@ export default function Dashboard() {
                   <Card className="glass-card border-border h-[400px] flex flex-col">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Activity className="h-5 w-5 text-primary" />
+                        <div className="h-9 w-9 glass-neon-icon border-primary/20 bg-primary/10 flex items-center justify-center">
+                          <Activity className="h-4 w-4 text-primary neon-pulse" />
+                        </div>
                         {t('dashboard.activity.title')}
                       </CardTitle>
                     </CardHeader>
@@ -191,8 +193,11 @@ export default function Dashboard() {
                       <div className="relative pl-4 border-l border-white/10 space-y-8 py-2 mt-4 cursor-default">
                         {recentActivities.map((activity, index) => (
                           <div key={index} className="relative group">
-                            <div className={`absolute -left-[21px] p-[5px] rounded border border-white/10 bg-background ${activity.color} transition-all duration-300 group-hover:scale-110`}>
-                              <activity.icon className="h-3.5 w-3.5" />
+                            <div className={cn(
+                              "absolute -left-[21px] p-[5px] rounded border bg-background flex items-center justify-center glass-neon-icon transition-all duration-300 group-hover:scale-110",
+                              activity.color
+                            )}>
+                              <activity.icon className="h-3.5 w-3.5 neon-pulse" />
                             </div>
                             <div className="pl-3">
                               <p className="text-[13px] font-medium text-white/80 group-hover:text-white transition-colors leading-tight">{activity.text}</p>

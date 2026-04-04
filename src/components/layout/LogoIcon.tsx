@@ -2,29 +2,29 @@ import React from 'react';
 
 export const LogoIcon = ({ className = "w-9 h-9" }: { className?: string }) => {
   return (
-    <div className={`${className} relative flex items-center justify-center`}>
+    <div className={`${className} relative flex items-center justify-center p-1.5 glass-neon-icon`}>
       {/* Background Glow */}
-      <div className="absolute inset-0 bg-primary/20 blur-md rounded-xl animate-pulse" />
+      <div className="absolute inset-0 bg-primary/20 blur-xl opacity-50" />
       
       {/* Main Container - The Medical Cross Base */}
       <svg
         viewBox="0 0 100 100"
-        className="w-full h-full drop-shadow-[0_4px_10px_rgba(0,0,0,0.3)]"
+        className="w-full h-full neon-pulse"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           <linearGradient id="crossGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#9b7fff" />
-            <stop offset="100%" stopColor="#1a0a3c" />
+            <stop offset="0%" stopColor="hsla(var(--primary), 0.8)" />
+            <stop offset="100%" stopColor="hsla(var(--accent), 0.9)" />
           </linearGradient>
           <linearGradient id="ekgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#00c8ff" />
-            <stop offset="50%" stopColor="#ffffff" />
-            <stop offset="100%" stopColor="#00c8ff" />
+            <stop offset="0%" stopColor="#86F0FF" />
+            <stop offset="50%" stopColor="#FFFFFF" />
+            <stop offset="100%" stopColor="#86F0FF" />
           </linearGradient>
           <filter id="glow">
-            <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
@@ -32,40 +32,34 @@ export const LogoIcon = ({ className = "w-9 h-9" }: { className?: string }) => {
           </filter>
         </defs>
 
-        {/* The Cross Shape */}
+        {/* The Cross Shape - More rounded and glassy like image */}
         <path
-          d="M35 15 C35 10, 40 5, 50 5 C60 5, 65 10, 65 15 V35 H85 C90 35, 95 40, 95 50 C95 60, 90 65, 85 65 H65 V85 C65 90, 60 95, 50 95 C40 95, 35 90, 35 85 V65 H15 C10 65, 5 60, 5 50 C5 40, 10 35, 15 35 H35 V15Z"
+          d="M35 5 H65 V35 H95 V65 H65 V95 H35 V65 H5 V35 H35 V5Z"
           fill="url(#crossGradient)"
-          stroke="#9b7fff"
+          fillOpacity="0.4"
+          stroke="hsla(var(--primary), 0.8)"
           strokeWidth="3"
+          className="backdrop-blur-md"
         />
         
-        {/* Shadow/Overlay for depth */}
+        {/* Subtle inner reflection */}
         <path
-          d="M35 15 C35 10, 40 5, 50 5 C60 5, 65 10, 65 15 V35 H85 C90 35, 95 40, 95 50 C95 60, 90 65, 85 65 H65 V85 C65 90, 60 95, 50 95 C40 95, 35 90, 35 85 V65 H15 C10 65, 5 60, 5 50 C5 40, 10 35, 15 35 H35 V15Z"
-          fill="black"
-          fillOpacity="0.2"
+          d="M38 8 H62 V38 H92 V62 H62 V92 H38 V62 H8 V38 H38 V8Z"
+          stroke="white"
+          strokeOpacity="0.15"
+          strokeWidth="1"
         />
 
         {/* EKG / Heartbeat Line */}
         <path
-          d="M5 50 H30 L35 40 L42 65 L50 25 L58 75 L65 40 L70 50 H95"
+          d="M2 50 H28 L35 30 L45 75 L55 10 L65 70 L72 50 H98"
           stroke="url(#ekgGradient)"
-          strokeWidth="4"
+          strokeWidth="6"
           strokeLinecap="round"
           strokeLinejoin="round"
           filter="url(#glow)"
-          className="animate-[dash_3s_linear_infinite]"
         />
       </svg>
-      
-      <style>{`
-        @keyframes dash {
-          0% { stroke-dasharray: 0, 200; stroke-dashoffset: 0; }
-          50% { stroke-dasharray: 100, 200; stroke-dashoffset: 0; }
-          100% { stroke-dasharray: 0, 200; stroke-dashoffset: -150; }
-        }
-      `}</style>
     </div>
   );
 };
