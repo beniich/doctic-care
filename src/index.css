@@ -145,7 +145,7 @@
 
 @layer components {
   .glass-card {
-    @apply backdrop-blur-xl transition-all duration-500 rounded-[1.8rem] relative group;
+    @apply backdrop-blur-xl transition-all duration-500 rounded-[1.8rem] relative;
     background: hsla(var(--card) / 0.85);
     border: 2px solid transparent;
     background-clip: padding-box;
