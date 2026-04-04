@@ -95,13 +95,18 @@ export default function Dashboard() {
               </div>
             </div>            {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {kpis.map((kpi) => (
+              {kpis.map((kpi: any) => (
                 <motion.div key={kpi.title} variants={item}>
                   <KPICard 
                     title={kpi.title}
                     value={kpi.value}
-                    trend={{ direction: kpi.change.startsWith('+') ? 'up' : 'down', value: parseFloat(kpi.change.replace(/[^0-9.]/g, '')) }}
+                    statusLabel={kpi.statusLabel}
+                    trend={kpi.change ? { 
+                      direction: kpi.change.startsWith('+') ? 'up' : 'down', 
+                      value: parseFloat(kpi.change.replace(/[^0-9.]/g, '')) 
+                    } : undefined}
                     glowColor={kpi.glowColor}
+                    icon={kpi.icon}
                   />
                 </motion.div>
               ))}
