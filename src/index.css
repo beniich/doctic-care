@@ -4,8 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Doctic Medical OS - Leonardo.AI Inspired Dark Theme */
-
+@layer base {
   /* =========================================
      1. EMERALD LIGHT (Cyber-style transformed to Light)
      #EEF7F4 based - BLACK TEXT + GRADIENT BORDERS
