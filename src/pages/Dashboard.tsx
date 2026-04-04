@@ -13,6 +13,15 @@ import { useNavigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+interface DashboardKPI {
+  title: string;
+  value: string;
+  statusLabel: string;
+  icon: any;
+  glowColor: 'cyan' | 'orange' | 'green' | 'steel';
+  change?: string;
+}
+
 export default function Dashboard() {
   const { t } = useTranslation();
   const { currentTenant } = useTenant();
@@ -33,11 +42,11 @@ export default function Dashboard() {
     show: { opacity: 1, y: 0 }
   };
 
-  const kpis = [
-    { title: t('dashboard.kpi.active_patients'), value: '1 245', statusLabel: 'OPTIMUM', icon: Users, glowColor: 'cyan' as const },
-    { title: t('dashboard.kpi.appointments_today'), value: '24', statusLabel: 'TENSION', icon: Calendar, glowColor: 'orange' as const },
-    { title: t('dashboard.kpi.monthly_revenue'), value: '€25 767', statusLabel: 'STABLE', icon: DollarSign, glowColor: 'green' as const },
-    { title: t('dashboard.kpi.satisfaction'), value: '98%', statusLabel: 'OPTIMAL', icon: Activity, glowColor: 'cyan' as const }
+  const kpis: DashboardKPI[] = [
+    { title: t('dashboard.kpi.active_patients'), value: '1 245', statusLabel: 'OPTIMUM', icon: Users, glowColor: 'cyan' },
+    { title: t('dashboard.kpi.appointments_today'), value: '24', statusLabel: 'TENSION', icon: Calendar, glowColor: 'orange' },
+    { title: t('dashboard.kpi.monthly_revenue'), value: '€25 767', statusLabel: 'STABLE', icon: DollarSign, glowColor: 'green' },
+    { title: t('dashboard.kpi.satisfaction'), value: '98%', statusLabel: 'OPTIMAL', icon: Activity, glowColor: 'cyan' }
   ];
 
   const recentActivities = [
@@ -96,15 +105,15 @@ export default function Dashboard() {
               </div>
             </div>            {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {kpis.map((kpi: any) => (
+              {kpis.map((kpi) => (
                 <motion.div key={kpi.title} variants={item}>
                   <KPICard 
                     title={kpi.title}
                     value={kpi.value}
                     statusLabel={kpi.statusLabel}
                     trend={kpi.change ? { 
-                      direction: kpi.change.startsWith('+') ? 'up' : 'down', 
-                      value: parseFloat(kpi.change.replace(/[^0-9.]/g, '')) 
+                      direction: (kpi.change as string).startsWith('+') ? 'up' : 'down', 
+                      value: parseFloat((kpi.change as string).replace(/[^0-9.]/g, '')) 
                     } : undefined}
                     glowColor={kpi.glowColor}
                     icon={kpi.icon}
