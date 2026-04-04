@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { motion } from "framer-motion";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
+import { cn } from "@/lib/utils";
 
 import { useTranslation } from "react-i18next";
 import { useTenant } from "@/contexts/TenantContext";
