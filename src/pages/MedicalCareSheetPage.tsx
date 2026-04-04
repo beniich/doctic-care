@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Printer, Mail, Save, Stethoscope } from 'lucide-react';
+import { Printer, Mail, Save, Stethoscope, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,6 +20,7 @@ export default function MedicalCareSheetPage() {
         optical: { glasses: '', amount: '' },
         summary: ''
     });
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleChange = (section: string, index: number, field: string, value: string) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,8 +50,27 @@ export default function MedicalCareSheetPage() {
         window.print();
     };
 
-    const handleSave = () => {
-        alert('Fiche sauvegardée (simulation envoi backend)');
+    const handleSave = async () => {
+        if (!formData.patientId) {
+            toast.error('Veuillez spécifier un patient');
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            await api.post('/records', {
+                patientId: formData.patientId,
+                title: `Fiche de Soins - ${formData.date}`,
+                content: JSON.stringify(formData),
+                recordDate: new Date(formData.date)
+            });
+            toast.success('Fiche de soins enregistrée avec succès');
+        } catch (error) {
+            console.error('Save error:', error);
+            toast.error('Erreur lors de la sauvegarde de la fiche');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -74,8 +96,12 @@ export default function MedicalCareSheetPage() {
                                 <Mail className="h-4 w-4 mr-2" />
                                 Envoyer
                             </Button>
-                            <Button onClick={handleSave}>
-                                <Save className="h-4 w-4 mr-2" />
+                            <Button onClick={handleSave} disabled={isSaving}>
+                                {isSaving ? (
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                    <Save className="h-4 w-4 mr-2" />
+                                )}
                                 Sauvegarder
                             </Button>
                         </div>

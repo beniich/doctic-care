@@ -217,24 +217,24 @@ export const appointmentsApi = {
 // ─── PRESCRIPTIONS ────────────────────────────────────────────────────────────
 export const prescriptionsApi = {
   list: (params?: { patientId?: string; status?: string }) =>
-    api.get<unknown[]>('/prescriptions', params),
+    api.get<unknown[]>('/clinical/prescriptions', params),
 
-  create: (data: unknown) => api.post<unknown>('/prescriptions', data),
+  create: (data: unknown) => api.post<unknown>('/clinical/prescriptions', data),
 
-  update: (id: string, data: unknown) => api.patch(`/prescriptions/${id}`, data),
+  update: (id: string, data: unknown) => api.patch(`/clinical/prescriptions/${id}`, data),
 };
 
 // ─── INVOICES ─────────────────────────────────────────────────────────────────
 export const invoicesApi = {
   list: (params?: { status?: string; patientId?: string; page?: number }) =>
-    api.get<Invoice[]>('/invoices', params),
+    api.get<Invoice[]>('/records/invoices', params),
 
-  create: (data: unknown) => api.post<Invoice>('/invoices', data),
+  create: (data: unknown) => api.post<Invoice>('/records/invoices', data),
 
-  update: (id: string, data: unknown) => api.patch<Invoice>(`/invoices/${id}`, data),
+  update: (id: string, data: unknown) => api.patch<Invoice>(`/records/invoices/${id}`, data),
 
   createPaymentIntent: (id: string) =>
-    api.post<{ clientSecret: string }>(`/invoices/${id}/pay`),
+    api.post<{ clientSecret: string }>(`/records/invoices/${id}/pay`),
 };
 
 // ─── ANALYTICS ────────────────────────────────────────────────────────────────
@@ -313,9 +313,9 @@ export const rgpdApi = {
 
 // ─── SUBSCRIPTIONS ────────────────────────────────────────────────────────────
 export const subscriptionsApi = {
-  current: () => api.get<unknown>('/subscriptions/current'),
-  plans: () => api.get<unknown>('/subscriptions/plans'),
-  checkout: (plan: string) => api.post<{ url: string }>('/subscriptions/checkout', { plan }),
-  portal: () => api.post<{ url: string }>('/subscriptions/portal'),
-  invoices: () => api.get<unknown[]>('/subscriptions/invoices'),
+  current: () => api.get<unknown>('/billing/subscription'),
+  plans: () => api.get<unknown>('/billing/plans'),
+  checkout: (plan: string) => api.post<{ url: string }>('/billing/create-checkout-session', { plan }),
+  portal: () => api.post<{ url: string }>('/billing/create-portal-session'),
+  invoices: () => api.get<unknown[]>('/billing/invoices'),
 };

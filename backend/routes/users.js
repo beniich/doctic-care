@@ -3,14 +3,17 @@ import prisma from '../config/db.js';
 import { requireRole, isAdmin } from '../middleware/rbac.js';
 import { requireQuota } from '../middleware/planGuard.js';
 import crypto from 'crypto';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 // 1. Lister les utilisateurs du tenant actuel (ADMIN+)
 router.get('/', isAdmin, async (req, res) => {
   try {
     const users = await prisma.user.findMany({
-      where: { tenantId: req.tenantId },
+      where: { tenantId: req.user.tenantId },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
@@ -43,7 +46,7 @@ router.post('/invite', isAdmin, requireQuota('users'), async (req, res) => {
 
     // Vérifier si l'utilisateur existe déjà dans ce tenant
     const existingUser = await prisma.user.findFirst({
-      where: { email, tenantId: req.tenantId }
+      where: { email, tenantId: req.user.tenantId }
     });
 
     if (existingUser) {
@@ -61,7 +64,7 @@ router.post('/invite', isAdmin, requireQuota('users'), async (req, res) => {
         role,
         token,
         expiresAt,
-        tenantId: req.tenantId,
+        tenantId: req.user.tenantId,
         invitedById: req.user.id
       }
     });
@@ -84,7 +87,7 @@ router.get('/invitations', isAdmin, async (req, res) => {
   try {
     const invitations = await prisma.invitation.findMany({
       where: {
-        tenantId: req.tenantId,
+        tenantId: req.user.tenantId,
         acceptedAt: null,
         expiresAt: { gt: new Date() }
       }
@@ -107,7 +110,7 @@ router.delete('/:id', isAdmin, async (req, res) => {
 
     // Désactivation au lieu de suppression physique pour garder l'intégrité des logs
     await prisma.user.update({
-      where: { id, tenantId: req.tenantId },
+      where: { id, tenantId: req.user.tenantId },
       data: { active: false }
     });
 
@@ -121,7 +124,7 @@ router.delete('/:id', isAdmin, async (req, res) => {
 router.patch('/:id/toggle-active', isAdmin, async (req, res) => {
   try {
     const user = await prisma.user.findFirst({
-      where: { id: req.params.id, tenantId: req.tenantId }
+      where: { id: req.params.id, tenantId: req.user.tenantId }
     });
 
     if (!user) return res.status(404).json({ error: 'User not found' });

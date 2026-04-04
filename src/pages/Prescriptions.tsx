@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { OutlookLayout } from '@/components/layout/OutlookLayout';
 import { Save } from 'lucide-react';
 import ReportGenerator from '@/components/ai/ReportGenerator';
+import { prescriptionsApi } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Medication {
     name: string;
@@ -39,8 +41,6 @@ export default function Prescriptions() {
         notes: ''
     });
 
-    const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/prescriptions`;
-
     // Base médicaments mock (à remplacer par API Vidal ou autre plus tard)
     const medicationsDB = [
         'Paracétamol 500mg',
@@ -62,12 +62,11 @@ export default function Prescriptions() {
     const fetchPrescriptions = async () => {
         setLoading(true);
         try {
-            const response = await fetch(API_URL);
-            if (!response.ok) throw new Error('Erreur chargement');
-            const data = await response.json();
-            setPrescriptions(data);
+            const res = await prescriptionsApi.list();
+            setPrescriptions(res.data as any[]);
         } catch (err) {
             console.error('Impossible de charger les ordonnances', err);
+            toast.error('Erreur lors du chargement des ordonnances');
         } finally {
             setLoading(false);
         }
@@ -110,19 +109,12 @@ export default function Prescriptions() {
 
     const handleSavePrescription = async () => {
         try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, status: 'active' })
-            });
-
-            if (!response.ok) throw new Error('Erreur sauvegarde');
-
+            await prescriptionsApi.create({ ...formData, status: 'active' });
             fetchPrescriptions();
             setIsNewModalOpen(false);
-            // alert('Ordonnance créée avec succès !');
+            toast.success('Ordonnance créée avec succès !');
         } catch (err) {
-            alert('Échec création ordonnance');
+            toast.error('Échec création ordonnance');
         }
     };
 
