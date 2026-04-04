@@ -1,7 +1,13 @@
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Leaf, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function ThemeToggle() {
     const { theme, setTheme } = useTheme();
@@ -20,30 +26,53 @@ export function ThemeToggle() {
         );
     }
 
-    const isDark = theme === "dark";
+    const getIcon = () => {
+        switch (theme) {
+            case "agro-dark":
+                return <Leaf className="h-5 w-5 text-primary" />;
+            case "agro-light":
+                return <Sun className="h-5 w-5 text-primary" />;
+            case "cyber-dark":
+            case "dark":
+                return <Monitor className="h-5 w-5 text-primary" />;
+            default:
+                return <Sun className="h-5 w-5" />;
+        }
+    };
 
     return (
-        <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(isDark ? "light" : "dark")}
-            className="w-10 h-10 relative overflow-hidden group"
-        >
-            <div className="relative w-5 h-5">
-                <Sun
-                    className={`h-5 w-5 absolute inset-0 transition-all duration-500 ${isDark
-                            ? "rotate-90 scale-0 opacity-0"
-                            : "rotate-0 scale-100 opacity-100"
-                        }`}
-                />
-                <Moon
-                    className={`h-5 w-5 absolute inset-0 transition-all duration-500 ${isDark
-                            ? "rotate-0 scale-100 opacity-100"
-                            : "-rotate-90 scale-0 opacity-0"
-                        }`}
-                />
-            </div>
-            <span className="sr-only">Toggle theme</span>
-        </Button>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="w-10 h-10 relative overflow-hidden group border border-white/10 glass-card">
+                    <div className="relative flex items-center justify-center">
+                        {getIcon()}
+                    </div>
+                    <span className="sr-only">Toggle theme</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="glass-card border-white/10 bg-background/95 backdrop-blur-xl">
+                <DropdownMenuItem 
+                    onClick={() => setTheme("cyber-dark")}
+                    className="flex items-center gap-2 cursor-pointer focus:bg-primary/20"
+                >
+                    <Monitor className="h-4 w-4 text-primary" />
+                    <span>Cyber Dark</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                    onClick={() => setTheme("agro-dark")}
+                    className="flex items-center gap-2 cursor-pointer focus:bg-primary/20"
+                >
+                    <Leaf className="h-4 w-4 text-[#1abdd6]" />
+                    <span>Agro Dark</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                    onClick={() => setTheme("agro-light")}
+                    className="flex items-center gap-2 cursor-pointer focus:bg-primary/20"
+                >
+                    <Sun className="h-4 w-4 text-[#e87b2f]" />
+                    <span>Agro Light</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }

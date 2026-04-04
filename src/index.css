@@ -7,8 +7,11 @@
 /* Doctic Medical OS - Leonardo.AI Inspired Dark Theme */
 
 @layer base {
-  :root {
-    /* Theme Santé Connect V2 (Dark Mode - Default) — Deep Indigo & Neon */
+  /* =========================================
+     1. CYBER-MEDICAL DARK (Doctic / Santé Connect)
+     ========================================= */
+  :root,
+  [data-theme="cyber-dark"] {
     --background: 255 60% 8%;     /* #0c051a Deepest Indigo */
     --foreground: 210 40% 98%;
     --card: 255 55% 12% / 0.8;    /* Indigo glass */
@@ -29,11 +32,11 @@
     --ring: 193 100% 50%;
     --radius: 1.25rem;
     
-    /* Status Colors (Dark) */
+    /* Status Colors */
     --success: 145 100% 45%;      /* #00e676 Neon Green */
     --warning: 25 100% 50%;       /* #ff6b00 Neon Orange */
     
-    /* Sidebar — Deep Indigo */
+    /* Sidebar */
     --sidebar-background: 255 60% 6% / 0.95;
     --sidebar-foreground: 210 20% 85%;
     --sidebar-primary: 193 100% 50%;
@@ -43,58 +46,107 @@
     --sidebar-border: 255 50% 15%;
     --sidebar-ring: 193 100% 50%;
 
-    /* Chart Colors — Neon Palette */
-    --chart-1: 193 100% 50%;      /* Cyan */
-    --chart-2: 25 100% 50%;       /* Orange */
-    --chart-3: 145 100% 45%;      /* Green */
-    --chart-4: 280 100% 70%;      /* Purple */
+    /* Chart Colors */
+    --chart-1: 193 100% 50%;
+    --chart-2: 25 100% 50%;
+    --chart-3: 145 100% 45%;
+    --chart-4: 280 100% 70%;
     --chart-5: 200 100% 50%;
   }
 
-  .light {
-    /* Theme Wordex Suite (Light Mode) — Sable & Cuivre */
-    --background: 60 20% 98%;      /* #fafaf8 Cream */
-    --foreground: 25 25% 15%;     /* Deep Coffee/Grey */
-    --card: 0 0% 100% / 0.9;
-    --card-foreground: 25 25% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 25 25% 15%;
-    --primary: 30 42% 39%;        /* #8c6239 Copper */
-    --primary-foreground: 60 20% 98%;
-    --secondary: 42 63% 55%;      /* #d4a843 Gold/Sand */
-    --secondary-foreground: 25 25% 15%;
-    --muted: 25 15% 90%;
-    --muted-foreground: 25 20% 45%;
-    --accent: 42 63% 55%;
-    --accent-foreground: 25 25% 15%;
-    --destructive: 0 84% 60%;
-    --border: 25 20% 85%;
-    --input: 25 20% 90%;
-    --ring: 30 42% 39%;
+  /* =========================================
+     2. AGRO DARK (AgroMaître Sombre)
+     ========================================= */
+  [data-theme="agro-dark"] {
+    --background: 168 33% 8%;     /* #0b1614 Deep Forest Green */
+    --foreground: 160 20% 85%;    /* Soft Greenish Grey */
+    --card: 168 25% 12% / 0.8;
+    --card-foreground: 160 30% 98%;
+    --popover: 168 33% 10%;
+    --popover-foreground: 160 30% 98%;
+    --primary: 188 86% 53%;       /* #1abdd6 Bright Teal/Turquoise */
+    --primary-foreground: 168 33% 8%;
+    --secondary: 168 33% 18%;
+    --secondary-foreground: 160 30% 98%;
+    --muted: 168 30% 15%;
+    --muted-foreground: 160 20% 50%;
+    --accent: 25 85% 55%;         /* #e87b2f Warm Orange/Copper */
+    --accent-foreground: 168 33% 8%;
+    --destructive: 0 70% 55%;
+    --border: 168 25% 20%;
+    --input: 168 25% 20%;
+    --ring: 188 86% 53%;
     --radius: 1.25rem;
     
-    /* Status Colors (Light) */
-    --success: 145 50% 40%;
-    --warning: 25 100% 45%;
+    /* Status Colors */
+    --success: 145 70% 45%; 
+    --warning: 25 85% 55%; 
     
-    /* Sidebar — Deep Coffee (Wordex Header style) */
-    --sidebar-background: 25 35% 18%;   /* #3c2415 */
-    --sidebar-foreground: 60 20% 90%;
-    --sidebar-primary: 30 42% 39%;
-    --sidebar-primary-foreground: 60 20% 100%;
-    --sidebar-accent: 42 63% 55% / 0.2;
-    --sidebar-accent-foreground: 60 20% 100%;
-    --sidebar-border: 25 35% 25%;
-    --sidebar-ring: 30 42% 39%;
+    /* Sidebar */
+    --sidebar-background: 168 40% 6% / 0.95;
+    --sidebar-foreground: 160 20% 80%;
+    --sidebar-primary: 188 86% 53%;
+    --sidebar-primary-foreground: 168 33% 8%;
+    --sidebar-accent: 188 86% 53% / 0.15;
+    --sidebar-accent-foreground: 160 30% 98%;
+    --sidebar-border: 168 25% 15%;
+    --sidebar-ring: 188 86% 53%;
 
-    /* Chart Colors — Warm Palette */
-    --chart-1: 30 42% 39%;        /* Copper */
-    --chart-2: 42 63% 55%;        /* Gold */
-    --chart-3: 25 25% 15%;        /* Coffee */
-    --chart-4: 15 100% 50%;       /* Terracotta */
-    --chart-5: 60 10% 40%;
+    /* Chart Colors */
+    --chart-1: 188 86% 53%;
+    --chart-2: 25 85% 55%;
+    --chart-3: 145 70% 45%;
+    --chart-4: 35 90% 60%;
+    --chart-5: 165 40% 40%;
+  }
+
+  /* =========================================
+     3. AGRO LIGHT (AgroMaître Clair)
+     ========================================= */
+  [data-theme="agro-light"], .light {
+    --background: 44 25% 94%;     /* #f4f2ea Rustic Cream */
+    --foreground: 168 50% 15%;    /* Very dark pine string */
+    --card: 44 20% 98%;
+    --card-foreground: 168 50% 15%;
+    --popover: 44 20% 98%;
+    --popover-foreground: 168 50% 15%;
+    --primary: 25 85% 55%;        /* #e87b2f Primary Orange */
+    --primary-foreground: 44 25% 98%;
+    --secondary: 168 20% 90%;
+    --secondary-foreground: 168 50% 15%;
+    --muted: 44 15% 85%;
+    --muted-foreground: 168 20% 40%;
+    --accent: 70 35% 85%;         /* Soft olive/yellowish touch */
+    --accent-foreground: 168 50% 15%;
+    --destructive: 0 84% 60%;
+    --border: 44 20% 85%;
+    --input: 44 20% 85%;
+    --ring: 25 85% 55%;
+    --radius: 1.25rem;
+    
+    /* Status Colors */
+    --success: 145 60% 35%;
+    --warning: 25 85% 55%;
+    
+    /* Sidebar — Very Dark Pine Green ALWAYS */
+    --sidebar-background: 168 50% 11%;  /* #0e1e1b */
+    --sidebar-foreground: 160 20% 85%;
+    --sidebar-primary: 25 85% 55%;
+    --sidebar-primary-foreground: 44 25% 98%;
+    --sidebar-accent: 25 85% 55% / 0.2;
+    --sidebar-accent-foreground: 44 20% 98%;
+    --sidebar-border: 168 50% 15%;
+    --sidebar-ring: 25 85% 55%;
+
+    /* Chart Colors */
+    --chart-1: 25 85% 55%;
+    --chart-2: 188 50% 40%;
+    --chart-3: 168 60% 25%;
+    --chart-4: 15 80% 50%;
+    --chart-5: 45 60% 40%;
   }
 }
+
 
 @layer base {
   * {
@@ -110,14 +162,26 @@
 
 @layer components {
   .glass-card {
-    @apply backdrop-blur-xl border border-white/10 shadow-lg rounded-[1.5rem];
-    background: hsl(var(--card) / 0.6);
+    @apply backdrop-blur-xl border border-foreground/10 shadow-lg rounded-[1.5rem] transition-all duration-500;
+    background: hsla(var(--card) / 0.7);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   }
 
+  [data-theme="cyber-dark"] .glass-card,
+  [data-theme="agro-dark"] .glass-card {
+    box-shadow: 0 8px 32px 0 hsla(var(--background) / 0.8);
+    border: 1px solid hsla(var(--primary) / 0.15);
+  }
+
+  [data-theme="agro-light"] .glass-card {
+    background: hsla(var(--card) / 0.9);
+    border: 1px solid hsla(var(--border) / 0.5);
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+  }
+
   .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background: linear-gradient(
+    @apply bg-clip-text text-transparent transition-all duration-500;
+    background-image: linear-gradient(
       135deg,
       hsl(var(--primary)) 0%,
       hsl(var(--accent)) 100%
@@ -158,13 +222,10 @@
   }
 }
 body {
-  @apply bg-background text-foreground antialiased;
-  font-feature-settings:
-    "rlig" 1,
-    "calt" 1;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
+  @apply bg-background text-foreground antialiased min-h-screen;
+  font-feature-settings: "rlig" 1, "calt" 1;
+  font-family: "Exo 2", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-attachment: fixed;
 }
 
 /* Smooth transitions globally */
@@ -345,12 +406,12 @@ body {
   /* Custom Dark Scrollbar */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--primary) / 0.3) transparent;
+    scrollbar-color: hsla(var(--primary) / 0.3) transparent;
   }
 
   .scrollbar-thin::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -360,18 +421,14 @@ body {
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background: linear-gradient(
       180deg,
-      hsl(var(--primary) / 0.3),
-      hsl(var(--accent) / 0.3)
+      hsla(var(--primary) / 0.3),
+      hsla(var(--accent) / 0.3)
     );
     border-radius: 10px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(
-      180deg,
-      hsl(var(--primary) / 0.5),
-      hsl(var(--accent) / 0.5)
-    );
+    background: hsla(var(--primary) / 0.6);
   }
 
   /* Advanced Animations */

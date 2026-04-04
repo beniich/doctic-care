@@ -86,24 +86,30 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
         variant="ghost"
         onClick={() => navigate(item.path)}
         className={cn(
-          "w-full justify-start gap-3 h-10 px-3 transition-all duration-200 rounded-lg group",
+          "w-full justify-start gap-3 h-11 px-3 transition-all duration-300 rounded-xl group relative overflow-hidden",
           isActive 
-            ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_hsl(var(--primary)/0.15)]" 
-            : "text-foreground/50 hover:bg-white/[0.03] hover:text-foreground",
+            ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_20px_hsla(var(--primary)/0.1)]" 
+            : "text-sidebar-foreground/60 hover:bg-foreground/[0.03] hover:text-sidebar-foreground",
           collapsed && "justify-center px-0"
         )}
       >
+        {/* Shine effect on hover */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none" />
+        
         <div className={cn(
-          "h-8 w-8 transition-all duration-300 glass-neon-icon",
-          isActive ? "border-primary/60 scale-110 shadow-glow" : "border-white/5 opacity-70 group-hover:opacity-100"
+          "h-8 w-8 transition-all duration-500 glass-neon-icon flex flex-shrink-0",
+          isActive ? "border-primary/60 scale-105 shadow-[0_0_15px_hsla(var(--primary)/0.3)] bg-primary/20" : "border-foreground/10 opacity-70 group-hover:opacity-100 group-hover:border-foreground/20 group-hover:scale-105"
         )}>
-          <Icon className={cn("h-4 w-4 flex-shrink-0 transition-all duration-300", isActive ? "text-primary neon-pulse" : "text-inherit")} />
+          <Icon className={cn("h-4 w-4 transition-all duration-500", isActive ? "text-primary neon-pulse" : "text-inherit")} />
         </div>
         {!collapsed && (
           <div className="flex-1 flex items-center justify-between overflow-hidden">
-            <span className={cn("text-[13px] truncate", isActive ? "font-semibold" : "font-medium")}>{item.label}</span>
+            <span className={cn("text-[13px] tracking-tight transition-all duration-300", isActive ? "font-bold translate-x-0.5" : "font-medium group-hover:translate-x-0.5")}>{item.label}</span>
             {item.badge && (
-              <span className="bg-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-primary/30">
+              <span className={cn(
+                  "text-[9px] font-black px-1.5 py-0.5 rounded-md border transition-all duration-300",
+                  isActive ? "bg-primary text-primary-foreground border-primary shadow-glow" : "bg-foreground/5 text-foreground/40 border-foreground/10"
+              )}>
                 {item.badge}
               </span>
             )}
@@ -116,7 +122,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{button}</TooltipTrigger>
-          <TooltipContent side="right" className="bg-black/80 backdrop-blur-md border-white/10 text-white text-xs">
+          <TooltipContent side="right" className="glass-card border-primary/20 text-foreground text-xs font-bold px-3 py-2">
             {item.label}
           </TooltipContent>
         </Tooltip>
@@ -129,35 +135,39 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   return (
     <aside
       className={cn(
-        "flex flex-col h-screen transition-all duration-300 border-r border-sidebar-border bg-sidebar backdrop-blur-2xl relative",
-        collapsed ? "w-16" : "w-64"
+        "flex flex-col h-screen transition-all duration-500 border-r border-sidebar-border bg-sidebar backdrop-blur-3xl relative z-40",
+        collapsed ? "w-20" : "w-72"
       )}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] to-transparent pointer-events-none" />
+      {/* Decorative gradient overlay */}
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-primary/[0.05] to-transparent pointer-events-none" />
 
       {/* Logo Header Doctic Purple Style */}
-      <div className="flex items-center gap-3 px-4 py-6 mb-2">
-        <LogoIcon className="w-9 h-9" />
+      <div className="flex items-center gap-3 px-6 py-8 mb-4">
+        <div className="relative group">
+            <div className="absolute -inset-2 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <LogoIcon className="w-10 h-10 relative transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3" />
+        </div>
         {!collapsed && (
           <div className="flex flex-col leading-none">
-            <span className="font-extrabold text-[15px] tracking-tight text-foreground uppercase">DOCTIC CARE</span>
-            <span className="text-[9px] text-primary/80 tracking-[0.2em] uppercase font-bold mt-1">Medical OS</span>
+            <span className="font-black text-[16px] tracking-tighter text-sidebar-foreground uppercase">DOCTIC<span className="text-primary italic ml-0.5">CARE</span></span>
+            <span className="text-[10px] text-primary/60 tracking-[0.25em] uppercase font-bold mt-1.5 opacity-80">Medical OS</span>
           </div>
         )}
       </div>
 
-      <nav className="flex-1 py-2 px-3 space-y-7 overflow-y-auto scrollbar-none">
+      <nav className="flex-1 py-2 px-4 space-y-9 overflow-y-auto scrollbar-none custom-scroll">
         {/* Main Modules */}
-        <div className="space-y-1">
-          {!collapsed && <h3 className="px-2 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.1em] mb-3">Menu Principal</h3>}
+        <div className="space-y-1.5">
+          {!collapsed && <h3 className="px-3 text-[10px] font-black text-sidebar-foreground/30 uppercase tracking-[0.2em] mb-4">Menu Principal</h3>}
           {filteredNavItems.map((item) => (
             <NavItemButton key={item.path} item={item} />
           ))}
         </div>
 
         {/* Content Modules */}
-        <div className="space-y-1">
-          {!collapsed && <h3 className="px-2 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.1em] mb-3">Communication</h3>}
+        <div className="space-y-1.5">
+          {!collapsed && <h3 className="px-3 text-[10px] font-black text-sidebar-foreground/30 uppercase tracking-[0.2em] mb-4">Communication</h3>}
           {filteredContentItems.map((item) => (
             <NavItemButton key={item.path} item={item} />
           ))}
@@ -165,15 +175,16 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       </nav>
 
       {/* Bottom Footer Info */}
-      <div className="pt-4 pb-8 px-3 border-t border-white/[0.04] bg-black/20">
+      <div className="mt-auto pt-6 pb-10 px-4 border-t border-foreground/5 bg-gradient-to-t from-black/20 to-transparent">
         {!collapsed && (
-          <div className="px-3 py-2 space-y-1">
-            <div className="flex items-center justify-between text-[10px] text-white/30 font-medium whitespace-nowrap">
-               <span>{new Date().toLocaleDateString('fr-FR')}</span>
-               <span className="font-bold text-primary/60 tracking-wider">DOCTICE</span>
+          <div className="px-4 py-2 space-y-2">
+            <div className="flex items-center justify-between text-[10px] text-sidebar-foreground/40 font-bold whitespace-nowrap">
+               <span className="opacity-60">{new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+               <span className="text-primary tracking-widest animate-pulse">LIVE</span>
             </div>
-            <div className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
-               <span>v2.2 Stable</span>
+            <div className="flex items-center justify-between">
+                <span className="text-[10px] text-sidebar-foreground/20 font-black uppercase tracking-widest">v2.3 Stable</span>
+                <div className="w-2 h-2 rounded-full bg-success animate-ping" />
             </div>
           </div>
         )}
@@ -181,3 +192,4 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
     </aside>
   );
 }
+

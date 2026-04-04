@@ -129,7 +129,7 @@ const App = () => (
   <GlobalErrorBoundary>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="doctic-theme">
+        <ThemeProvider attribute="data-theme" defaultTheme="cyber-dark" enableSystem={false} storageKey="doctic-theme">
           <TenantProvider>
             <AuthProvider>
               <ModalProvider>
