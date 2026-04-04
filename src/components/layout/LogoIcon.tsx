@@ -69,7 +69,7 @@ export const LogoIcon = ({ className = "w-9 h-9" }: { className?: string }) => {
           strokeWidth="1"
         />
 
-        {/* EKG / Pulse Line */}
+        {/* EKG / Pulse Line — Animated */}
         <path
           d="M2 50 H28 L35 30 L45 75 L55 10 L65 70 L72 50 H98"
           stroke="url(#ekgColor)"
@@ -77,8 +77,25 @@ export const LogoIcon = ({ className = "w-9 h-9" }: { className?: string }) => {
           strokeLinecap="round"
           strokeLinejoin="round"
           filter="url(#neon)"
+          className="animate-ekg"
+          style={{ 
+            strokeDasharray: '200',
+            strokeDashoffset: '200',
+          }}
         />
       </svg>
+
+      <style>{`
+        @keyframes ekgFlow {
+          0% { stroke-dashoffset: 400; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+        .animate-ekg {
+          animation: ekgFlow 2.5s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 };
