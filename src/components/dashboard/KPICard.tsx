@@ -11,7 +11,7 @@ export interface KPICardProps {
     };
     icon?: string;
     iconColor?: string;
-    glowColor?: 'cyan' | 'purple' | 'orange' | 'green';
+    glowColor?: 'coral' | 'crimson' | 'steel' | 'green';
 }
 
 export function KPICard({
@@ -20,30 +20,30 @@ export function KPICard({
     unit,
     trend,
     icon,
-    glowColor = 'cyan',
+    glowColor = 'coral',
 }: KPICardProps) {
     const getGlowStyles = () => {
         switch (glowColor) {
-            case 'purple':
+            case 'crimson':
                 return {
-                    bg: 'radial-gradient(circle,rgba(155,127,255,0.15) 0%,transparent 70%)',
-                    text: 'text-accent text-glow-purple',
+                    bg: 'radial-gradient(circle,hsla(355, 64%, 44%, 0.15) 0%,transparent 70%)',
+                    text: 'text-accent',
                 };
-            case 'orange':
+            case 'steel':
                 return {
-                    bg: 'radial-gradient(circle,rgba(255,107,0,0.15) 0%,transparent 70%)',
-                    text: 'text-warning',
+                    bg: 'radial-gradient(circle,hsla(220, 22%, 28%, 0.15) 0%,transparent 70%)',
+                    text: 'text-foreground/70',
                 };
             case 'green':
                 return {
-                    bg: 'radial-gradient(circle,rgba(0,230,118,0.15) 0%,transparent 70%)',
+                    bg: 'radial-gradient(circle,hsla(158, 64%, 52%, 0.15) 0%,transparent 70%)',
                     text: 'text-success',
                 };
-            case 'cyan':
+            case 'coral':
             default:
                 return {
-                    bg: 'radial-gradient(circle,rgba(0,200,255,0.15) 0%,transparent 70%)',
-                    text: 'text-primary text-glow-cyan',
+                    bg: 'radial-gradient(circle,hsla(15, 100%, 76%, 0.15) 0%,transparent 70%)',
+                    text: 'text-primary drop-shadow-[0_0_10px_hsla(15, 100%, 76%, 0.3)]',
                 };
         }
     };

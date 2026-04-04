@@ -8,149 +8,152 @@
 
 @layer base {
   :root {
-    /* Doctic Purple Theme - Cyberpunk/Neon Style */
-    --background: 259 71% 14%; /* #1a0a3c */
-    --background-2: 258 65% 18%; /* #22104d */
-    --background-3: 254 59% 26%; /* #2d1b69 */
+    /* Doctic Navy & Coral Theme — Dark Mode */
+    --background: 240 48% 17%;    /* #16163F — navy profond */
+    --background-2: 222 34% 21%;  /* #242F49 — navy mid */
+    --background-3: 220 22% 28%;  /* #384358 — navy steel */
 
-    --foreground: 0 0% 100%; /* #ffffff */
-    --foreground-muted: 0 0% 100% / 0.5;
-    --foreground-subtle: 0 0% 100% / 0.25;
+    --foreground: 0 0% 98%;       /* blanc cassé */
+    --foreground-muted: 0 0% 98% / 0.6;
+    --foreground-subtle: 0 0% 98% / 0.3;
 
     /* Cards with sleek elevation */
-    --card: 0 0% 100% / 0.06;
-    --card-hover: 0 0% 100% / 0.09;
-    --card-foreground: 0 0% 100%;
+    --card: 222 34% 21% / 0.7;    /* navy mid glass */
+    --card-hover: 222 34% 21% / 0.9;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 259 71% 14%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 240 48% 17%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Cyan Primary */
-    --primary: 193 100% 50%; /* #00c8ff */
-    --primary-foreground: 259 71% 14%;
+    /* Primary = Coral (#FFA586) */
+    --primary: 15 100% 76%;
+    --primary-foreground: 240 48% 12%;
 
-    /* Secondary */
-    --secondary: 0 0% 100% / 0.05;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary = Navy Steel */
+    --secondary: 220 22% 28% / 0.4;
+    --secondary-foreground: 0 0% 98%;
 
     /* Muted elements */
-    --muted: 0 0% 100% / 0.05;
-    --muted-foreground: 0 0% 100% / 0.5;
+    --muted: 220 22% 28% / 0.2;
+    --muted-foreground: 0 0% 98% / 0.5;
 
-    /* Purple Accent */
-    --accent: 253 100% 75%; /* #9b7fff */
-    --accent-foreground: 259 71% 14%;
+    /* Accent = Crimson (#B51A2B) */
+    --accent: 355 64% 44%;
+    --accent-foreground: 0 0% 98%;
 
-    /* Status Colors - Vibrant */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    /* Status Colors — Medical Crimson & Warm Coral */
+    --destructive: 340 36% 21%;    /* Burgundy profond #541A2E */
+    --destructive-foreground: 0 0% 98%;
 
-    --success: 151 100% 45%; /* #00e676 */
-    --success-foreground: 259 71% 14%;
+    --success: 158 64% 52%;      /* Vert émeraude adouci */
+    --success-foreground: 240 48% 12%;
 
-    --warning: 25 100% 50%; /* #ff6b00 */
-    --warning-foreground: 0 0% 100%;
+    --warning: 15 100% 76%;       /* Coral comme warning (plus doux) */
+    --warning-foreground: 240 48% 12%;
 
-    --info: 193 100% 50%; /* #00c8ff */
-    --info-foreground: 259 71% 14%;
+    --info: 15 100% 76%;
+    --info-foreground: 240 48% 12%;
 
     /* UI Elements */
-    --border: 254 100% 65% / 0.2; /* rgba(120,80,255,0.2) */
-    --input: 254 100% 65% / 0.2;
-    --ring: 193 100% 50%;
-    --radius: 1rem;
+    --border: 15 100% 76% / 0.15;
+    --input: 15 100% 76% / 0.1;
+    --ring: 15 100% 76%;
+    --radius: 1.25rem;
 
-    /* Sidebar - Transparent Glass Style */
-    --sidebar-background: 0 0% 100% / 0.03;
-    --sidebar-foreground: 0 0% 100% / 0.5; /* --text2 */
-    --sidebar-primary: 193 100% 50%;
-    --sidebar-primary-foreground: 259 71% 14%;
-    --sidebar-accent: 0 0% 100% / 0.05;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 254 100% 65% / 0.15;
-    --sidebar-ring: 193 100% 50%;
+    /* Sidebar — Navy Steel Glass */
+    --sidebar-background: 220 22% 24% / 0.95;
+    --sidebar-foreground: 0 0% 98% / 0.6;
+    --sidebar-primary: 15 100% 76%;
+    --sidebar-primary-foreground: 240 48% 12%;
+    --sidebar-accent: 15 100% 76% / 0.08;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 15 100% 76% / 0.1;
+    --sidebar-ring: 15 100% 76%;
 
     /* Glass Effects */
-    --glass: 259 71% 14% / 0.7;
-    --glass-border: 254 100% 65% / 0.15;
+    --glass: 240 48% 17% / 0.8;
+    --glass-border: 15 100% 76% / 0.15;
 
     /* Glows */
-    --glow-purple: 255 69% 55% / 0.4; /* rgba(100,60,220,0.4) */
-    --glow-cyan: 193 100% 50% / 0.3; /* rgba(0,200,255,0.3) */
+    --glow-coral: 15 100% 76% / 0.3;
+    --glow-crimson: 355 64% 44% / 0.2;
 
-    /* Chart Colors - Vibrant (identiques dans les 2 modes) */
-    --chart-1: 290 91% 65%;
-    --chart-2: 330 81% 60%;
-    --chart-3: 142 76% 56%;
-    --chart-4: 38 92% 50%;
-    --chart-5: 199 89% 56%;
+    /* Chart Colors — Palette Coral/Crimson/Navy */
+    --chart-1: 15 100% 76%;
+    --chart-2: 355 64% 44%;
+    --chart-3: 340 36% 21%;
+    --chart-4: 220 22% 28%;
+    --chart-5: 0 0% 98%;
   }
 
   .light {
-    /* Premium Light Mode - Inspired by Modern Clean Medical Interfaces */
-    --background: 210 20% 98%; /* #f8f9fa */
-    --background-2: 0 0% 100%; /* #ffffff */
-    --background-3: 210 20% 94%; /* #f1f3f5 */
+    /* Premium Sand & Crimson — Light Mode */
+    --background: 30 35% 98%;     /* Crème très clair #fafaf8 */
+    --background-2: 0 0% 100%;   /* Blanc pur */
+    --background-3: 30 20% 94%;   /* Sable doux #f4f2f0 */
 
-    --foreground: 222 47% 11%; /* #0f172a */
-    --foreground-muted: 222 47% 11% / 0.6;
-    --foreground-subtle: 222 47% 11% / 0.3;
+    --foreground: 240 48% 17%;    /* Navy profond pour le texte */
+    --foreground-muted: 240 48% 17% / 0.65;
+    --foreground-subtle: 240 48% 17% / 0.35;
 
-    --card: 0 0% 100% / 0.8;
+    --card: 0 0% 100% / 0.9;
     --card-hover: 0 0% 100% / 1;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 240 48% 17%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 240 48% 17%;
 
-    --primary: 221.2 83.2% 53.3%; /* Professional Blue */
+    /* Primary = Crimson Médical (#B51A2B) */
+    --primary: 355 64% 44%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11.2%;
+    /* Secondary = Sable */
+    --secondary: 30 20% 94%;
+    --secondary-foreground: 240 48% 17%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 30 20% 94%;
+    --muted-foreground: 240 20% 45%;
 
-    --accent: 253 100% 65%; /* Soft Purple */
-    --accent-foreground: 222 47% 11.2%;
+    /* Accent = Coral doux */
+    --accent: 15 100% 85%;
+    --accent-foreground: 240 48% 17%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 340 36% 21%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 36%;
-    --success-foreground: 210 40% 98%;
+    --success: 158 64% 35%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 210 40% 98%;
+    --warning: 15 100% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --info: 199 89% 48%;
+    --info: 355 64% 44%;
     --info-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 30 15% 90%;
+    --input: 30 15% 90%;
+    --ring: 355 64% 44%;
 
-    --sidebar-background: 210 20% 96%;
-    --sidebar-foreground: 215 25% 27%;
-    --sidebar-primary: 221.2 83.2% 53.3%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 93%;
-    --sidebar-accent-foreground: 222 47% 11.2%;
-    --sidebar-border: 214.3 31.8% 88%;
-    --sidebar-ring: 221.2 83.2% 53.3%;
+    --sidebar-background: 30 25% 96%;
+    --sidebar-foreground: 240 48% 25%;
+    --sidebar-primary: 355 64% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 355 64% 44% / 0.06;
+    --sidebar-accent-foreground: 240 48% 17%;
+    --sidebar-border: 30 15% 88%;
+    --sidebar-ring: 355 64% 44%;
 
-    --glass: 0 0% 100% / 0.8;
-    --glass-border: 214.3 31.8% 91.4%;
+    --glass: 0 0% 100% / 0.85;
+    --glass-border: 30 15% 90%;
 
-    --glow-purple: 255 69% 55% / 0.1;
-    --glow-cyan: 193 100% 50% / 0.1;
+    --glow-coral: 15 100% 76% / 0.15;
+    --glow-crimson: 355 64% 44% / 0.1;
     
-    --chart-1: 221.2 83.2% 53.3%;
-    --chart-2: 212 95% 68%;
-    --chart-3: 142 76% 36%;
-    --chart-4: 47 95% 50%;
-    --chart-5: 25 95% 50%;
+    --chart-1: 355 64% 44%;
+    --chart-2: 15 100% 76%;
+    --chart-3: 158 64% 35%;
+    --chart-4: 30 20% 45%;
+    --chart-5: 0 0% 40%;
   }
 }
 

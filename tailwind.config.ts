@@ -91,11 +91,12 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
         lattice: {
-          1: '#023E73',
-          2: '#024059',
-          3: '#BF6415',
-          4: '#D9CCC1',
-          5: '#8C503A',
+          1: '#16163F',  // navy-deep
+          2: '#242F49',  // navy-mid
+          3: '#384358',  // navy-steel
+          4: '#FFA586',  // coral
+          5: '#B51A2B',  // crimson
+          6: '#541A2E',  // burgundy
         },
       },
       borderRadius: {
@@ -196,11 +197,11 @@ export default {
         shimmer: "shimmer 2s linear infinite",
       },
       boxShadow: {
-        glass: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
-        "glass-sm": "0 4px 16px 0 rgba(31, 38, 135, 0.1)",
-        "glass-lg": "0 16px 48px 0 rgba(0, 0, 0, 0.15)",
-        glow: "0 0 40px rgba(0, 123, 255, 0.3)",
-        "glow-accent": "0 0 40px rgba(111, 66, 193, 0.3)",
+        glass: "0 8px 32px 0 rgba(22, 22, 63, 0.25)",
+        "glass-sm": "0 4px 16px 0 rgba(22, 22, 63, 0.15)",
+        "glass-lg": "0 16px 48px 0 rgba(22, 22, 63, 0.30)",
+        glow: "0 0 40px rgba(255, 165, 134, 0.3)",
+        "glow-accent": "0 0 40px rgba(181, 26, 43, 0.3)",
       },
     },
   },

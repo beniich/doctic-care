@@ -80,11 +80,11 @@ const PLANS = [
 
 export default function LandingPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', color: '#f0f4f8', fontFamily: 'Sora, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#16163F', color: '#f0f4f8', fontFamily: 'Sora, sans-serif' }}>
       {/* ── NAV ─────────────────────────────────────────────────────────── */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 100,
-        background: 'rgba(13,17,23,0.85)', backdropFilter: 'blur(16px)',
+        background: 'rgba(22, 22, 63, 0.85)', backdropFilter: 'blur(20px)',
         borderBottom: '0.5px solid rgba(255,255,255,0.07)',
         padding: '0 2rem', height: 64,
         display: 'flex', alignItems: 'center', gap: '2rem',
@@ -94,7 +94,7 @@ export default function LandingPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 10,
-            background: 'linear-gradient(135deg, #10b981, #059669)',
+            background: 'linear-gradient(135deg, #FFA586, #B51A2B)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="18" height="18" fill="none" stroke="white" strokeWidth={2} viewBox="0 0 24 24">
@@ -103,8 +103,8 @@ export default function LandingPage() {
           </div>
           <span style={{ fontFamily: 'Playfair Display, serif', fontSize: 18, fontWeight: 600 }}>Doctic</span>
           <span style={{
-            background: 'rgba(16,185,129,0.12)', color: '#34d399',
-            border: '0.5px solid rgba(16,185,129,0.25)',
+            background: 'rgba(255,165,134,0.12)', color: '#FFA586',
+            border: '0.5px solid rgba(255,165,134,0.25)',
             fontSize: 10, padding: '2px 7px', borderRadius: 10,
             fontWeight: 500, letterSpacing: '0.06em',
           }}>Medical OS</span>
@@ -133,7 +133,7 @@ export default function LandingPage() {
           }}>Connexion</Link>
           <Link to="/dashboard" style={{
             padding: '9px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500,
-            background: '#10b981', color: '#fff',
+            background: '#FFA586', color: '#16163F',
           }}>Essai gratuit 14j →</Link>
         </div>
       </nav>
@@ -150,24 +150,24 @@ export default function LandingPage() {
         <div style={{
           position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)',
           width: 600, height: 400,
-          background: 'radial-gradient(ellipse, rgba(16,185,129,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse, rgba(255,165,134,0.08) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{
           position: 'absolute', bottom: '10%', left: '15%',
           width: 300, height: 300,
-          background: 'radial-gradient(ellipse, rgba(59,130,246,0.05) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse, rgba(181,26,43,0.08) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
 
         {/* Badge */}
         <div className="animate-fade-up" style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: 'rgba(16,185,129,0.08)', border: '0.5px solid rgba(16,185,129,0.2)',
+          background: 'rgba(255,165,134,0.08)', border: '0.5px solid rgba(255,165,134,0.2)',
           borderRadius: 20, padding: '6px 16px', marginBottom: '2rem',
         }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', animation: 'fadeInOut 2s infinite', display: 'block' }} />
-          <span style={{ fontSize: 12, color: '#34d399', fontWeight: 500, letterSpacing: '0.08em' }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFA586', animation: 'fadeInOut 2s infinite', display: 'block' }} />
+          <span style={{ fontSize: 12, color: '#FFA586', fontWeight: 500, letterSpacing: '0.08em' }}>
             PLATEFORME MÉDICALE · CERTIFIÉE RGPD & HIPAA
           </span>
         </div>
@@ -182,7 +182,7 @@ export default function LandingPage() {
         }}>
           La médecine moderne
           <br />
-          <em style={{ color: '#34d399', fontStyle: 'italic' }}>mérite un OS moderne.</em>
+          <em style={{ color: '#FFA586', fontStyle: 'italic' }}>mérite un OS moderne.</em>
         </h1>
 
         <p className="animate-fade-up delay-2" style={{
@@ -196,7 +196,7 @@ export default function LandingPage() {
         <div className="animate-fade-up delay-3" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '4rem' }}>
           <Link to="/dashboard" style={{
             padding: '14px 32px', borderRadius: 12, fontSize: 15, fontWeight: 500,
-            background: '#10b981', color: '#fff',
+            background: '#FFA586', color: '#16163F',
           }}>
             Démarrer gratuitement
           </Link>
@@ -227,7 +227,7 @@ export default function LandingPage() {
       <section id="fonctionnalités" style={{ padding: '6rem 2rem', background: '#0d1117' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <p style={{ fontSize: 11, color: '#10b981', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 12 }}>
+            <p style={{ fontSize: 11, color: '#FFA586', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 12 }}>
               FONCTIONNALITÉS
             </p>
             <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 400, lineHeight: 1.2, marginBottom: '1rem' }}>
@@ -277,7 +277,7 @@ export default function LandingPage() {
               {/* Fake sidebar */}
               <div style={{ background: '#0d1117', borderRight: '0.5px solid rgba(255,255,255,0.07)', padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: 4 }} className="hidden sm:flex">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px', marginBottom: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,#10b981,#059669)', display:'flex',alignItems:'center',justifyContent:'center' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,#FFA586,#B51A2B)', display:'flex',alignItems:'center',justifyContent:'center' }}>
                     <svg width="12" height="12" fill="none" stroke="white" strokeWidth={2} viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                   </div>
                   <span style={{ fontSize: 13, fontFamily:'Playfair Display,serif', fontWeight:600, color:'#f0f4f8' }}>Doctic</span>
@@ -285,10 +285,10 @@ export default function LandingPage() {
                 {['Tableau de bord','Agenda','Patients','Facturation','Assistant IA'].map((item, i) => (
                   <div key={item} style={{
                     padding:'7px 10px', borderRadius:8, fontSize:12,
-                    background: i===0?'rgba(16,185,129,0.12)':'transparent',
-                    color: i===0?'#34d399':'#4a5568',
+                    background: i===0?'rgba(255,165,134,0.12)':'transparent',
+                    color: i===0?'#FFA586':'#4a5568',
                     display:'flex',alignItems:'center',gap:8,
-                    border: i===0?'0.5px solid rgba(16,185,129,0.2)':'none',
+                    border: i===0?'0.5px solid rgba(255,165,134,0.2)':'none',
                   }}>
                     <div style={{width:8,height:8,borderRadius:2,background:'currentColor',opacity:0.6,flexShrink:0}}/>
                     {item}
@@ -319,11 +319,11 @@ export default function LandingPage() {
                   <svg viewBox="0 0 400 80" style={{width:'100%',height:80}}>
                     <defs>
                       <linearGradient id="gr" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stopColor="#10b981" stopOpacity="0.3"/>
-                        <stop offset="100%" stopColor="#10b981" stopOpacity="0"/>
+                        <stop offset="0%" stopColor="#FFA586" stopOpacity="0.3"/>
+                        <stop offset="100%" stopColor="#FFA586" stopOpacity="0"/>
                       </linearGradient>
                     </defs>
-                    <path d="M0 60 C40 50, 60 30, 100 35 S160 20, 200 25 S280 15, 320 20 S380 30, 400 28" fill="none" stroke="#10b981" strokeWidth="2"/>
+                    <path d="M0 60 C40 50, 60 30, 100 35 S160 20, 200 25 S280 15, 320 20 S380 30, 400 28" fill="none" stroke="#FFA586" strokeWidth="2"/>
                     <path d="M0 60 C40 50, 60 30, 100 35 S160 20, 200 25 S280 15, 320 20 S380 30, 400 28 V80 H0Z" fill="url(#gr)"/>
                   </svg>
                 </div>
@@ -399,7 +399,7 @@ export default function LandingPage() {
           <Link to="/dashboard" style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
             padding: '16px 36px', borderRadius: 12, fontSize: 15, fontWeight: 500,
-            background: '#10b981', color: '#fff',
+            background: '#FFA586', color: '#16163F',
           }}>
             Démarrer l'essai gratuit →
           </Link>
@@ -414,7 +414,7 @@ export default function LandingPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '2rem', textAlign: 'left' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.75rem' }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,#10b981,#059669)', display:'flex',alignItems:'center',justifyContent:'center' }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,#FFA586,#B51A2B)', display:'flex',alignItems:'center',justifyContent:'center' }}>
                 <svg width="14" height="14" fill="none" stroke="white" strokeWidth={2} viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
               </div>
               <span style={{ fontFamily: 'Playfair Display, serif', fontSize: 16, fontWeight: 600 }}>Doctic Medical OS</span>
@@ -478,8 +478,8 @@ function PlanCard({ name, price, desc, features, featured }: typeof PLANS[0]) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        background: featured ? 'linear-gradient(145deg, #1c2d24, #162520)' : '#161b22',
-        border: featured ? '1px solid rgba(16,185,129,0.3)' : '0.5px solid rgba(255,255,255,0.07)',
+        background: featured ? 'linear-gradient(145deg, #242F49, #16163F)' : '#242F49',
+        border: featured ? '1px solid rgba(255,165,134,0.3)' : '0.5px solid rgba(255,255,255,0.07)',
         borderRadius: 16, padding: '2rem',
         transform: hov ? 'translateY(-3px)' : 'none',
         transition: 'all 0.25s',
@@ -489,8 +489,8 @@ function PlanCard({ name, price, desc, features, featured }: typeof PLANS[0]) {
       {featured && (
         <div style={{
           position: 'absolute', top: 16, right: 16,
-          background: 'rgba(16,185,129,0.15)', color: '#34d399',
-          border: '0.5px solid rgba(16,185,129,0.3)',
+          background: 'rgba(255,165,134,0.15)', color: '#FFA586',
+          border: '0.5px solid rgba(255,165,134,0.3)',
           fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 20, letterSpacing: '0.08em',
         }}>
           RECOMMANDÉ
@@ -515,8 +515,8 @@ function PlanCard({ name, price, desc, features, featured }: typeof PLANS[0]) {
       <Link to="/dashboard" style={{
         display: 'block', textAlign: 'center',
         padding: '11px', borderRadius: 10, fontSize: 14, fontWeight: 500,
-        background: featured ? '#10b981' : 'rgba(255,255,255,0.05)',
-        color: featured ? '#fff' : '#f0f4f8',
+        background: featured ? '#FFA586' : 'rgba(255,255,255,0.05)',
+        color: featured ? '#16163F' : '#f0f4f8',
         border: featured ? 'none' : '0.5px solid rgba(255,255,255,0.1)',
         transition: 'background 0.2s',
       }}>

@@ -18,6 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { LogoIcon } from '@/components/layout/LogoIcon';
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────
 interface Tenant {
@@ -192,9 +193,7 @@ const SuperAdminDashboard = () => {
       <aside className="w-64 flex-shrink-0 border-r border-white/[0.06] bg-black/40 backdrop-blur-xl p-6 hidden md:flex flex-col">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-10">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-orange-600 flex items-center justify-center shadow-lg shadow-rose-500/30">
-            <ShieldAlert className="w-5 h-5 text-white" />
-          </div>
+          <LogoIcon className="w-9 h-9" />
           <div>
             <h1 className="text-base font-bold text-white leading-tight">Doctic Control</h1>
             <p className="text-[10px] text-rose-400 tracking-widest uppercase">Super Admin</p>

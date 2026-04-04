@@ -27,6 +27,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { useAuth } from "@/contexts/AuthContext";
+import { LogoIcon } from "./LogoIcon";
 
 interface NavItem {
   icon: React.ElementType;
@@ -92,8 +93,8 @@ export function AppSidebar() {
         className={cn(
           "w-full justify-start gap-3 h-10 px-3 transition-all duration-200 rounded-lg group",
           isActive 
-            ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(0,180,255,0.05)]" 
-            : "text-white/50 hover:bg-white/[0.03] hover:text-white",
+            ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_hsl(var(--primary)/0.15)]" 
+            : "text-foreground/50 hover:bg-white/[0.03] hover:text-foreground",
           collapsed && "justify-center px-0"
         )}
       >
@@ -101,7 +102,7 @@ export function AppSidebar() {
           "p-1.5 rounded-md transition-all duration-300",
           isActive ? "bg-primary/20" : "bg-transparent group-hover:bg-white/5"
         )}>
-          <Icon className={cn("h-4 w-4 flex-shrink-0", isActive ? "text-primary shadow-[0_0_8px_rgba(0,210,255,0.5)]" : "text-inherit")} />
+          <Icon className={cn("h-4 w-4 flex-shrink-0 transition-all duration-300", isActive ? "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.6)]" : "text-inherit")} />
         </div>
         {!collapsed && (
           <div className="flex-1 flex items-center justify-between overflow-hidden">
@@ -133,7 +134,7 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        "flex flex-col h-screen transition-all duration-300 border-r border-white/[0.04] bg-[#050508] relative",
+        "flex flex-col h-screen transition-all duration-300 border-r border-sidebar-border bg-sidebar backdrop-blur-2xl relative",
         collapsed ? "w-16" : "w-64"
       )}
     >
@@ -141,13 +142,11 @@ export function AppSidebar() {
 
       {/* Logo Header Doctic Purple Style */}
       <div className="flex items-center gap-3 px-4 py-6 mb-2">
-        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent border border-white/10 shadow-lg shadow-primary/20 flex-shrink-0">
-          <ShieldAlert className="w-5 h-5 text-white" />
-        </div>
+        <LogoIcon className="w-9 h-9" />
         {!collapsed && (
           <div className="flex flex-col leading-none">
-            <span className="font-extrabold text-[15px] tracking-tight text-white">DOCTIC CARE</span>
-            <span className="text-[9px] text-primary/70 tracking-[0.2em] uppercase font-bold mt-1">Medical OS</span>
+            <span className="font-extrabold text-[15px] tracking-tight text-foreground uppercase">DOCTIC CARE</span>
+            <span className="text-[9px] text-primary/80 tracking-[0.2em] uppercase font-bold mt-1">Medical OS</span>
           </div>
         )}
       </div>
@@ -155,7 +154,7 @@ export function AppSidebar() {
       <nav className="flex-1 py-2 px-3 space-y-7 overflow-y-auto scrollbar-none">
         {/* Main Modules */}
         <div className="space-y-1">
-          {!collapsed && <h3 className="px-2 text-[10px] font-bold text-white/20 uppercase tracking-[0.1em] mb-3">Menu Principal</h3>}
+          {!collapsed && <h3 className="px-2 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.1em] mb-3">Menu Principal</h3>}
           {filteredNavItems.map((item) => (
             <NavItemButton key={item.path} item={item} />
           ))}
@@ -163,7 +162,7 @@ export function AppSidebar() {
 
         {/* Content Modules */}
         <div className="space-y-1">
-          {!collapsed && <h3 className="px-2 text-[10px] font-bold text-white/20 uppercase tracking-[0.1em] mb-3">Communication</h3>}
+          {!collapsed && <h3 className="px-2 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.1em] mb-3">Communication</h3>}
           {filteredContentItems.map((item) => (
             <NavItemButton key={item.path} item={item} />
           ))}
@@ -192,13 +191,13 @@ export function AppSidebar() {
 
         {/* Footer Info */}
         {!collapsed && (
-          <div className="px-2 py-3 mt-2 border-t border-white/[0.03] space-y-2">
-            <div className="flex items-center justify-between text-[10px] text-white/30 font-medium whitespace-nowrap">
+          <div className="px-2 py-3 mt-2 border-t border-sidebar-border/50 space-y-2">
+            <div className="flex items-center justify-between text-[10px] text-foreground/30 font-medium whitespace-nowrap">
                <span>{new Date().toLocaleDateString('fr-FR')}</span>
                <span className="truncate ml-2 text-primary/50">{user?.tenant?.name || 'Doctic Organization'}</span>
             </div>
-            <div className="text-[10px] text-white/20 font-bold flex items-center justify-between">
-               <span>DocticCare v2.1</span>
+            <div className="text-[10px] text-foreground/20 font-bold flex items-center justify-between">
+               <span>DocticCare v2.2</span>
                <span className="flex items-center gap-1">© {new Date().getFullYear()}</span>
             </div>
           </div>
@@ -209,7 +208,7 @@ export function AppSidebar() {
           variant="ghost"
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
-            "w-full h-9 px-2 text-white/40 hover:text-white hover:bg-white/5",
+            "w-full h-9 px-2 text-foreground/40 hover:text-foreground hover:bg-white/5",
             collapsed ? "justify-center" : "justify-between"
           )}
         >

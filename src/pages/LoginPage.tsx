@@ -31,15 +31,15 @@ export default function LoginPage() {
         }
     };
 
-    const bg = isDarkMode ? 'bg-gray-950' : 'bg-gray-50';
-    const card = isDarkMode ? 'bg-gray-900/90 border-gray-800' : 'bg-white/90 border-gray-200';
+    const bg = isDarkMode ? 'bg-background' : 'bg-background';
+    const card = isDarkMode ? 'glass-card !bg-card text-foreground' : 'bg-card text-foreground border-border';
 
     return (
         <div className={`min-h-screen ${bg} flex items-center justify-center p-4 transition-all duration-500`}>
             <Card className={`w-full max-w-md p-10 ${card} rounded-3xl shadow-2xl border`}>
                 <div className="flex justify-end mb-6">
-                    <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-gray-700/30 dark:hover:bg-gray-200/30 transition">
-                        {isDarkMode ? <Sun className="h-5 w-5 text-yellow-400" /> : <Moon className="h-5 w-5" />}
+                    <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-foreground/5 transition">
+                        {isDarkMode ? <Sun className="h-5 w-5 text-primary" /> : <Moon className="h-5 w-5" />}
                     </button>
                 </div>
 
@@ -48,7 +48,7 @@ export default function LoginPage() {
                         <Stethoscope className="h-10 w-10 text-white" />
                     </div>
                     <h1 className="text-3xl font-bold mb-2">Doctic Pro</h1>
-                    <p className="text-gray-400">Connexion à votre espace médical</p>
+                    <p className="text-muted-foreground">Connexion à votre espace médical</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-6">
@@ -88,7 +88,7 @@ export default function LoginPage() {
                 </form>
 
                 <div className="mt-8 text-center">
-                    <p className="text-sm text-gray-400 mb-4">Ou continuer avec</p>
+                    <p className="text-sm text-muted-foreground mb-4">Ou continuer avec</p>
                     <div className="flex justify-center gap-4">
                         <Button
                             variant="outline"

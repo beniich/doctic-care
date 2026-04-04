@@ -33,17 +33,17 @@ export default function Dashboard() {
   };
 
   const kpis = [
-    { title: t('dashboard.kpi.active_patients'), value: '1 245', change: '+12%', icon: Users, glowColor: 'cyan' as const },
-    { title: t('dashboard.kpi.appointments_today'), value: '24', change: '+5', icon: Calendar, glowColor: 'purple' as const },
+    { title: t('dashboard.kpi.active_patients'), value: '1 245', change: '+12%', icon: Users, glowColor: 'coral' as const },
+    { title: t('dashboard.kpi.appointments_today'), value: '24', change: '+5', icon: Calendar, glowColor: 'steel' as const },
     { title: t('dashboard.kpi.monthly_revenue'), value: '€25 767', change: '+18%', icon: DollarSign, glowColor: 'green' as const },
-    { title: t('dashboard.kpi.satisfaction'), value: '98%', change: '+2%', icon: Activity, glowColor: 'orange' as const }
+    { title: t('dashboard.kpi.satisfaction'), value: '98%', change: '+2%', icon: Activity, glowColor: 'crimson' as const }
   ];
 
   const recentActivities = [
-    { icon: FileText, text: `${t('dashboard.recent_activity.consultation_finished')} - Sarah Johnson`, time: '5 min', color: 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(0,200,255,0.4)]' },
-    { icon: FileText, text: `${t('dashboard.recent_activity.new_prescription')} - Michael Chen`, time: '15 min', color: 'bg-accent/20 text-accent shadow-[0_0_10px_rgba(155,127,255,0.4)]' },
-    { icon: Video, text: t('dashboard.recent_activity.teleconsult_planned'), time: '2h', color: 'bg-warning/20 text-warning shadow-[0_0_10px_rgba(255,107,0,0.4)]' },
-    { icon: Video, text: t('dashboard.recent_activity.video_published'), time: '1h', color: 'bg-success/20 text-success shadow-[0_0_10px_rgba(0,230,118,0.4)]' }
+    { icon: FileText, text: `${t('dashboard.recent_activity.consultation_finished')} - Sarah Johnson`, time: '5 min', color: 'bg-primary/20 text-primary shadow-[0_0_10px_hsla(15,100%,76%,0.4)]' },
+    { icon: FileText, text: `${t('dashboard.recent_activity.new_prescription')} - Michael Chen`, time: '15 min', color: 'bg-accent/20 text-accent shadow-[0_0_10px_hsla(355,64%,44%,0.4)]' },
+    { icon: Video, text: t('dashboard.recent_activity.teleconsult_planned'), time: '2h', color: 'bg-warning/20 text-warning shadow-[0_0_10px_hsla(15,100%,76%,0.4)]' },
+    { icon: Video, text: t('dashboard.recent_activity.video_published'), time: '1h', color: 'bg-success/20 text-success shadow-[0_0_10px_hsla(158,64%,52%,0.4)]' }
   ];
 
   const upcomingAppointments = [
@@ -68,7 +68,7 @@ export default function Dashboard() {
             {currentTenant?.plan === 'STARTER' && (
               <motion.div 
                 variants={item}
-                className="relative overflow-hidden p-6 rounded-2xl bg-gradient-to-r from-rose-500/20 to-orange-500/20 border border-white/10 backdrop-blur-xl group cursor-pointer hover:border-rose-500/30 transition-all duration-500 shadow-2xl shadow-rose-500/10"
+                className="relative overflow-hidden p-6 rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/20 backdrop-blur-xl group cursor-pointer hover:border-primary/40 transition-all duration-500 shadow-2xl shadow-primary/10"
                 onClick={() => navigate('/saas-billing')}
               >
                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -208,13 +208,13 @@ export default function Dashboard() {
                 {/* Quick Actions / Tips */}
                 <motion.div variants={item}>
                   <Card className="glass-card border-border/50 bg-gradient-to-br from-primary/10 to-transparent relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,200,255,0.05)_25%,transparent_25%,transparent_50%,rgba(0,200,255,0.05)_50%,rgba(0,200,255,0.05)_75%,transparent_75%,transparent)] bg-[length:10px_10px] opacity-20" />
+                    <div className="absolute inset-0 bg-[linear-gradient(45deg,hsla(15,100%,76%,0.05)_25%,transparent_25%,transparent_50%,hsla(15,100%,76%,0.05)_50%,hsla(15,100%,76%,0.05)_75%,transparent_75%,transparent)] bg-[length:10px_10px] opacity-20" />
                     <CardContent className="p-6 relative z-10">
                       <h3 className="font-bold text-sm tracking-widest text-primary mb-2 uppercase">{t('dashboard.tips.title')}</h3>
                       <p className="text-xs text-white/50 mb-4 leading-relaxed">
                         {t('dashboard.tips.content')}
                       </p>
-                      <button className="w-full py-2.5 rounded border border-primary/40 bg-primary/10 text-primary text-[11px] font-bold tracking-widest uppercase hover:bg-primary/20 hover:shadow-[0_0_15px_rgba(0,200,255,0.3)] transition-all">
+                      <button className="w-full py-2.5 rounded border border-primary/40 bg-primary/10 text-primary text-[11px] font-bold tracking-widest uppercase hover:bg-primary/20 hover:shadow-[0_0_15px_hsla(15,100%,76%,0.3)] transition-all">
                         {t('dashboard.tips.open_assistant')}
                       </button>
                     </CardContent>
