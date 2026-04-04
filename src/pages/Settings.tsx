@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { OutlookLayout } from "@/components/layout/OutlookLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,30 +15,137 @@ import {
   Palette,
   Database,
   Wifi,
-  WifiOff,
   UserPlus,
+  Loader2,
+  Save,
 } from "lucide-react";
 import { TeamManagement } from "@/components/settings/TeamManagement";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { api } from "@/lib/api";
 
 export default function Settings() {
+  const { user, refresh } = useAuth();
+  const [loading, setLoading] = useState(false);
+  
+  // Profile state
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        phone: user.phone || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    setLoading(true);
+    try {
+      const res = await api.patch<{ data: any }>('/users/me', {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        phone: profile.phone
+      });
+      if (res.data) {
+        toast.success("Profil mis à jour avec succès");
+        refresh?.(); // Rafraîchir le contexte Auth
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Erreur lors de la mise à jour");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <OutlookLayout
       singlePane={
-        <div className="p-8 max-w-4xl mx-auto space-y-8">
+        <div className="p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
           <div>
-            <h1 className="text-3xl font-bold">Settings</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage your clinic preferences and system configuration
+            <h1 className="text-3xl font-bold text-white tracking-tight">Paramètres</h1>
+            <p className="text-white/40 mt-1">
+              Gérez les préférences de votre clinique et la configuration système
             </p>
           </div>
 
+          {/* User Profile - REAL DATA */}
+          <Card className="bg-white/[0.03] border-white/[0.08] backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <User className="h-5 w-5 text-primary" />
+                Mon Profil
+              </CardTitle>
+              <CardDescription className="text-white/40">
+                Vos informations personnelles et coordonnées professionnelles
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="text-white/60">Prénom</Label>
+                  <Input 
+                    id="firstName" 
+                    value={profile.firstName} 
+                    onChange={e => setProfile({...profile, firstName: e.target.value})}
+                    className="bg-white/5 border-white/10 text-white focus:border-primary/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-white/60">Nom</Label>
+                  <Input 
+                    id="lastName" 
+                    value={profile.lastName} 
+                    onChange={e => setProfile({...profile, lastName: e.target.value})}
+                    className="bg-white/5 border-white/10 text-white focus:border-primary/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-white/60">Email</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={profile.email} 
+                    disabled 
+                    className="bg-white/[0.02] border-white/10 text-white/40 cursor-not-allowed"
+                  />
+                  <p className="text-[10px] text-white/20">L'email ne peut pas être modifié par l'utilisateur.</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-white/60">Téléphone</Label>
+                  <Input 
+                    id="phone" 
+                    value={profile.phone} 
+                    onChange={e => setProfile({...profile, phone: e.target.value})}
+                    className="bg-white/5 border-white/10 text-white focus:border-primary/50"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={handleSaveProfile} disabled={loading} className="gap-2 bg-primary hover:bg-primary/90 text-white px-6">
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  Enregistrer les modifications
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Team Management - Only for ADMIN or SUPER_ADMIN */}
-          {(useAuth().user?.role === 'ADMIN' || useAuth().user?.role === 'SUPER_ADMIN') && (
+          {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
             <section className="space-y-4">
               <div className="flex items-center gap-2 mb-2">
-                <UserPlus className="h-6 w-6 text-primary" />
-                <h2 className="text-xl font-bold">Gestion d'Équipe</h2>
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <UserPlus className="h-5 w-5 text-primary" />
+                </div>
+                <h2 className="text-xl font-bold text-white">Gestion d'Équipe</h2>
               </div>
               <TeamManagement />
             </section>
@@ -45,254 +153,99 @@ export default function Settings() {
 
           <Separator className="bg-white/5" />
 
-          {/* Profile Settings */}
-          <Card className="glass-card">
+          {/* Clinic Information */}
+          <Card className="bg-white/[0.03] border-white/[0.08] backdrop-blur-xl opacity-60">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-primary" />
-                Profile Settings
-              </CardTitle>
-              <CardDescription>
-                Your personal information and preferences
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" defaultValue="Dr. Sarah Anderson" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue="dr.anderson@doctic.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" defaultValue="+1 (555) 123-4567" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="specialty">Specialty</Label>
-                  <Input id="specialty" defaultValue="General Practice" />
-                </div>
-              </div>
-              <Button>Save Changes</Button>
-            </CardContent>
-          </Card>
-
-          {/* Clinic Settings */}
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-white">
                 <Building2 className="h-5 w-5 text-primary" />
-                Clinic Information
+                Information de la Clinique
               </CardTitle>
-              <CardDescription>
-                Your clinic's details and contact information
+              <CardDescription className="text-white/40">
+                Coordonnées de l'établissement (géré par l'administrateur)
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="clinic-name">Clinic Name</Label>
-                  <Input id="clinic-name" defaultValue="Doctic Medical Center" />
+                  <Label className="text-white/60">Nom de la clinique</Label>
+                  <Input disabled value={user?.tenant?.name || "Clinique Doctic"} className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="clinic-phone">Clinic Phone</Label>
-                  <Input id="clinic-phone" defaultValue="+1 (555) 000-0000" />
+                  <Label className="text-white/60">Sous-domaine</Label>
+                  <Input disabled value={`${user?.tenant?.slug || "demo"}.doctic.com`} className="bg-white/5 border-white/10" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Input id="address" defaultValue="123 Medical Plaza, Suite 100, New York, NY 10001" />
-              </div>
-              <Button>Update Clinic Info</Button>
             </CardContent>
           </Card>
 
-          {/* Notifications */}
-          <Card className="glass-card">
+          {/* Notifications config */}
+          <Card className="bg-white/[0.03] border-white/[0.08] backdrop-blur-xl">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-white">
                 <Bell className="h-5 w-5 text-primary" />
-                Notifications
+                Alertes & Notifications
               </CardTitle>
-              <CardDescription>
-                Configure how you receive alerts and updates
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Appointment Reminders</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive reminders before scheduled appointments
-                  </p>
+              {[
+                { label: "Rappels de rendez-vous", sub: "Recevoir une alerte avant chaque patient", default: true },
+                { label: "Nouveaux patients", sub: "Notification à chaque nouveau dossier créé", default: true },
+                { label: "Alertes facturation", sub: "Alertes pour les impayés et factures en retard", default: false },
+              ].map((item, i) => (
+                <div key={i}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-white">{item.label}</Label>
+                      <p className="text-sm text-white/30">{item.sub}</p>
+                    </div>
+                    <Switch defaultChecked={item.default} className="data-[state=checked]:bg-primary" />
+                  </div>
+                  {i < 2 && <Separator className="my-4 bg-white/5" />}
                 </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>New Patient Alerts</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Get notified when new patients register
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Billing Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Alerts for overdue payments and invoices
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Email Digest</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Daily summary of clinic activities
-                  </p>
-                </div>
-                <Switch />
-              </div>
+              ))}
             </CardContent>
           </Card>
 
           {/* Security */}
-          <Card className="glass-card">
+          <Card className="bg-white/[0.03] border-white/[0.08] backdrop-blur-xl">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-white">
                 <Shield className="h-5 w-5 text-primary" />
-                Security & Privacy
+                Sécurité & Confidentialité
               </CardTitle>
-              <CardDescription>
-                Manage your security settings and access controls
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Two-Factor Authentication</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Add an extra layer of security to your account
-                  </p>
+                  <Label className="text-white">Authentification à deux facteurs</Label>
+                  <p className="text-sm text-white/30">Sécurisez votre compte avec une vérification supplémentaire</p>
                 </div>
-                <Button variant="outline" size="sm">Enable</Button>
+                <Button variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/5">Activer</Button>
               </div>
-              <Separator />
+              <Separator className="bg-white/5" />
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Session Timeout</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Automatically log out after 30 minutes of inactivity
-                  </p>
+                  <Label className="text-white">Audit System</Label>
+                  <p className="text-sm text-white/30">Traçage de toutes les actions conforme RGPD</p>
                 </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Audit Logging</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Track all actions for compliance purposes
-                  </p>
-                </div>
-                <Badge variant="secondary" className="status-success">Enabled</Badge>
+                <Badge className="bg-emerald-500/10 text-emerald-400 border-none">Activé</Badge>
               </div>
             </CardContent>
           </Card>
 
-          {/* Offline Mode */}
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5 text-primary" />
-                Offline Mode
-              </CardTitle>
-              <CardDescription>
-                Configure offline-first functionality
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Wifi className="h-5 w-5 text-success" />
-                  <div>
-                    <Label>Connection Status</Label>
-                    <p className="text-sm text-muted-foreground">
-                      You are currently online
-                    </p>
-                  </div>
-                </div>
-                <Badge className="status-success">Connected</Badge>
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Enable Offline Mode</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Cache data locally for offline access
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Auto-Sync</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Automatically sync data when connection is restored
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="pt-4">
-                <Button variant="outline" className="gap-2">
-                  <Database className="h-4 w-4" />
-                  Sync Now
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Appearance */}
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5 text-primary" />
-                Appearance
-              </CardTitle>
-              <CardDescription>
-                Customize the look and feel of your workspace
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Dark Mode</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Use dark theme for the interface
-                  </p>
-                </div>
-                <Switch />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Compact View</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Show more content with reduced spacing
-                  </p>
-                </div>
-                <Switch />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Status */}
+          <div className="flex items-center justify-center gap-6 py-6 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-widest font-bold">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
+              Système En Ligne
+            </div>
+            <div className="flex items-center gap-2">
+              <Database className="w-3 h-3" /> Base de données synchronisée
+            </div>
+            <div className="flex items-center gap-2">
+              <Wifi className="w-3 h-3" /> Connection SSL Sécurisée
+            </div>
+          </div>
         </div>
       }
     />

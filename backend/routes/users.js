@@ -140,4 +140,27 @@ router.patch('/:id/toggle-active', isAdmin, async (req, res) => {
   }
 });
 
+// 6. Mettre à jour mon profil
+router.patch('/me', async (req, res) => {
+  try {
+    const { firstName, lastName, phone, avatar } = req.body;
+    
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        firstName,
+        lastName,
+        phone,
+        avatar,
+        name: `${firstName || ''} ${lastName || ''}`.trim() || undefined
+      }
+    });
+
+    res.json({ data: updatedUser });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
 export default router;
