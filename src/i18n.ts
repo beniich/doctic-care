@@ -3,8 +3,6 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Import translation files
-// In a real app with many files, we might want to use i18next-http-backend
-// but for now we'll bundle them to ensure they work immediately without server config
 import en from './locales/en/translation.json';
 import fr from './locales/fr/translation.json';
 import es from './locales/es/translation.json';
@@ -21,7 +19,8 @@ i18n
     // init i18next
     .init({
         debug: true,
-        fallbackLng: 'en', // Default language is English
+        lng: 'en', // ENFORCE ENGLISH AS DEFAULT
+        fallbackLng: 'en',
         resources: {
             en: {
                 translation: en

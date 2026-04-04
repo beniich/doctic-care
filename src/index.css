@@ -87,61 +87,70 @@
   }
 
   .light {
-    /* La maquette est Dark Only by default. 
-       On mappe le light mode sur le dark mode momentanément pour éviter un flash blanc indésirable. */
-    --background: 259 71% 14%;
-    --background-2: 258 65% 18%;
-    --background-3: 254 59% 26%;
+    /* Premium Light Mode - Inspired by Modern Clean Medical Interfaces */
+    --background: 210 20% 98%; /* #f8f9fa */
+    --background-2: 0 0% 100%; /* #ffffff */
+    --background-3: 210 20% 94%; /* #f1f3f5 */
 
-    --foreground: 0 0% 100%;
+    --foreground: 222 47% 11%; /* #0f172a */
+    --foreground-muted: 222 47% 11% / 0.6;
+    --foreground-subtle: 222 47% 11% / 0.3;
 
-    --card: 0 0% 100% / 0.06;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 100% / 0.8;
+    --card-hover: 0 0% 100% / 1;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 259 71% 14%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 193 100% 50%;
-    --primary-foreground: 259 71% 14%;
+    --primary: 221.2 83.2% 53.3%; /* Professional Blue */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 100% / 0.05;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11.2%;
 
-    --muted: 0 0% 100% / 0.05;
-    --muted-foreground: 0 0% 100% / 0.5;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 253 100% 75%;
-    --accent-foreground: 259 71% 14%;
+    --accent: 253 100% 65%; /* Soft Purple */
+    --accent-foreground: 222 47% 11.2%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --success: 151 100% 45%;
-    --success-foreground: 259 71% 14%;
+    --success: 142 76% 36%;
+    --success-foreground: 210 40% 98%;
 
-    --warning: 25 100% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 210 40% 98%;
 
-    --info: 193 100% 50%;
-    --info-foreground: 259 71% 14%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
 
-    --border: 254 100% 65% / 0.2;
-    --input: 254 100% 65% / 0.2;
-    --ring: 193 100% 50%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
 
-    --sidebar-background: 0 0% 100% / 0.03;
-    --sidebar-foreground: 0 0% 100% / 0.5;
-    --sidebar-primary: 193 100% 50%;
-    --sidebar-primary-foreground: 259 71% 14%;
-    --sidebar-accent: 0 0% 100% / 0.05;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 254 100% 65% / 0.15;
-    --sidebar-ring: 193 100% 50%; /* Chart Colors - IDENTIQUES au dark mode */
-    --chart-1: 290 91% 65%;
-    --chart-2: 330 81% 60%;
-    --chart-3: 142 76% 56%;
-    --chart-4: 38 92% 50%;
-    --chart-5: 199 89% 56%;
+    --sidebar-background: 210 20% 96%;
+    --sidebar-foreground: 215 25% 27%;
+    --sidebar-primary: 221.2 83.2% 53.3%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 93%;
+    --sidebar-accent-foreground: 222 47% 11.2%;
+    --sidebar-border: 214.3 31.8% 88%;
+    --sidebar-ring: 221.2 83.2% 53.3%;
+
+    --glass: 0 0% 100% / 0.8;
+    --glass-border: 214.3 31.8% 91.4%;
+
+    --glow-purple: 255 69% 55% / 0.1;
+    --glow-cyan: 193 100% 50% / 0.1;
+    
+    --chart-1: 221.2 83.2% 53.3%;
+    --chart-2: 212 95% 68%;
+    --chart-3: 142 76% 36%;
+    --chart-4: 47 95% 50%;
+    --chart-5: 25 95% 50%;
   }
 }
 
