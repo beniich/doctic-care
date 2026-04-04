@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { AppSidebar } from "./AppSidebar";
 import { Topbar } from "./Topbar";
 
@@ -10,14 +10,20 @@ interface OutlookLayoutProps {
 }
 
 export function OutlookLayout({ title, listPane, detailPane, singlePane }: OutlookLayoutProps) {
+  const [collapsed, setCollapsed] = useState(false);
+
   // Single pane mode for dashboard and similar pages
   if (singlePane) {
     return (
-      <div className="outlook-layout bg-background overflow-hidden">
-        <AppSidebar />
-        <main className="flex-1 overflow-auto scrollbar-thin flex flex-col relative w-full h-screen">
-          <Topbar title={title || "TABLEAU DE BORD"} />
-          <div className="flex-1 overflow-auto">
+      <div className="outlook-layout bg-background overflow-hidden relative flex shadow-2xl">
+        <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+        <main className="flex-1 overflow-auto flex flex-col relative h-screen">
+          <Topbar 
+            title={title || "TABLEAU DE BORD"} 
+            isSidebarCollapsed={collapsed} 
+            onToggleSidebar={() => setCollapsed(!collapsed)} 
+          />
+          <div className="flex-1 overflow-auto scrollbar-thin">
             {singlePane}
           </div>
         </main>
@@ -27,10 +33,14 @@ export function OutlookLayout({ title, listPane, detailPane, singlePane }: Outlo
 
   // Three-pane Outlook-style layout
   return (
-    <div className="outlook-layout bg-background overflow-hidden relative">
-      <AppSidebar />
+    <div className="outlook-layout bg-background overflow-hidden relative flex">
+      <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
       <div className="flex-1 flex flex-col min-w-0">
-        <Topbar title={title || "VUE DÉTAILLÉE"} />
+        <Topbar 
+          title={title || "VUE DÉTAILLÉE"} 
+          isSidebarCollapsed={collapsed} 
+          onToggleSidebar={() => setCollapsed(!collapsed)} 
+        />
         <div className="flex-1 flex overflow-hidden">
           <div className="outlook-list-pane w-80 flex flex-col border-r border-sidebar-border">
             {listPane}

@@ -49,19 +49,18 @@ const navItems: NavItem[] = [
   { icon: Bot, label: "AI Assistant", path: "/assistant", allowedRoles: ['SUPER_ADMIN', 'ADMIN', 'DOCTOR'] },
 ];
 
-const bottomNavItems: NavItem[] = [
-  { icon: CreditCard, label: "My Subscription", path: "/subscription" },
-  { icon: Settings, label: "Settings", path: "/settings" },
-];
-
 const contentItems: NavItem[] = [
   { icon: Film, label: "Streaming & Vidéos", path: "/streaming" },
   { icon: Share2, label: "Réseaux Sociaux", path: "/publish-social" },
   { icon: MessageSquare, label: "Messages", path: "/messages" },
 ];
 
-export function AppSidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+interface AppSidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -76,7 +75,6 @@ export function AppSidebar() {
   };
 
   const filteredNavItems = filterNavItems(navItems);
-  const filteredBottomNavItems = filterNavItems(bottomNavItems);
   const filteredContentItems = filterNavItems(contentItems);
 
   const NavItemButton = ({ item }: { item: NavItem }) => {
@@ -166,17 +164,10 @@ export function AppSidebar() {
         </div>
       </nav>
 
-      {/* Bottom Navigation & Footer */}
-      <div className="pt-4 pb-6 px-3 border-t border-white/[0.04] space-y-4 bg-black/20">
-        <div className="space-y-1">
-          {filteredBottomNavItems.map((item) => (
-            <NavItemButton key={item.path} item={item} />
-          ))}
-        </div>
-
-        {/* Footer Info — Minimalist */}
+      {/* Bottom Footer Info */}
+      <div className="pt-4 pb-8 px-3 border-t border-white/[0.04] bg-black/20">
         {!collapsed && (
-          <div className="px-3 py-3 mt-2 border-t border-white/5 space-y-1">
+          <div className="px-3 py-2 space-y-1">
             <div className="flex items-center justify-between text-[10px] text-white/30 font-medium whitespace-nowrap">
                <span>{new Date().toLocaleDateString('fr-FR')}</span>
                <span className="font-bold text-primary/60 tracking-wider">DOCTICE</span>
@@ -186,19 +177,6 @@ export function AppSidebar() {
             </div>
           </div>
         )}
-
-        {/* Collapse Toggle */}
-        <Button
-          variant="ghost"
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn(
-            "w-full h-9 px-2 text-foreground/40 hover:text-foreground hover:bg-white/5",
-            collapsed ? "justify-center" : "justify-between"
-          )}
-        >
-          {!collapsed && <span className="text-xs font-semibold">Réduire le menu</span>}
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </Button>
       </div>
     </aside>
   );
