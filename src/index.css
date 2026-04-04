@@ -8,112 +8,104 @@
 
 @layer base {
   /* =========================================
-     1. EMERALD MEDICAL (Cyber-style - Segment 1)
-     #53AC8E based palette - NO BLACK
+     1. EMERALD LIGHT (Cyber-style transformed to Light)
+     #EEF7F4 based - 100% LIGHT
      ========================================= */
   :root,
   [data-theme="cyber-dark"] {
-    --background: 162 44% 6%;     /* Slightly lightened from 950 #08110E */
-    --foreground: 162 30% 98%;
-    --card: 162 35% 12% / 0.8;    /* Lighter card */
-    --card-foreground: 162 30% 98%;
-    --popover: 162 35% 10%;
-    --popover-foreground: 162 30% 98%;
+    --background: 162 44% 95%;     /* #EEF7F4 - 50 */
+    --foreground: 162 50% 10%;    /* Deep 900 Emerald for text */
+    --card: 162 44% 98% / 0.9;
+    --card-foreground: 162 50% 12%;
+    --popover: 162 44% 99%;
+    --popover-foreground: 162 50% 12%;
     --primary: 160 38% 50%;       /* #53AC8E - 500 */
-    --primary-foreground: 162 44% 6%;
-    --secondary: 160 35% 18% / 0.6;
-    --secondary-foreground: 162 30% 98%;
-    --muted: 162 25% 18% / 0.5;
-    --muted-foreground: 160 15% 65%;
-    --accent: 172 40% 65%;        /* #91CAB7 - 300ish */
-    --accent-foreground: 162 44% 6%;
-    --destructive: 355 85% 60%;
-    --border: 162 35% 22%;
-    --input: 162 35% 22%;
+    --primary-foreground: 162 44% 98%;
+    --secondary: 162 40% 90%;
+    --secondary-foreground: 162 50% 15%;
+    --muted: 162 20% 88%;
+    --muted-foreground: 162 30% 40%;
+    --accent: 160 38% 50% / 0.1;
+    --accent-foreground: 162 50% 10%;
+    --destructive: 0 84% 60%;
+    --border: 162 30% 85%;
+    --input: 162 30% 85%;
     --ring: 160 38% 50%;
     --radius: 1.25rem;
     
-    /* Status Colors */
-    --success: 160 50% 50%;
-    --warning: 160 40% 65%;
-    
-    /* Sidebar — Tinted Emerald Deep, not Black */
-    --sidebar-background: 162 40% 7% / 0.98;
-    --sidebar-foreground: 162 20% 90%;
+    /* Sidebar — Very Light Mint */
+    --sidebar-background: 162 44% 92%;
+    --sidebar-foreground: 162 50% 15%;
     --sidebar-primary: 160 38% 50%;
-    --sidebar-primary-foreground: 162 44% 6%;
-    --sidebar-accent: 160 38% 50% / 0.15;
-    --sidebar-accent-foreground: 162 30% 98%;
-    --sidebar-border: 162 35% 15%;
+    --sidebar-primary-foreground: 162 44% 98%;
+    --sidebar-accent: 160 38% 50% / 0.1;
+    --sidebar-accent-foreground: 162 50% 10%;
+    --sidebar-border: 162 30% 88%;
     --sidebar-ring: 160 38% 50%;
 
     /* Chart Colors */
     --chart-1: 160 38% 50%;
-    --chart-2: 162 25% 70%;
-    --chart-3: 160 35% 30%;
-    --chart-4: 170 40% 60%;
-    --chart-5: 160 30% 45%;
+    --chart-2: 162 40% 30%;
+    --chart-3: 170 40% 60%;
+    --chart-4: 162 20% 40%;
+    --chart-5: 160 30% 25%;
   }
 
   /* =========================================
-     2. ROSE MAGENTA (Agro Dark-style - Segment 2)
-     #D42B7A based palette - NO BLACK
+     2. ROSE LIGHT (Agro-Dark transformed to Light)
+     #FBEAF2 based - 100% LIGHT
      ========================================= */
   [data-theme="agro-dark"] {
-    --background: 334 60% 7%;     /* Slightly lightened from 950 #15040C */
-    --foreground: 334 40% 98%;
-    --card: 334 65% 14% / 0.8;
-    --card-foreground: 334 40% 98%;
-    --popover: 334 65% 12%;
-    --popover-foreground: 334 40% 98%;
+    --background: 334 60% 95%;     /* #FBEAF2 - 50 */
+    --foreground: 334 60% 10%;    /* Deep 900 Rose for text */
+    --card: 334 60% 98% / 0.9;
+    --card-foreground: 334 60% 12%;
+    --popover: 334 60% 99%;
+    --popover-foreground: 334 60% 12%;
     --primary: 332 66% 50%;       /* #D42B7A - 500 */
     --primary-foreground: 334 60% 98%;
-    --secondary: 332 66% 25% / 0.6;
-    --secondary-foreground: 334 40% 98%;
-    --muted: 332 40% 20% / 0.5;
-    --muted-foreground: 334 20% 65%;
-    --accent: 332 65% 68%;        /* #E378AA - 300ish */
-    --accent-foreground: 334 60% 4%;
+    --secondary: 334 50% 90%;
+    --secondary-foreground: 334 60% 15%;
+    --muted: 334 20% 88%;
+    --muted-foreground: 334 30% 45%;
+    --accent: 332 66% 50% / 0.1;
+    --accent-foreground: 334 60% 10%;
     --destructive: 0 84% 60%;
-    --border: 334 65% 22%;
-    --input: 334 65% 22%;
+    --border: 334 40% 85%;
+    --input: 334 40% 85%;
     --ring: 332 66% 50%;
     --radius: 1.25rem;
     
-    /* Status Colors */
-    --success: 145 60% 45%; 
-    --warning: 332 65% 68%;
-    
-    /* Sidebar — Deep Wine Tinted, not Black */
-    --sidebar-background: 334 70% 5% / 0.98;
-    --sidebar-foreground: 334 30% 85%;
+    /* Sidebar — Very Light Rose */
+    --sidebar-background: 334 60% 92%;
+    --sidebar-foreground: 334 60% 15%;
     --sidebar-primary: 332 66% 50%;
-    --sidebar-primary-foreground: 334 65% 4%;
-    --sidebar-accent: 332 66% 50% / 0.15;
-    --sidebar-accent-foreground: 334 40% 98%;
-    --sidebar-border: 334 65% 12%;
+    --sidebar-primary-foreground: 334 60% 98%;
+    --sidebar-accent: 332 66% 50% / 0.1;
+    --sidebar-accent-foreground: 334 60% 10%;
+    --sidebar-border: 334 40% 88%;
     --sidebar-ring: 332 66% 50%;
 
     /* Chart Colors */
     --chart-1: 332 66% 50%;
-    --chart-2: 334 50% 70%;
-    --chart-3: 334 60% 30%;
-    --chart-4: 340 70% 60%;
-    --chart-5: 332 50% 45%;
+    --chart-2: 334 50% 30%;
+    --chart-3: 340 70% 60%;
+    --chart-4: 334 20% 45%;
+    --chart-5: 332 40% 25%;
   }
 
   /* =========================================
-     3. GOLDEN YELLOW (Agro Light-style - Segment 3)
-     #FFD014 based palette - SOFT NO HARSH ONES
+     3. GOLDEN LIGHT (Original Agro Light)
+     #FFFAE6 based - 100% LIGHT
      ========================================= */
   [data-theme="agro-light"], .light {
-    --background: 48 100% 96%;     /* Softer Cream */
-    --foreground: 48 100% 8%;      /* Very deep Coffee */
-    --card: 48 100% 99% / 0.95;
+    --background: 48 100% 95%;     /* #FFFAE6 - 50 */
+    --foreground: 48 100% 8%;      /* #1A1400 - 950 */
+    --card: 48 100% 98% / 0.95;
     --card-foreground: 48 100% 10%;
-    --popover: 48 100% 99%;
+    --popover: 48 100% 98%;
     --popover-foreground: 48 100% 10%;
-    --primary: 48 100% 48%;        /* Slightly deeper Gold */
+    --primary: 48 100% 54%;        /* #FFD014 - 500 */
     --primary-foreground: 48 100% 5%;
     --secondary: 48 100% 92%;
     --secondary-foreground: 48 100% 12%;
@@ -127,18 +119,14 @@
     --ring: 48 100% 54%;
     --radius: 1.25rem;
     
-    /* Status Colors */
-    --success: 145 60% 35%;
-    --warning: 48 100% 54%;
-    
-    /* Sidebar — Deep Coffee-Gold, not pure Black */
-    --sidebar-background: 48 100% 8%;    /* Richer Coffee tint */
-    --sidebar-foreground: 48 100% 90%;
+    /* Sidebar — Richer Gold-Light (No black coffee anymore) */
+    --sidebar-background: 48 100% 90%;
+    --sidebar-foreground: 48 100% 15%;
     --sidebar-primary: 48 100% 50%;
     --sidebar-primary-foreground: 48 100% 5%;
     --sidebar-accent: 48 100% 50% / 0.15;
-    --sidebar-accent-foreground: 48 100% 98%;
-    --sidebar-border: 48 100% 15%;
+    --sidebar-accent-foreground: 48 100% 10%;
+    --sidebar-border: 48 70% 85%;
     --sidebar-ring: 48 100% 50%;
 
     /* Chart Colors */
@@ -149,9 +137,6 @@
     --chart-5: 48 70% 45%;
   }
 }
-
-
-
 
 @layer base {
   * {
