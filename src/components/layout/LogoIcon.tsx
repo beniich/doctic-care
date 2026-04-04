@@ -2,64 +2,84 @@ import React from 'react';
 
 export const LogoIcon = ({ className = "w-9 h-9" }: { className?: string }) => {
   return (
-    <div className={`${className} relative flex items-center justify-center p-1.5 glass-neon-icon`}>
-      {/* Background Glow */}
-      <div className="absolute inset-0 bg-primary/20 blur-xl opacity-50" />
+    <div className={`${className} relative flex items-center justify-center p-0.5`}>
+      {/* Glow effect matching the image's outer aura */}
+      <div className="absolute inset-0 bg-[#86F0FF]/15 blur-xl rounded-full" />
       
-      {/* Main Container - The Medical Cross Base */}
       <svg
         viewBox="0 0 100 100"
-        className="w-full h-full neon-pulse"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full drop-shadow-[0_4px_12px_rgba(77,43,144,0.4)]"
       >
         <defs>
-          <linearGradient id="crossGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="hsla(var(--primary), 0.8)" />
-            <stop offset="100%" stopColor="hsla(var(--accent), 0.9)" />
+          {/* Main Background Gradient */}
+          <linearGradient id="mainPurple" x1="50" y1="5" x2="50" y2="95" gradientUnits="userSpaceOnUse">
+             <stop offset="0%" stopColor="#8E5CF7" />
+             <stop offset="100%" stopColor="#4D2B90" />
           </linearGradient>
-          <linearGradient id="ekgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#86F0FF" />
-            <stop offset="50%" stopColor="#FFFFFF" />
-            <stop offset="100%" stopColor="#86F0FF" />
+          
+          {/* Subtle Inner Glow */}
+          <linearGradient id="innerGlow" x1="50" y1="5" x2="50" y2="95">
+             <stop offset="0%" stopColor="white" stopOpacity="0.2" />
+             <stop offset="100%" stopColor="white" stopOpacity="0" />
           </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
+
+          {/* EKG Gradient */}
+          <linearGradient id="ekgColor" x1="0" y1="50" x2="100" y2="50">
+             <stop offset="0%" stopColor="#86F0FF" />
+             <stop offset="50%" stopColor="white" />
+             <stop offset="100%" stopColor="#86F0FF" />
+          </linearGradient>
+
+          <filter id="neon" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
-        {/* The Cross Shape - More rounded and glassy like image */}
+        {/* The Outer Rounded Plus Shape (The glowing border) */}
         <path
-          d="M35 5 H65 V35 H95 V65 H65 V95 H35 V65 H5 V35 H35 V5Z"
-          fill="url(#crossGradient)"
-          fillOpacity="0.4"
-          stroke="hsla(var(--primary), 0.8)"
-          strokeWidth="3"
-          className="backdrop-blur-md"
+          d="M38 5 H62 C65 5 67 7 67 10 V33 H90 C93 33 95 35 95 38 V62 C95 65 93 67 90 67 H67 V90 C67 93 65 95 62 95 H38 C35 95 33 93 33 90 V67 H10 C7 67 5 65 5 62 V38 C5 35 7 33 10 33 H33 V10 C33 7 35 5 38 5Z"
+          fill="#311B92"
+          stroke="#86F0FF"
+          strokeWidth="3.5"
+          strokeLinejoin="round"
         />
-        
-        {/* Subtle inner reflection */}
+
+        {/* The Main Purple Fill Shape */}
         <path
-          d="M38 8 H62 V38 H92 V62 H62 V92 H38 V62 H8 V38 H38 V8Z"
+          d="M39 6 H61 C63 6 65 8 65 10 V34 H90 C92 34 94 36 94 38 V62 C94 64 92 66 90 66 H65 V90 C65 92 63 94 61 94 H39 C37 94 35 92 35 90 V66 H10 C8 66 6 64 6 62 V38 C6 36 8 34 10 34 H35 V10 C35 8 37 6 39 6Z"
+          fill="url(#mainPurple)"
+        />
+
+        {/* Glossy Overlay (The light reflection in Image) */}
+        <path
+          d="M35 10 C35 8 37 6 39 6 H61 C63 6 65 8 65 10 V34 H90 C92 34 94 36 94 38 V45 L35 45 Z"
+          fill="white"
+          fillOpacity="0.12"
+          className="pointer-events-none"
+        />
+
+        {/* Inner Highlight Line */}
+        <path
+          d="M39 7 H61 C62 7 64 9 64 10 V35 H90 C91 35 93 37 93 38 V62 C93 63 91 65 90 65 H64 V90 C64 91 62 93 61 93 H39 C38 93 36 91 36 90 V65 H10 C9 65 7 63 7 62 V38 C7 37 9 35 10 35 H36 V10 C36 9 38 7 39 7Z"
           stroke="white"
           strokeOpacity="0.15"
           strokeWidth="1"
         />
 
-        {/* EKG / Heartbeat Line */}
+        {/* EKG / Pulse Line */}
         <path
           d="M2 50 H28 L35 30 L45 75 L55 10 L65 70 L72 50 H98"
-          stroke="url(#ekgGradient)"
-          strokeWidth="6"
+          stroke="url(#ekgColor)"
+          strokeWidth="5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          filter="url(#glow)"
+          filter="url(#neon)"
         />
       </svg>
     </div>
   );
 };
+
