@@ -145,6 +145,10 @@ jobs:
       
       - name: Deploy to Render (Staging)
         run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}" ]; then
+            echo "Error: RENDER_DEPLOY_HOOK_STAGING secret is not configured. Skipping deployment."
+            exit 0
+          fi
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}
   
   # ========================================
@@ -166,6 +170,10 @@ jobs:
       
       - name: Deploy to Production
         run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}" ]; then
+            echo "Error: RENDER_DEPLOY_HOOK_PRODUCTION secret is not configured. Skipping deployment."
+            exit 0
+          fi
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}
       
       - name: Notify Slack
