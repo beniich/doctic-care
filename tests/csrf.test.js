@@ -1,12 +1,14 @@
-const request = require('supertest');
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const csrf = require('csurf');
-const bodyParser = require('body-parser');
+import request from 'supertest';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import csrf from 'csurf';
+import bodyParser from 'body-parser';
 
-// Mock app for CSRF testing without full server dependencies
+process.env.JWT_SECRET = 'test-secret';
+process.env.JWT_REFRESH_SECRET = 'test-secret-refresh';
+
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cookieParser());
 const csrfProtection = csrf({ cookie: true });
 
@@ -50,7 +52,7 @@ describe('CSRF Protection', () => {
         const res = await request(app)
             .post('/protected')
             .set('Cookie', cookie)
-            .set('CSRF-Token', csrfToken)
+            .set('X-CSRF-Token', csrfToken)
             .send({});
 
         expect(res.statusCode).toEqual(200);

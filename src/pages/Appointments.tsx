@@ -40,11 +40,7 @@ export default function Appointments() {
   const { t } = useTranslation();
   const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/appointments`;
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
-
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -58,7 +54,11 @@ export default function Appointments() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
 
   // Format pour FullCalendar
   const calendarEvents = appointments.map(apt => {

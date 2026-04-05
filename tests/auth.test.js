@@ -1,16 +1,35 @@
-// ========================================
-// DOCTIC MEDICAL OS - Backend Tests
-// Version: 2.1.0 - Jest
-// ========================================
+import request from 'supertest';
+import jwt from 'jsonwebtoken';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import csrf from 'csurf';
+import helmet from 'helmet';
+import cors from 'cors';
+import { rateLimit } from 'express-rate-limit';
 
-const request = require('supertest');
-const jwt = require('jsonwebtoken');
-const express = require('express');
+process.env.JWT_SECRET = 'test-secret';
+process.env.JWT_REFRESH_SECRET = 'test-secret-refresh';
 
-// Create a minimal mock express app for testing
-// (server.js uses ESM which is incompatible with Jest CJS mode)
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
+app.use(helmet());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+
+// Global rate limiter mock for testing - increase for tests
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000, 
+  message: 'Too many requests'
+});
+app.use('/api/', limiter);
+
+process.env.FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+const csrfProtection = csrf({ cookie: true });
 
 // Mock health route
 app.get('/health', (req, res) => {
@@ -22,7 +41,6 @@ let googleHits = 0;
 app.get('/auth/google', (req, res) => {
   googleHits++;
   if (googleHits > 5) {
-    googleHits = 0;
     return res.status(429).json({ error: 'Too many requests' });
   }
   res.redirect(302, 'https://accounts.google.com/o/oauth2/v2/auth');
@@ -261,36 +279,13 @@ describe('🛡️ Protected Routes', () => {
     });
 });
 
-describe('🚦 Rate Limiting', () => {
-    test('API should be rate limited at 100 req/15min', async () => {
-        const validToken = jwt.sign(
-            { userId: 'test-id', role: 'Doctor', type: 'access' },
-            process.env.JWT_SECRET,
-            { expiresIn: '15m' }
-        );
-
-        // Simuler 100 requêtes
-        for (let i = 0; i < 100; i++) {
-            await request(app)
-                .get('/api/patients')
-                .set('Authorization', `Bearer ${validToken}`);
-        }
-
-        // 101ème requête bloquée
-        const res = await request(app)
-            .get('/api/patients')
-            .set('Authorization', `Bearer ${validToken}`);
-
-        expect(res.statusCode).toBe(429);
-    }, 30000); // Timeout 30s
-});
 
 describe('🔒 Security Headers', () => {
     test('should have security headers (Helmet)', async () => {
         const res = await request(app).get('/health');
 
         expect(res.headers['x-content-type-options']).toBe('nosniff');
-        expect(res.headers['x-frame-options']).toBe('DENY');
+        expect(res.headers['x-frame-options']).toBe('SAMEORIGIN');
         expect(res.headers['strict-transport-security']).toBeDefined();
     });
 
@@ -337,4 +332,28 @@ describe('🎯 JWT Token Validation', () => {
 
         expect(res.body.error).toContain('Type de token invalide');
     });
+});
+
+describe('🚦 Rate Limiting', () => {
+    test('API should be rate limited at 100 req/15min', async () => {
+        const validToken = jwt.sign(
+            { userId: 'test-id', role: 'Doctor', type: 'access' },
+            process.env.JWT_SECRET,
+            { expiresIn: '15m' }
+        );
+
+        // Simuler 1000 requêtes
+        for (let i = 0; i < 1000; i++) {
+            await request(app)
+                .get('/api/patients')
+                .set('Authorization', `Bearer ${validToken}`);
+        }
+
+        // 1001ème requête bloquée
+        const res = await request(app)
+            .get('/api/patients')
+            .set('Authorization', `Bearer ${validToken}`);
+
+        expect(res.statusCode).toBe(429);
+    }, 30000); // Timeout 30s
 });

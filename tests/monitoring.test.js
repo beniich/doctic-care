@@ -1,5 +1,5 @@
-const request = require('supertest');
-const express = require('express');
+import request from 'supertest';
+import express from 'express';
 
 // Mock dependencies since we are unit testing the endpoints logic
 // In a real integration test we would use the real server.js but dealing with Sentry and DB connections

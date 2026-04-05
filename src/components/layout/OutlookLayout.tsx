@@ -7,9 +7,10 @@ interface OutlookLayoutProps {
   listPane?: ReactNode;
   detailPane?: ReactNode;
   singlePane?: ReactNode;
+  children?: ReactNode;
 }
 
-export function OutlookLayout({ title, listPane, detailPane, singlePane }: OutlookLayoutProps) {
+export function OutlookLayout({ title, listPane, detailPane, singlePane, children }: OutlookLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
 
   // Single pane mode for dashboard and similar pages
@@ -25,6 +26,7 @@ export function OutlookLayout({ title, listPane, detailPane, singlePane }: Outlo
           />
           <div className="flex-1 overflow-auto scrollbar-thin">
             {singlePane}
+            {children}
           </div>
         </main>
       </div>
@@ -47,6 +49,7 @@ export function OutlookLayout({ title, listPane, detailPane, singlePane }: Outlo
           </div>
           <div className="outlook-detail-pane flex-1 flex flex-col overflow-auto bg-black/10">
             {detailPane}
+            {children}
           </div>
         </div>
       </div>

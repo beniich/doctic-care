@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Plus, Edit, Trash2, Printer, Archive, MessageSquare, User, Mail, Phone, AlertCircle, Users, Loader2, X, FileText, Pill } from 'lucide-react'; // Added icons
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,12 +41,7 @@ export default function Patients() {
   // const { toast } = useToast();
   const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/patients`;
 
-  // Charger les patients au montage
-  useEffect(() => {
-    fetchPatients();
-  }, []);
-
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -61,7 +56,11 @@ export default function Patients() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchPatients();
+  }, [fetchPatients]);
 
   const filteredPatients = patients.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

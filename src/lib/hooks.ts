@@ -47,7 +47,10 @@ function useQuery<T>(
     }
   }, []);
 
-  useEffect(() => { fetch(); }, [...deps, fetch]);
+  useEffect(() => {
+    fetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetch, ...deps]);
 
   return { data, loading, error, refetch: fetch };
 }
@@ -91,6 +94,7 @@ export function usePatients(params?: { page?: number; limit?: number; search?: s
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0 });
 
+  const paramsStr = JSON.stringify(params);
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
@@ -102,7 +106,8 @@ export function usePatients(params?: { page?: number; limit?: number; search?: s
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramsStr]);
 
   useEffect(() => { fetch(); }, [fetch]);
 
@@ -159,7 +164,8 @@ export function useUpdatePatient(id: string): UseMutationState<Patient> {
 export function useAppointments(params?: {
   date?: string; doctorId?: string; status?: string;
 }) {
-  return useQuery<Appointment[]>(() => appointmentsApi.list(params), [JSON.stringify(params)]);
+  const paramsStr = JSON.stringify(params);
+  return useQuery<Appointment[]>(() => appointmentsApi.list(params), [paramsStr]);
 }
 
 export function useTodayAppointments() {
@@ -189,7 +195,8 @@ export function useCreateAppointment(): UseMutationState<Appointment> {
 
 // ─── INVOICES HOOK ────────────────────────────────────────────────────────────
 export function useInvoices(params?: { status?: string; page?: number }) {
-  return useQuery<Invoice[]>(() => invoicesApi.list(params), [JSON.stringify(params)]);
+  const paramsStr = JSON.stringify(params);
+  return useQuery<Invoice[]>(() => invoicesApi.list(params), [paramsStr]);
 }
 
 // ─── AI CHAT HOOK ─────────────────────────────────────────────────────────────

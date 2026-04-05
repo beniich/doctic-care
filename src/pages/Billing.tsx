@@ -53,11 +53,7 @@ export default function Billing() {
 
   const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/billing`;
 
-  useEffect(() => {
-    fetchInvoices();
-  }, []);
-
-  const fetchInvoices = async () => {
+  const fetchInvoices = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -71,7 +67,11 @@ export default function Billing() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchInvoices();
+  }, [fetchInvoices]);
 
   const filteredInvoices = invoices.filter(inv =>
     inv.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||

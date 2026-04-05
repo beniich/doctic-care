@@ -65,7 +65,7 @@ export const AuditLogSchema = z.object({
     action: AuditActionSchema,
     resourceType: AuditResourceSchema,
     resourceId: z.string().min(1),
-    details: z.record(z.any()).optional(),
+    details: z.record(z.unknown()).optional(),
     ipAddress: z.string().optional(),
     createdAt: z.coerce.date().optional(),
 });

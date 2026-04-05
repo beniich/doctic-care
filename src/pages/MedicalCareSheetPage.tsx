@@ -7,8 +7,44 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 
+interface CareAct {
+    date: string;
+    designation: string;
+    amount: string;
+    signature: string;
+}
+
+interface Exam {
+    date: string;
+    nature: string;
+    coef: string;
+    amount: string;
+    signature: string;
+}
+
+interface CurrentAct {
+    date: string;
+    number: string;
+    unitPrice: string;
+    total: string;
+    signature: string;
+}
+
+interface CareSheetFormData {
+    patientName: string;
+    patientId: string;
+    date: string;
+    provider: string;
+    acts: CareAct[];
+    exams: Exam[];
+    currentActs: CurrentAct[];
+    dental: { diagram: string; amount: string };
+    optical: { glasses: string; amount: string };
+    summary: string;
+}
+
 export default function MedicalCareSheetPage() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<CareSheetFormData>({
         patientName: '',
         patientId: '',
         date: new Date().toISOString().split('T')[0],
@@ -22,12 +58,16 @@ export default function MedicalCareSheetPage() {
     });
     const [isSaving, setIsSaving] = useState(false);
 
-    const handleChange = (section: string, index: number, field: string, value: string) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setFormData((prev: any) => {
-            const newSection = [...prev[section]];
+    const handleChange = <T extends 'acts' | 'exams' | 'currentActs'>(
+        section: T,
+        index: number,
+        field: string,
+        value: string
+    ) => {
+        setFormData((prev) => {
+            const newSection = [...prev[section]] as Record<string, string>[];
             newSection[index] = { ...newSection[index], [field]: value };
-            return { ...prev, [section]: newSection };
+            return { ...prev, [section]: newSection as CareSheetFormData[T] };
         });
     };
 

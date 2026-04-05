@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Plus, Video, Phone, Clock, User, Calendar, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,11 +30,7 @@ export default function Teleconsult() {
 
     const API_URL = `${import.meta.env.VITE_API_URL || ''}/api/teleconsult`;
 
-    useEffect(() => {
-        fetchSessions();
-    }, []);
-
-    const fetchSessions = async () => {
+    const fetchSessions = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -48,7 +44,11 @@ export default function Teleconsult() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [API_URL]);
+
+    useEffect(() => {
+        fetchSessions();
+    }, [fetchSessions]);
 
     const filteredSessions = sessions.filter(session =>
         session.patient.toLowerCase().includes(searchTerm.toLowerCase())

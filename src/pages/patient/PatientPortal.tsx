@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,16 +31,7 @@ export default function PatientPortal() {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem('patient_token');
-        if (!token) {
-            navigate('/patient/login');
-            return;
-        }
-        fetchData(token);
-    }, []);
-
-    const fetchData = async (token: string) => {
+    const fetchData = useCallback(async (token: string) => {
         setLoading(true);
         try {
             const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/patient/portal`;
@@ -60,7 +51,16 @@ export default function PatientPortal() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem('patient_token');
+        if (!token) {
+            navigate('/patient/login');
+            return;
+        }
+        fetchData(token);
+    }, [navigate, fetchData]);
 
     const handleLogout = () => {
         localStorage.removeItem('patient_token');
