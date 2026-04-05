@@ -12,10 +12,22 @@ interface PatientData {
     tenant?: { name: string; slug: string; logo?: string };
 }
 
+interface Prescription {
+    id: string;
+    prescriptionDate: string;
+    doctor?: { firstName?: string };
+}
+
+interface Appointment {
+    id: string;
+    start: string;
+    status: string;
+}
+
 export default function PatientPortal() {
     const [patient, setPatient] = useState<PatientData | null>(null);
-    const [prescriptions, setPrescriptions] = useState<any[]>([]);
-    const [appointments, setAppointments] = useState<any[]>([]);
+    const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+    const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 

@@ -56,9 +56,36 @@ export default function MultiTenantDashboard() {
   const [planFilter, setPlanFilter] = useState<string>('all');
   const [selectedTenant, setSelectedTenant] = useState<TenantWithMetrics | null>(null);
   
-  const [tenants, setTenants] = useState<any[]>([]);
-  const [analytics, setAnalytics] = useState<any>(null);
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+interface ApiTenant {
+  id: string;
+  name: string;
+  adminEmail?: string;
+  subscriptionStatus: string;
+  planId: string;
+  country?: string;
+  revenue?: number;
+  activeUsers?: number;
+  usage?: { patientsCount: number; storageUsedGB: number };
+  createdAt: string;
+}
+
+interface ApiAnalytics {
+  revenue?: { thisMonth?: number };
+  patients?: { total?: number; trend?: number };
+  network?: Record<string, unknown>;
+}
+
+interface AuditLog {
+  id: string;
+  timestamp: string;
+  action: string;
+  details?: string;
+  user?: { firstName?: string; lastName?: string; email?: string };
+}
+
+  const [tenants, setTenants] = useState<ApiTenant[]>([]);
+  const [analytics, setAnalytics] = useState<ApiAnalytics | null>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newTenantData, setNewTenantData] = useState({ name: '', slug: '', plan: 'STARTER', adminEmail: '' });

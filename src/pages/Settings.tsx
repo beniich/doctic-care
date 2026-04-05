@@ -50,17 +50,18 @@ export default function Settings() {
   const handleSaveProfile = async () => {
     setLoading(true);
     try {
-      const res = await api.patch<{ data: any }>('/users/me', {
+      const res = await api.patch<{ data: { id: string } }>('/users/me', {
         firstName: profile.firstName,
         lastName: profile.lastName,
         phone: profile.phone
       });
       if (res.data) {
         toast.success("Profil mis à jour avec succès");
-        refresh?.(); // Rafraîchir le contexte Auth
+        refresh?.();
       }
-    } catch (error: any) {
-      toast.error(error.message || "Erreur lors de la mise à jour");
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

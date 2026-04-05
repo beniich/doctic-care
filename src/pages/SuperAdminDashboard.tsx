@@ -124,13 +124,13 @@ const SuperAdminDashboard = () => {
       ]);
 
       if (tenantsRes.status === 'fulfilled') {
-        setTenants((tenantsRes.value as any).data ?? []);
+        setTenants(tenantsRes.value.data ?? []);
       }
       if (revenueRes.status === 'fulfilled') {
-        setRevenueData((revenueRes.value as any).data ?? []);
+        setRevenueData(revenueRes.value.data ?? []);
       }
       if (auditRes.status === 'fulfilled') {
-        setAuditLogs((auditRes.value as any).data ?? []);
+        setAuditLogs(auditRes.value.data ?? []);
       }
     } catch (e) {
       toast.error('Erreur de chargement de l\'infrastructure');

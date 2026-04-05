@@ -39,8 +39,9 @@ const TenantOnboarding = () => {
             });
             toast.success("Clinique créée avec succès !");
             setStep(3);
-        } catch (error: any) {
-            toast.error(error.message || "Erreur lors de la création.");
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Erreur lors de la création.";
+            toast.error(msg);
         } finally {
             setIsLoading(false);
         }

@@ -58,8 +58,20 @@ export default function SaasBilling() {
   const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
   const [isProcessingPlan, setIsProcessingPlan] = useState(false);
   const [invoices, setInvoices] = useState<SaasInvoice[]>([]);
-  const [subscription, setSubscription] = useState<any>(null);
-  const [usage, setUsage] = useState<any>(null);
+interface SubscriptionData {
+  plan?: string;
+  status?: string;
+  currentPeriodEnd?: string;
+}
+
+interface UsageData {
+  patientsCount?: number;
+  appointmentsMonth?: number;
+  storageUsed?: number;
+}
+
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [usage, setUsage] = useState<UsageData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const { currentTenant } = useTenant();
@@ -193,7 +205,7 @@ export default function SaasBilling() {
 
       {currentPlan && (
         <SubscriptionStatus 
-          tenant={currentTenant || { name: 'Clinique', plan: 'STARTER', subscriptionStatus: 'active' } as any}
+          tenant={currentTenant || { name: 'Clinique', plan: 'STARTER', subscriptionStatus: 'active' }}
           subscription={subscription || { status: 'active', currentPeriodEnd: null }}
           plan={currentPlan}
           usage={usage || { patientsCount: 0, appointmentsMonth: 0, storageUsed: 0 }}

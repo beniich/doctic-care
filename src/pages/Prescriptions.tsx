@@ -63,7 +63,7 @@ export default function Prescriptions() {
         setLoading(true);
         try {
             const res = await prescriptionsApi.list();
-            setPrescriptions(res.data as any[]);
+            setPrescriptions(res.data as Prescription[]);
         } catch (err) {
             console.error('Impossible de charger les ordonnances', err);
             toast.error('Erreur lors du chargement des ordonnances');
