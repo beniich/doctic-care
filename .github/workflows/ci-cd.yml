@@ -177,6 +177,7 @@ jobs:
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}
       
       - name: Notify Slack
+        if: success() && secrets.SLACK_WEBHOOK != ''
         uses: slackapi/slack-github-action@v2
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK }}
