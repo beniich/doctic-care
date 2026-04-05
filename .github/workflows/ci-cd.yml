@@ -179,7 +179,7 @@ jobs:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v2
         with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          webhook: ${{ secrets.SLACK_WEBHOOK }}
           payload: |
             {
               "text": "🚀 Doctic Medical OS v${{ github.sha }} deployed to production!"
