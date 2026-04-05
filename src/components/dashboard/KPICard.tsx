@@ -10,7 +10,7 @@ export interface KPICardProps {
         value: number;
         label?: string;
     };
-    icon?: any;
+    icon?: React.ElementType;
     iconColor?: string;
     glowColor?: 'cyan' | 'orange' | 'green' | 'steel';
 }

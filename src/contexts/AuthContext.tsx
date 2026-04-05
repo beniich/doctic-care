@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: 'admin@doctic.care',
           role: 'SUPER_ADMIN',
           tenantId: 'system'
-        } as any);
+        } as User);
       } else {
         setUser(null);
       }

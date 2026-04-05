@@ -10,12 +10,33 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 
+import { cn } from '@/lib/utils';
+
 const API_BASE = '/api';
 
+interface Message {
+  id: string;
+  content: string;
+  senderRole: string;
+  createdAt: string;
+  isRead?: boolean;
+}
+
+interface Conversation {
+  id: string;
+  patient?: {
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+  };
+  messages?: Message[];
+  updatedAt: string;
+}
+
 export default function Messages() {
-  const [conversations, setConversations] = useState<any[]>([]);
-  const [selectedConv, setSelectedConv] = useState<any>(null);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -225,7 +246,3 @@ export default function Messages() {
   );
 }
 
-// Helper function for CN
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
-}

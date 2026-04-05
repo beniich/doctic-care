@@ -17,7 +17,7 @@ interface DashboardKPI {
   title: string;
   value: string;
   statusLabel: string;
-  icon: any;
+  icon: React.ElementType;
   glowColor: 'cyan' | 'orange' | 'green' | 'steel';
   change?: string;
 }
