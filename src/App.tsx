@@ -43,6 +43,13 @@ import { HelmetProvider } from "react-helmet-async";
 import { LoadingSplash } from "./components/ui/LoadingSplash";
 import { GlobalErrorBoundary } from "./components/ErrorBoundary";
 
+// Wealth Planning pages
+import WealthLanding from "./pages/wealth/WealthLanding";
+import WealthClientsPage from "./pages/wealth/WealthClientsPage";
+import WealthCFPsPage from "./pages/wealth/WealthCFPsPage";
+import WealthAboutPage from "./pages/wealth/WealthAboutPage";
+import WealthContactPage from "./pages/wealth/WealthContactPage";
+
 const queryClient = new QueryClient();
 
 const AppContent = () => {
@@ -55,7 +62,11 @@ const AppContent = () => {
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<WealthLanding />} />
+          <Route path="/fonctionnalites" element={<WealthClientsPage />} />
+          <Route path="/praticiens" element={<WealthCFPsPage />} />
+          <Route path="/mission" element={<WealthAboutPage />} />
+          <Route path="/contact" element={<WealthContactPage />} />
           <Route
             path="/dashboard"
             element={

@@ -12,6 +12,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ConsultationsChart } from "@/components/dashboard/charts/ConsultationsChart";
+import { RevenueChart } from "@/components/dashboard/charts/RevenueChart";
+import { SpecialtyDonut } from "@/components/dashboard/charts/SpecialtyDonut";
 
 interface DashboardKPI {
   title: string;
@@ -245,6 +248,37 @@ export default function Dashboard() {
 
             </div>
             
+            <motion.div variants={item}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+                <Card className="glass-card !bg-card/40 border-border/50 p-4">
+                  <CardHeader className="p-2 pb-4">
+                    <CardTitle className="text-sm font-semibold text-white/80">Activité Consultations (Chart.js)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="h-60 p-0">
+                    <ConsultationsChart />
+                  </CardContent>
+                </Card>
+
+                <Card className="glass-card !bg-card/40 border-border/50 p-4">
+                  <CardHeader className="p-2 pb-4">
+                    <CardTitle className="text-sm font-semibold text-white/80">Revenus Trimestriels (Chart.js)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="h-60 p-0">
+                    <RevenueChart />
+                  </CardContent>
+                </Card>
+
+                <Card className="glass-card !bg-card/40 border-border/50 p-4">
+                  <CardHeader className="p-2 pb-4">
+                    <CardTitle className="text-sm font-semibold text-white/80">Répartition Consultations (Chart.js)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="h-60 p-0 flex items-center justify-center">
+                    <SpecialtyDonut />
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.div>
+
             <motion.div variants={item}>
               <AnalyticsDashboard />
             </motion.div>

@@ -30,6 +30,7 @@ import { tenantMiddleware } from './backend/middleware/tenant.js';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
+import nodemailer from 'nodemailer';
 import { tenantRateLimit } from './backend/middleware/tenantRateLimit.js';
 import rgpdRoutes from './backend/routes/rgpd.js';
 
@@ -300,7 +301,99 @@ app.use('/api/messages', messagesRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/rgpd', rgpdRoutes);
+
 // ============================================================================
+// WEALTH PLANNING — Contact Form
+// ============================================================================
+
+const wealthContactLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 5,
+    message: { success: false, error: 'Zu viele Anfragen. Bitte versuchen Sie es später erneut.' }
+});
+
+app.post('/api/wealth/contact', wealthContactLimiter, async (req, res) => {
+    try {
+        const { name, email, phone, message, website } = req.body;
+
+        // Honeypot
+        if (website) {
+            console.warn(`[WealthContact] Honeypot triggered by ${req.ip}`);
+            return res.status(400).json({ success: false, error: 'Spam erkannt.' });
+        }
+
+        // Validation
+        if (!name || name.length < 2)
+            return res.status(400).json({ success: false, error: 'Bitte geben Sie Ihren Namen ein.' });
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+            return res.status(400).json({ success: false, error: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.' });
+        if (!message || message.length < 10)
+            return res.status(400).json({ success: false, error: 'Bitte schreiben Sie eine Nachricht (mindestens 10 Zeichen).' });
+
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_SERVER || 'smtp.gmail.com',
+            port: Number(process.env.SMTP_PORT) || 587,
+            secure: process.env.SMTP_ENCRYPTION === 'ssl',
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASSWORD,
+            },
+        });
+
+        const timestamp = new Date().toLocaleString('de-DE');
+        const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unbekannt';
+
+        const htmlBody = `
+        <!DOCTYPE html>
+        <html lang="de">
+        <head><meta charset="UTF-8"></head>
+        <body style="font-family:-apple-system,sans-serif;color:#1a2520;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;">
+            <div style="background:#ebe4d2;padding:30px;border-radius:4px;">
+                <h2 style="color:#1d4a3a;margin-top:0;font-family:Georgia,serif;">Neue Kontaktanfrage</h2>
+                <p style="color:#a89060;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Wealth Planning AG</p>
+                <table style="width:100%;border-collapse:collapse;margin:20px 0;">
+                    <tr><td style="padding:8px 0;font-weight:bold;width:100px;">Name:</td><td>${name}</td></tr>
+                    <tr><td style="padding:8px 0;font-weight:bold;">E-Mail:</td><td><a href="mailto:${email}" style="color:#1d4a3a;">${email}</a></td></tr>
+                    <tr><td style="padding:8px 0;font-weight:bold;">Telefon:</td><td>${phone || '—'}</td></tr>
+                    <tr><td style="padding:8px 0;font-weight:bold;">Datum:</td><td>${timestamp}</td></tr>
+                </table>
+                <div style="background:#fff;padding:20px;border-left:3px solid #1d4a3a;margin:20px 0;">
+                    <p style="font-weight:bold;margin-top:0;">Nachricht:</p>
+                    <p style="white-space:pre-wrap;margin-bottom:0;">${message}</p>
+                </div>
+                <hr style="border:none;border-top:1px solid #a89060;margin:20px 0;">
+                <p style="color:#888;font-size:11px;">IP: ${ip}<br>Gesendet über das Kontaktformular der Website.</p>
+            </div>
+        </body>
+        </html>`;
+
+        const textBody = `Name: ${name}\nE-Mail: ${email}\nTelefon: ${phone || '-'}\nDatum: ${timestamp}\n\nNachricht:\n${message}\n\nIP: ${ip}`;
+
+        const mailOptions = {
+            from: `"Wealth Planning AG" <${process.env.MAIL_FROM || process.env.SMTP_USER}>`,
+            to: process.env.MAIL_TO,
+            replyTo: `"${name}" <${email}>`,
+            subject: `${process.env.MAIL_SUBJECT_PREFIX || '[Contact WPAG]'} Neue Anfrage von ${name}`,
+            text: textBody,
+            html: htmlBody,
+        };
+
+        if (process.env.SMTP_USER && process.env.SMTP_PASSWORD && process.env.MAIL_TO) {
+            await transporter.sendMail(mailOptions);
+            console.log(`[WealthContact] Email sent from ${email}`);
+        } else {
+            console.warn('[WealthContact] SMTP not configured — mock send:');
+            console.warn('To:', mailOptions.to, '| From:', mailOptions.from);
+        }
+
+        res.status(200).json({ success: true, message: 'Vielen Dank! Ihre Nachricht wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.' });
+    } catch (error) {
+        console.error('[WealthContact] Error:', error);
+        res.status(500).json({ success: false, error: 'Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.' });
+    }
+});
+
+
 // HEALTH CHECK (Monitoring)
 // ============================================================================
 app.get('/api/health', async (req, res) => {
