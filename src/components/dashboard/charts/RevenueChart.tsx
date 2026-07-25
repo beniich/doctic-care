@@ -36,12 +36,12 @@ export function RevenueChart() {
     plugins: {
       legend: {
         position: 'top' as const,
-        labels: { color: '#8b9ab0', font: { family: 'Sora, sans-serif', size: 11 } },
+        labels: { color: '#cda7f1', font: { family: 'Sora, sans-serif', size: 11 } },
       },
     },
     scales: {
-      x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8b9ab0' } },
-      y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8b9ab0' } },
+      x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#cda7f1' } },
+      y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#cda7f1' } },
     },
   };
 

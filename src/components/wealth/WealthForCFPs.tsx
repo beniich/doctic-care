@@ -53,7 +53,7 @@ export function WealthForCFPs() {
             Votre expertise. <br />
             <span style={{ fontStyle: "italic", color: "#FFA586" }}>Notre plateforme.</span>
           </h2>
-          <p style={{ color: "#8b9ab0", fontSize: "1.125rem", lineHeight: 1.7, marginBottom: "3rem" }}>
+          <p style={{ color: "#cda7f1", fontSize: "1.125rem", lineHeight: 1.7, marginBottom: "3rem" }}>
             Ensemble, révolutionnons les soins. Nous avons conçu Doctic pour répondre aux défis quotidiens des professionnels de santé modernes.
           </p>
 
@@ -81,7 +81,7 @@ export function WealthForCFPs() {
                 </div>
                 <div>
                   <h4 style={{ color: "#f0f4f8", fontWeight: 600, marginBottom: "0.25rem", fontSize: "1.1rem" }}>{pillar.title}</h4>
-                  <p style={{ color: "#8b9ab0", margin: 0, lineHeight: 1.6 }}>{pillar.desc}</p>
+                  <p style={{ color: "#cda7f1", margin: 0, lineHeight: 1.6 }}>{pillar.desc}</p>
                 </div>
               </motion.div>
             ))}

@@ -176,7 +176,7 @@ export function WealthForClients() {
             </h3>
 
             <p style={{
-              color: "#8b9ab0",
+              color: "#cda7f1",
               lineHeight: 1.6,
               fontSize: "1rem",
               margin: 0,

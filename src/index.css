@@ -6,45 +6,45 @@
 
 @layer base {
   /* =========================================
-     1. EMERALD LIGHT (Cyber-style transformed to Light)
-     #EEF7F4 based - BLACK TEXT + GRADIENT BORDERS
+     1. INDIGO BLOOM (Dark Theme)
      ========================================= */
   :root,
   [data-theme="cyber-dark"] {
-    --background: 162 44% 96%;
-    --foreground: 0 0% 0%;        /* PURE BLACK TEXT */
-    --card: 162 44% 98% / 0.8;
-    --card-foreground: 0 0% 0%;
-    --popover: 162 44% 99%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 160 38% 50%;       /* #53AC8E - 500 */
-    --primary-foreground: 0 0% 0%;
-    --secondary: 162 40% 90%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 162 20% 90%;
-    --muted-foreground: 0 0% 20%;
-    --accent: 172 40% 65%;
-    --accent-foreground: 0 0% 0%;
+    --background: 270 72% 7%;      /* #12051f - Indigo 950 */
+    --foreground: 0 0% 100%;       /* White */
+    --card: 271 73% 10%;           /* #1a072c - Indigo 900 */
+    --card-foreground: 0 0% 100%;
+    --popover: 271 73% 10%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 271 73% 50%;        /* #8324db - Indigo 500 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 271 67% 90%;      /* #e6d3f8 - Indigo 100 */
+    --secondary-foreground: 270 72% 7%;
+    --muted: 271 73% 15%;          /* #340e58 - Indigo 800 */
+    --muted-foreground: 271 67% 90%; /* #e6d3f8 - Indigo 100 */
+    --accent: 271 73% 50%;         
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
-    --border: 160 38% 50% / 0.3;
-    --input: 162 30% 85%;
-    --ring: 160 38% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 271 73% 50% / 0.3;
+    --input: 271 73% 20%;
+    --ring: 271 73% 50%;
     --radius: 1.25rem;
     
-    --sidebar-background: 162 44% 94%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 160 38% 50%;
-    --sidebar-primary-foreground: 162 44% 98%;
-    --sidebar-accent: 160 38% 50% / 0.15;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 160 38% 50% / 0.2;
-    --sidebar-ring: 160 38% 50%;
+    --sidebar-background: 270 72% 7%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 271 73% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 271 73% 50% / 0.15;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 271 73% 50% / 0.2;
+    --sidebar-ring: 271 73% 50%;
 
-    --chart-1: 160 38% 50%;
-    --chart-2: 172 40% 65%;
-    --chart-3: 162 20% 40%;
-    --chart-4: 162 50% 10%;
-    --chart-5: 160 30% 25%;
+    --chart-1: 271 73% 50%;
+    --chart-2: 271 60% 65%;
+    --chart-3: 15 100% 76%;        /* #FFA586 - Coral Accent */
+    --chart-4: 271 50% 80%;
+    --chart-5: 271 40% 40%;
   }
 
   /* =========================================

@@ -33,6 +33,8 @@ import { ModalProvider } from "@/contexts/ModalContext";
 import SocialPublish from "./pages/SocialPublish";
 import Landing from "./pages/Landing";
 import LoginPage from "./pages/LoginPage";
+import Signup from "./pages/Signup";
+import Onboarding from "./pages/Onboarding";
 import Pricing from "./pages/Pricing";
 import Terms from "./pages/legal/Terms";
 import Privacy from "./pages/legal/Privacy";
@@ -87,10 +89,12 @@ const AppContent = () => {
             path="/signup"
             element={
               <PublicOnlyRoute redirectTo="/dashboard">
-                <LoginPage />
+                <Signup />
               </PublicOnlyRoute>
             }
           />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/patients" element={<Patients />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/medical-care-sheet" element={<MedicalCareSheetPage />} />

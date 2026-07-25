@@ -80,7 +80,7 @@ export function WealthAboutUs() {
             <div style={{ width: "3rem", height: "2px", backgroundColor: "#B51A2B", marginTop: "1rem" }} />
           </div>
 
-          <div style={{ color: "#8b9ab0", fontSize: "1.125rem", lineHeight: 1.8, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div style={{ color: "#cda7f1", fontSize: "1.125rem", lineHeight: 1.8, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             <p>
               Nous avons fondé Doctic avec une conviction simple : le temps d'un praticien est trop précieux pour être perdu en tâches administratives répétitives et sur des logiciels obsolètes.
             </p>
@@ -96,7 +96,7 @@ export function WealthAboutUs() {
               borderRadius: "0 12px 12px 0"
             }}>
               <h4 style={{ color: "#f0f4f8", fontSize: "1.1rem", fontWeight: 600, margin: "0 0 1rem 0" }}>Nos engagements</h4>
-              <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "flex", flexDirection: "column", gap: "0.8rem", color: "#8b9ab0" }}>
+              <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "flex", flexDirection: "column", gap: "0.8rem", color: "#cda7f1" }}>
                 <li>Sécurité absolue et souveraineté des données (HDS)</li>
                 <li>Design intuitif nécessitant zéro formation</li>
                 <li>Innovation continue guidée par vos retours</li>

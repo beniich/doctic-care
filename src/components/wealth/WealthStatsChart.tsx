@@ -115,7 +115,7 @@ export function WealthStatsChart() {
     plugins: {
       legend: {
         labels: {
-          color: '#8b9ab0',
+          color: '#cda7f1',
           font: { family: 'Sora, sans-serif', size: 12 },
         },
       },
@@ -123,11 +123,11 @@ export function WealthStatsChart() {
     scales: {
       x: {
         grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        ticks: { color: '#8b9ab0' },
+        ticks: { color: '#cda7f1' },
       },
       y: {
         grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        ticks: { color: '#8b9ab0' },
+        ticks: { color: '#cda7f1' },
       },
     },
   };
@@ -161,7 +161,7 @@ export function WealthStatsChart() {
             >
               0
             </div>
-            <div style={{ fontSize: '0.875rem', color: '#8b9ab0', marginTop: '0.5rem' }}>{item.label}</div>
+            <div style={{ fontSize: '0.875rem', color: '#cda7f1', marginTop: '0.5rem' }}>{item.label}</div>
           </div>
         ))}
       </div>
@@ -202,7 +202,7 @@ export function WealthStatsChart() {
                 plugins: {
                   legend: {
                     position: 'bottom',
-                    labels: { color: '#8b9ab0', font: { family: 'Sora, sans-serif' } },
+                    labels: { color: '#cda7f1', font: { family: 'Sora, sans-serif' } },
                   },
                 },
               }}

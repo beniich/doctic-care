@@ -55,8 +55,8 @@ export function ConsultationsChart({ dataPoints }: ConsultationsChartProps) {
       },
     },
     scales: {
-      x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8b9ab0' } },
-      y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8b9ab0' } },
+      x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#cda7f1' } },
+      y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#cda7f1' } },
     },
   };
 

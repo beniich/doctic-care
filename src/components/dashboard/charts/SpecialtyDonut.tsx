@@ -22,7 +22,7 @@ export function SpecialtyDonut() {
     plugins: {
       legend: {
         position: 'right' as const,
-        labels: { color: '#8b9ab0', font: { family: 'Sora, sans-serif', size: 11 } },
+        labels: { color: '#cda7f1', font: { family: 'Sora, sans-serif', size: 11 } },
       },
     },
   };

@@ -78,7 +78,7 @@ export function WealthHero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
         style={{
-          fontSize: 18, color: "#8b9ab0", lineHeight: 1.7,
+          fontSize: 18, color: "#cda7f1", lineHeight: 1.7,
           maxWidth: 580, marginBottom: "2.5rem", fontWeight: 300,
         }}
       >
@@ -93,7 +93,7 @@ export function WealthHero() {
         transition={{ duration: 0.8, delay: 0.3 }}
         style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center", marginBottom: "4rem" }}
       >
-        <Link to="/dashboard" style={{
+        <Link to="/signup" style={{
           padding: "14px 32px", borderRadius: 12, fontSize: 15, fontWeight: 500,
           background: "#FFA586", color: "#12051f",
           textDecoration: "none",
@@ -130,7 +130,7 @@ export function WealthHero() {
         {STATS.map(stat => (
           <div key={stat.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <span style={{ fontSize: "2rem", fontWeight: 600, fontFamily: "Playfair Display, serif", color: "#f0f4f8" }}>{stat.value}</span>
-            <span style={{ fontSize: 13, color: "#8b9ab0", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 500 }}>{stat.label}</span>
+            <span style={{ fontSize: 13, color: "#cda7f1", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 500 }}>{stat.label}</span>
           </div>
         ))}
       </motion.div>

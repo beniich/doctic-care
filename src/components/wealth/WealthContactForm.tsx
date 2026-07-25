@@ -83,7 +83,7 @@ export function WealthContactForm() {
             <span style={{ fontStyle: "italic", color: "#FFA586" }}>cabinet</span>.
           </h2>
           <div style={{ width: "3rem", height: "2px", backgroundColor: "#B51A2B", marginBottom: "1.5rem" }} />
-          <p style={{ color: "#8b9ab0", fontSize: "1.125rem", maxWidth: "32rem" }}>
+          <p style={{ color: "#cda7f1", fontSize: "1.125rem", maxWidth: "32rem" }}>
             Que vous souhaitiez une démonstration ou que vous ayez une question spécifique, notre équipe vous répond en 24h.
           </p>
         </div>
@@ -136,7 +136,7 @@ export function WealthContactForm() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               <label style={{ fontSize: "0.875rem", fontWeight: 500, color: "#f0f4f8" }}>
-                Téléphone <span style={{ fontWeight: 400, color: "#8b9ab0" }}>(optionnel)</span>
+                Téléphone <span style={{ fontWeight: 400, color: "#cda7f1" }}>(optionnel)</span>
               </label>
               <input
                 type="tel" name="phone"
@@ -158,7 +158,7 @@ export function WealthContactForm() {
                 onFocus={e => { e.currentTarget.style.borderColor = "#FFA586"; e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)"; }}
                 onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)"; }}
               />
-              <div style={{ textAlign: "right", fontSize: "0.75rem", color: "#8b9ab0", fontVariantNumeric: "tabular-nums" }}>
+              <div style={{ textAlign: "right", fontSize: "0.75rem", color: "#cda7f1", fontVariantNumeric: "tabular-nums" }}>
                 {formData.message.length} / 5000
               </div>
             </div>
@@ -169,7 +169,7 @@ export function WealthContactForm() {
               borderRadius: "8px",
               padding: "1rem",
               fontSize: "0.8rem",
-              color: "#8b9ab0",
+              color: "#cda7f1",
               lineHeight: 1.6,
             }}>
               Vos données sont traitées de manière sécurisée et confidentielle. Nous ne les partageons jamais avec des tiers sans votre accord.

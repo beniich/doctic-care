@@ -26,6 +26,19 @@ export default {
         'mono-tech': ['"Share Tech Mono"', 'monospace'],
       },
       colors: {
+        'indigo-bloom': {
+          50: '#f3e9fb',
+          100: '#e6d3f8',
+          200: '#cda7f1',
+          300: '#b47bea',
+          400: '#9b50e2',
+          500: '#8324db',
+          600: '#681daf',
+          700: '#4e1584',
+          800: '#340e58',
+          900: '#1a072c',
+          950: '#12051f'
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

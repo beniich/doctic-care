@@ -14,7 +14,7 @@ export const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', siz
     danger:  { background: 'rgba(239,68,68,0.12)',   color: '#f87171', border: '0.5px solid rgba(239,68,68,0.3)' },
     warning: { background: 'rgba(245,158,11,0.12)',  color: '#fbbf24', border: '0.5px solid rgba(245,158,11,0.3)' },
     info:    { background: 'rgba(59,130,246,0.12)',  color: '#60a5fa', border: '0.5px solid rgba(59,130,246,0.3)' },
-    default: { background: 'rgba(255,255,255,0.06)', color: '#8b9ab0', border: '0.5px solid rgba(255,255,255,0.1)' },
+    default: { background: 'rgba(255,255,255,0.06)', color: '#cda7f1', border: '0.5px solid rgba(255,255,255,0.1)' },
   };
   return (
     <span style={{

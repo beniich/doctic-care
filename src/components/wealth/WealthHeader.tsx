@@ -14,7 +14,7 @@ export function WealthHeader() {
     fontSize: "0.875rem",
     fontWeight: 500,
     transition: "color 0.15s",
-    color: location.pathname === path ? "#f0f4f8" : "#8b9ab0",
+    color: location.pathname === path ? "#f0f4f8" : "#cda7f1",
     textDecoration: "none",
   } as React.CSSProperties);
 
@@ -64,7 +64,7 @@ export function WealthHeader() {
           {navLinks.map(({ to, label }) => (
             <Link key={to} to={to} style={getLinkStyle(to)}
               onMouseEnter={e => (e.currentTarget.style.color = "#f0f4f8")}
-              onMouseLeave={e => (e.currentTarget.style.color = location.pathname === to ? "#f0f4f8" : "#8b9ab0")}
+              onMouseLeave={e => (e.currentTarget.style.color = location.pathname === to ? "#f0f4f8" : "#cda7f1")}
             >
               {label}
             </Link>
@@ -75,7 +75,7 @@ export function WealthHeader() {
         <div style={{ display: "flex", gap: "10px" }}>
           <Link to="/login" style={{
             padding: "9px 18px", borderRadius: 10, fontSize: "0.875rem", fontWeight: 500,
-            color: "#8b9ab0",
+            color: "#cda7f1",
             background: "rgba(255,255,255,0.04)",
             border: "0.5px solid rgba(255,255,255,0.08)",
             textDecoration: "none",
@@ -87,12 +87,12 @@ export function WealthHeader() {
           }}
           onMouseLeave={e => {
             e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-            e.currentTarget.style.color = "#8b9ab0";
+            e.currentTarget.style.color = "#cda7f1";
           }}
           >
             Connexion
           </Link>
-          <Link to="/dashboard" style={{
+          <Link to="/signup" style={{
             padding: "9px 20px", borderRadius: 10, fontSize: "0.875rem", fontWeight: 500,
             background: "#FFA586", color: "#12051f",
             textDecoration: "none",
